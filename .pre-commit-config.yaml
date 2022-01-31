@@ -1,0 +1,40 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: detect-private-key
+      - id: detect-aws-credentials
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.1.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: .*/keys/.*|
+              (?x)(
+                     ^package-lock.json$/|
+                     ^Pipfile/|
+                     ^pyproject.toml
+              )
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.62.3
+    hooks:
+      - id: terraform_validate
+      - id: terraform_fmt
+      # - id: terraform_tflint
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.11
+    hooks:
+      - id: remove-tabs
+      - id: remove-crlf
+  - repo: https://github.com/mattlqx/pre-commit-search-and-replace
+    rev: v1.0.5
+    hooks:
+      - id: search-and-replace
+# - repo: github.com/jorisroovers/gitlint
+# - repo: https://github.com/mattlqx/pre-commit-sign
