@@ -28,6 +28,12 @@ Resources:
             TableName: !Ref HelloWorldTable
         - DynamoDBWritePolicy:
             TableName: !Ref HelloWorldTable
+        - S3ReadPolicy:
+            BucketName: !Ref HelloWorldBucket
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref HelloWorldTopic
+        - SQSSendMessagePolicy:
+            QueueName: !Ref HelloWorldQueue
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -64,6 +70,21 @@ Resources:
       KeySchema:
         - AttributeName: "Id"
           KeyType: "HASH"
+
+  HelloWorldBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "hello-world-platform-demo"
+
+  HelloWorldTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "hello-world-platform-demo"
+
+  HelloWorldQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "hello-world-platform-demo"
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
