@@ -7,7 +7,7 @@ This repository contains work-in-progress by the dev platform team for CI/CD pip
 Tools required:
 
 * AWS CLI with credentials to your target AWS account
-* AWS SAM CLI
+* AWS SAM CLI (`brew install aws/tap/aws-sam-cli`)
 * Terraform
 * pre-commit ( `brew install pre-commit && pre-commit install` )
 
