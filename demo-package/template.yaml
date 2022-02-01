@@ -23,6 +23,11 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref HelloWorldTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref HelloWorldTable
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -47,6 +52,18 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
+
+  HelloWorldTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "hello-world-platform-demo"
+      BillingMode: "PAY_PER_REQUEST"
+      AttributeDefinitions:
+        - AttributeName: "Id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Id"
+          KeyType: "HASH"
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
