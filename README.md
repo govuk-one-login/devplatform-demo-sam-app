@@ -9,5 +9,6 @@ Tools required:
 * AWS CLI with credentials to your target AWS account
 * AWS SAM CLI (`brew install aws/tap/aws-sam-cli`)
 * Terraform
-* pre-commit ( `brew install pre-commit && pre-commit install` )
+* tflint (`brew install tflint && (cd routine-pipeline-module/examples/pipeline-demo && tflint --init)`)
+* pre-commit (`brew install pre-commit && pre-commit install`)
 
