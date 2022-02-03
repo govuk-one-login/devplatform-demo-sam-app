@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
         with:
@@ -31,3 +34,17 @@ jobs:
       - name: SAM build and test
         run: sam build --use-container
         working-directory: ./demo-package
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.OIDCARN }}
+          aws-region: eu-west-2
+      - name: Upload lambdas to S3
+        env:
+          S3BucketName: ${{ secrets.S3BUCKETNAME }}
+        run: sam package --s3-bucket="$S3BucketName" --output-template-file=cf-template.yaml
+      - name: Zip the cloudformation template
+        run: zip template.zip cf-template.yaml
+      - name: Upload zipped cloudformation artifact to S3
+        env:
+          S3BucketName: ${{ secrets.S3BUCKETNAME }}
+        run: aws s3 cp template.zip s3://"$S3BucketName"/template.zip
