@@ -40,6 +40,15 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -58,6 +67,14 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
@@ -70,21 +87,83 @@ Resources:
       KeySchema:
         - AttributeName: "Id"
           KeyType: "HASH"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldTable
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "di-devplatform-build-demo-bucket"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldBucket
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
 
   HelloWorldTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub "di-devplatform-build-demo"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldTopic
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
   HelloWorldQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub "di-devplatform-build-demo"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldQueue
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
