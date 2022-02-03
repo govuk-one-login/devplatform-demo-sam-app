@@ -30,3 +30,4 @@ jobs:
       - uses: aws-actions/setup-sam@v1
       - name: SAM build and test
         run: sam build --use-container
+        working-directory: ./demo-package
