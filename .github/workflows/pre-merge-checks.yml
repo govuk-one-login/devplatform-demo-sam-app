@@ -28,9 +28,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build lambda1
         run: ./gradlew clean build
-        with:
-          path: ./demo-package/HelloWorldFunction
+        working-directory: ./demo-package/HelloWorldFunction
       - name: Build lambda2
         run: ./gradlew clean build
-        with:
-          path: ./demo-package/HelloWorldFunction2
+        working-directory: ./demo-package/HelloWorldFunction2
