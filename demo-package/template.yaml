@@ -5,6 +5,11 @@ Description: >
 
   Sample SAM Template for demo-package
 
+Parameters:
+  Environment:
+    Type: String
+    Description: Identifier for target deployment environment
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -107,7 +112,7 @@ Resources:
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "di-devplatform-build-demo-staging-bucket"
+      BucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
       Tags:
         - Key: BillingOrganization
           Value: GDS
