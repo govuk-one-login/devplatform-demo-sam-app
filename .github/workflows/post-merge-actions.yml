@@ -36,6 +36,8 @@ jobs:
         with:
           python-version: "3.8"
       - uses: aws-actions/setup-sam@v1
+      - name: SAM validate
+        run: sam validate
       - name: SAM build and test
         run: sam build --use-container
       - uses: aws-actions/configure-aws-credentials@v1
