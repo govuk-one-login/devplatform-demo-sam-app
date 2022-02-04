@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ./demo-package
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -33,7 +38,6 @@ jobs:
       - uses: aws-actions/setup-sam@v1
       - name: SAM build and test
         run: sam build --use-container
-        working-directory: ./demo-package
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.OIDCARN }}
