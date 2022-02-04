@@ -45,6 +45,7 @@ jobs:
         run: sam build --use-container
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       id-token: write
