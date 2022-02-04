@@ -26,6 +26,7 @@ repos:
     rev: v1.62.3
     hooks:
       - id: terraform_validate
+        exclude: routine-pipeline-module/[^/]+$
       - id: terraform_fmt
       - id: terraform_tflint
   - repo: https://github.com/Lucas-C/pre-commit-hooks
