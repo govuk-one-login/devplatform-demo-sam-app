@@ -107,7 +107,7 @@ Resources:
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "di-devplatform-build-demo-bucket"
+      BucketName: !Sub "di-devplatform-build-demo-staging-bucket"
       Tags:
         - Key: BillingOrganization
           Value: GDS
