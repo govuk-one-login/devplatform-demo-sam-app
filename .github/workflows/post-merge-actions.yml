@@ -11,11 +11,8 @@ defaults:
     working-directory: ./demo-package
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -44,17 +41,23 @@ jobs:
       - name: Set up SAM cli
         uses: aws-actions/setup-sam@v1
 
-      - name: SAM validate
-        run: sam validate
-
       - name: SAM build and test
         run: sam build --use-container
 
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.OIDCARN }}
           aws-region: eu-west-2
+
+      - name: SAM validate
+        run: sam validate
 
       - name: Upload lambdas to S3
         env:
