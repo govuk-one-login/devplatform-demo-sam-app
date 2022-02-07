@@ -25,6 +25,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      KmsKeyArn: !Ref HelloWorldKmsKey
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
@@ -63,6 +64,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      KmsKeyArn: !Ref HelloWorldKmsKey
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
@@ -86,12 +88,17 @@ Resources:
     Properties:
       TableName: !Sub "di-devplatform-build-demo"
       BillingMode: "PAY_PER_REQUEST"
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - AttributeName: "Id"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "Id"
           KeyType: "HASH"
+      SSESpecification:
+        KMSMasterKeyId: !Ref HelloWorldKmsKey
+        SSEEnabled: true
       Tags:
         - Key: BillingOrganization
           Value: GDS
@@ -107,7 +114,6 @@ Resources:
           Value: HelloWorldTable
         - Key: Source
           Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
-
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
@@ -142,11 +148,28 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
+  HelloWorldKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Ref HelloWorldFunction
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Ref HelloWorldFunction2
+            Action: 'kms:*'
+            Resource: '*'
 
   HelloWorldTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub "di-devplatform-build-demo"
+      KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
           Value: GDS
@@ -167,6 +190,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub "di-devplatform-build-demo"
+      KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
           Value: GDS
