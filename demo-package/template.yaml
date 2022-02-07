@@ -113,6 +113,19 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBukcetName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
       Tags:
         - Key: BillingOrganization
           Value: GDS
