@@ -156,12 +156,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: !Ref HelloWorldFunction
-            Action: 'kms:*'
-            Resource: '*'
-          - Effect: Allow
-            Principal:
-              AWS: !Ref HelloWorldFunction2
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action: 'kms:*'
             Resource: '*'
 
