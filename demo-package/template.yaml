@@ -25,7 +25,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
-      KmsKeyArn: !Ref HelloWorldKmsKey
+      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
@@ -64,7 +64,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
-      KmsKeyArn: !Ref HelloWorldKmsKey
+      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
