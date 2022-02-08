@@ -59,7 +59,7 @@ jobs:
       - name: Upload lambdas to S3
         env:
           S3BucketName: ${{ secrets.S3BUCKETNAME }}
-          BUILDSIGNINGPROFILE: ${{ secrets.BUILD_SIGNING_PROFILE }}
+          BUILDSIGNINGPROFILE: ${{ secrets.BUILDSIGNINGPROFILE }}
         run: sam package --s3-bucket="$S3BucketName" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$BUILDSIGNINGPROFILE" HelloWorldFunction2="$BUILDSIGNINGPROFILE"
 
       - name: Zip the cloudformation template
