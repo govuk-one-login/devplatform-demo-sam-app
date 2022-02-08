@@ -99,6 +99,7 @@ Resources:
       SSESpecification:
         KMSMasterKeyId: !Ref HelloWorldKmsKey
         SSEEnabled: true
+        SSEType: "KMS"
       Tags:
         - Key: BillingOrganization
           Value: GDS
