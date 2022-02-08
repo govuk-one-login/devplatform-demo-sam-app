@@ -12,4 +12,4 @@ Tools required:
 * tflint (`brew install tflint && (cd routine-pipeline-module/examples/pipeline-demo && tflint --init)`)
 * commitlint (`npm install -g @commitlint/cli`)
 * pre-commit (`brew install pre-commit && pre-commit install && pre-commit install -tprepare-commit-msg -tcommit-msg`)
-* [GDS CLI](https://github.com/alphagov/homebrew-gds)
+* GDS CLI (`brew tap alphagov/gds && brew install gds-cli`)
