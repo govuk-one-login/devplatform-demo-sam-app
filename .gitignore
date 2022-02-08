@@ -260,8 +260,8 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+# End of https://www.toptal.com/developers/gitignore/api/vim,sam,java,macos,direnv,terraform,intellij+all,visualstudiocode,gradle
+
 
 ### asdf ###
 **/.tool-versions
-
-# End of https://www.toptal.com/developers/gitignore/api/vim,sam,java,macos,direnv,terraform,intellij+all,visualstudiocode,gradle
