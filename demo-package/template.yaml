@@ -125,7 +125,7 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
       LoggingConfiguration:
-        DestinationBukcetName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+        DestinationBucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
