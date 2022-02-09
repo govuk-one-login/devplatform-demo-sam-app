@@ -44,4 +44,3 @@ jobs:
           skip_check: CKV_AWS_7,CKV_AWS_116
           quiet: true
           output_format: cli
-          container_user: 1000
