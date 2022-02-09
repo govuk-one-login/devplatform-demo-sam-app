@@ -37,11 +37,11 @@ jobs:
 
       - name: Run Checkov
         id: checkov
-        uses: bridgecrewio/checkov-action@v12
+        uses: bridgecrewio/checkov-action@v12.641.0
         with:
           framework: cloudformation
           directory: demo-package/
-#          skip_check: CKV_AWS_7, CKV_AWS_116
+          skip_check: CKV_AWS_7, CKV_AWS_116
           quiet: true
           output_format: cli
           container_user: 1000
