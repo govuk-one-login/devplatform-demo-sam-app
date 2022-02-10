@@ -68,4 +68,4 @@ jobs:
       - name: Upload zipped cloudformation artifact to S3
         env:
           S3BucketName: ${{ secrets.S3BUCKETNAME }}
-        run: aws s3 cp template.zip s3://"$S3BucketName"/template.zip
+        run: aws s3 cp template.zip "s3://$S3BucketName/template.zip"
