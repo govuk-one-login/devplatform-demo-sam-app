@@ -1,0 +1,229 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  demo-package
+
+  Sample SAM Template for demo-package
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Identifier for target deployment environment.
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: HelloWorldFunction
+      Handler: helloworld.App::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          PARAM1: VALUE
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref HelloWorldTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref HelloWorldTable
+        - S3ReadPolicy:
+            BucketName: !Ref HelloWorldBucket
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref HelloWorldTopic
+        - SQSSendMessagePolicy:
+            QueueName: !Ref HelloWorldQueue
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello
+            Method: get
+      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  HelloWorldFunction2:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: HelloWorldFunction2
+      Handler: helloworld2.App2::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          PARAM1: VALUE
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello2
+            Method: get
+      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  HelloWorldTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "di-devplatform-build-demo"
+      BillingMode: "PAY_PER_REQUEST"
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      AttributeDefinitions:
+        - AttributeName: "Id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Id"
+          KeyType: "HASH"
+      SSESpecification:
+        KMSMasterKeyId: !Ref HelloWorldKmsKey
+        SSEEnabled: true
+        SSEType: "KMS"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldTable
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  HelloWorldBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldBucket
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  HelloWorldKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: 'kms:*'
+            Resource: '*'
+
+  HelloWorldTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "di-devplatform-build-demo"
+      KmsMasterKeyId: !Ref HelloWorldKmsKey
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldTopic
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  HelloWorldQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "di-devplatform-build-demo"
+      KmsMasterKeyId: !Ref HelloWorldKmsKey
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldQueue
+        - Key: Source
+          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloWorldApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  HelloWorldFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
+  HelloWorldFunction2:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction2.Arn
+  HelloWorldFunctionIamRole2:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunction2Role.Arn
