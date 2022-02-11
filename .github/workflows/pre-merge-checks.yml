@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Checkov
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.641.0
+        uses: bridgecrewio/checkov-action@v12.1254.0
         with:
           framework: cloudformation
           directory: demo-package/
