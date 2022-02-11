@@ -29,18 +29,18 @@ jobs:
 
       - name: Build lambda1
         run: ./gradlew clean build
-        working-directory: ./demo-package/HelloWorldFunction
+        working-directory: ./sam-app/HelloWorldFunction
 
       - name: Build lambda2
         run: ./gradlew clean build
-        working-directory: ./demo-package/HelloWorldFunction2
+        working-directory: ./sam-app/HelloWorldFunction2
 
       - name: Run Checkov
         id: checkov
         uses: bridgecrewio/checkov-action@v12.1254.0
         with:
           framework: cloudformation
-          directory: demo-package/
+          directory: sam-app/
           skip_check: CKV_AWS_7,CKV_AWS_116
           quiet: true
           output_format: cli
