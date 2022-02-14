@@ -47,7 +47,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.OIDCARN }}
+          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -58,14 +58,14 @@ jobs:
 
       - name: Upload lambdas to S3
         env:
-          S3BucketName: ${{ secrets.S3BUCKETNAME }}
-          BUILDSIGNINGPROFILE: ${{ secrets.BUILDSIGNINGPROFILE }}
-        run: sam package --s3-bucket="$S3BucketName" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$BUILDSIGNINGPROFILE" HelloWorldFunction2="$BUILDSIGNINGPROFILE"
+          ARTIFACT_BUCKET: ${{ secrets.ARTIFACT_BUCKET }}
+          SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
+        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE" HelloWorldFunction2="$SIGNING_PROFILE"
 
       - name: Zip the cloudformation template
         run: zip template.zip cf-template.yaml
 
       - name: Upload zipped cloudformation artifact to S3
         env:
-          S3BucketName: ${{ secrets.S3BUCKETNAME }}
-        run: aws s3 cp template.zip "s3://$S3BucketName/template.zip"
+          ARTIFACT_BUCKET: ${{ secrets.ARTIFACT_BUCKET }}
+        run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip"
