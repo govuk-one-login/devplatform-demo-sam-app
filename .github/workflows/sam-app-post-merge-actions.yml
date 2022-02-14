@@ -1,4 +1,4 @@
-name: SAM test and build
+name: SAM app test and build and deploy
 
 on:
   push:
@@ -47,7 +47,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.SAM_APP_ROLE_TO_ASSUME }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload lambdas to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.ARTIFACT_BUCKET }}
+          ARTIFACT_BUCKET: ${{ secrets.SAM_APP_ARTIFACT_BUCKET }}
           SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
         run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE" HelloWorldFunction2="$SIGNING_PROFILE"
 
@@ -67,5 +67,5 @@ jobs:
 
       - name: Upload zipped cloudformation artifact to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.ARTIFACT_BUCKET }}
+          ARTIFACT_BUCKET: ${{ secrets.SAM_APP_ARTIFACT_BUCKET }}
         run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip"

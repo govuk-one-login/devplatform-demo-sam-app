@@ -1,4 +1,4 @@
-name: gradle test and build
+name: SAM app test and build
 
 on:
   pull_request:
