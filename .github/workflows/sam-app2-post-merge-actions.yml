@@ -1,4 +1,4 @@
-name: SAM test and build
+name: SAM app 2 test and build and deploy
 
 on:
   push:

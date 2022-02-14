@@ -1,4 +1,4 @@
-name: gradle test and build
+name: SAM app 2 test and build
 
 on:
   pull_request:
@@ -37,6 +37,6 @@ jobs:
         with:
           framework: cloudformation
           directory: sam-app2/
-          skip_check: CKV_AWS_7,CKV_AWS_116
+          skip_check: CKV_AWS_116
           quiet: true
           output_format: cli
