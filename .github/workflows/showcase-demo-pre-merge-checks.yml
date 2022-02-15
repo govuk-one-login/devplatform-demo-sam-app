@@ -36,6 +36,7 @@ jobs:
         uses: bridgecrewio/checkov-action@v12.1254.0
         with:
           framework: cloudformation
+          skip_check: CKV_AWS_116,CKV_AWS_173
           directory: showcase-demo-app/
           quiet: true
           output_format: cli
