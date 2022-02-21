@@ -9,9 +9,6 @@ Parameters:
   Environment:
     Type: String
     Description: Identifier for target deployment environment.
-  CodeSigningConfigArn:
-    Type: String
-    Description: Asserts that lambdas are signed when deployed.
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -49,7 +46,6 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -78,7 +74,6 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -91,7 +86,6 @@ Resources:
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "di-devplatform-build-demo"
       BillingMode: "PAY_PER_REQUEST"
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
@@ -124,14 +118,11 @@ Resources:
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-      LoggingConfiguration:
-        DestinationBucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -169,7 +160,6 @@ Resources:
   HelloWorldTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub "di-devplatform-build-demo"
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
@@ -190,7 +180,6 @@ Resources:
   HelloWorldQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "di-devplatform-build-demo"
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
