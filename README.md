@@ -17,7 +17,7 @@ The GitHub workflows make use of the following secrets:
 * SAM_APP2_ARTIFACT_BUCKET - The name of the S3 bucket to deploy [sam-app2](sam-app2) to
 * SAM_APP2_ROLE_TO_ASSUME - The ARN of the AWS role to assume when deploying [sam-app2](sam-app2)
 
-The values for these secrets are the Terraform outputs of the 
+The values for these secrets are the Terraform outputs of the
 [di-devplatform-demo-pipelines](https://github.com/alphagov/di-devplatform-demo-pipelines) repository.
 
 ## Getting Started
