@@ -34,6 +34,7 @@ if [[ $status_code != "200" ]]; then
   }
 ]
 EOF
+exit 1
 else
   cat <<EOF
 [
