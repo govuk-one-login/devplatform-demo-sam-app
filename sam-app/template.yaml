@@ -46,7 +46,7 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+#      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -75,7 +75,7 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+#      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
