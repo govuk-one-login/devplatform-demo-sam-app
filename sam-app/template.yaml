@@ -6,9 +6,6 @@ Description: >
   Sample SAM Template for demo-package
 
 Parameters:
-  Environment:
-    Type: String
-    Description: Identifier for target deployment environment.
   CodeSigningConfigArn:
     Type: String
     Description: Asserts that lambdas are signed when deployed.
@@ -91,7 +88,6 @@ Resources:
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "di-devplatform-build-demo"
       BillingMode: "PAY_PER_REQUEST"
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
@@ -124,14 +120,38 @@ Resources:
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+      BucketName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "helloworldbucket"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - '-'
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - /
+                          - Ref: AWS::StackId
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
       LoggingConfiguration:
-        DestinationBucketName: !Sub "di-devplatform-build-demo-${Environment}-bucket"
+        DestinationBucketName: !Join
+          - "-"
+          - - !Ref AWS::StackName
+            - "helloworldbucket"
+            - Fn::Select:
+                - 4
+                - Fn::Split:
+                    - '-'
+                    - Fn::Select:
+                        - 2
+                        - Fn::Split:
+                            - /
+                            - Ref: AWS::StackId
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -169,7 +189,6 @@ Resources:
   HelloWorldTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub "di-devplatform-build-demo"
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
@@ -190,7 +209,6 @@ Resources:
   HelloWorldQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "di-devplatform-build-demo"
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
         - Key: BillingOrganization
