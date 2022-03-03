@@ -47,6 +47,7 @@ Resources:
             Path: /hello
             Method: get
 #      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+      AutoPublishAlias: HelloWorldFunction
       DeploymentPreference:
         Type: Canary10Percent5Minutes
         Alarms:
