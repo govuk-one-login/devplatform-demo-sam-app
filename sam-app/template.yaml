@@ -229,7 +229,9 @@ Resources:
   HelloWorldFunctionErrorAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      MetricName: Errors
+      Description: >
+        Test alarm to trigger if the lambda receives many requests.
+      MetricName: Invocations
       Namespace: AWS/Lambda
       Statistic: Sum
       Dimensions:
@@ -238,7 +240,7 @@ Resources:
       Period: 300
       EvaluationPeriods: 1
       DatapointsToAlarm: 1
-      Threshold: 1
+      Threshold: 10
       ComparisonOperator: GreaterThanOrEqualToThreshold
       TreatMissingData: notBreaching
 

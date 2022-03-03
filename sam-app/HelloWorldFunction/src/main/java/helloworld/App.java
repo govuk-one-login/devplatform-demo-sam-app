@@ -30,7 +30,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
             String output = String.format("{ \"message\": \"hello world\", \"location\": \"%s\" }", pageContents);
 
             return response
-                    .withStatusCode(500)
+                    .withStatusCode(200)
                     .withBody(output);
         } catch (IOException e) {
             return response
