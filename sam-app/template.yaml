@@ -47,6 +47,10 @@ Resources:
             Path: /hello
             Method: get
 #      CodeSigningConfigArn: !Ref CodeSigningConfigArn
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        Alarms:
+          - !Ref HelloWorldFunctionTooManyRequestsAlarm
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -226,7 +230,7 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
-  HelloWorldFunctionErrorAlarm:
+  HelloWorldFunctionTooManyRequestsAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: >
