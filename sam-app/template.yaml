@@ -52,6 +52,8 @@ Resources:
         Type: Canary10Percent5Minutes
         Alarms:
           - !Ref HelloWorldFunctionTooManyRequestsAlarm
+        Hooks:
+          PreTraffic: !Ref PreTrafficHook
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -88,6 +90,38 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+
+  PreTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: preTrafficHook.handler
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Action:
+              - "codedeploy:PutLifecycleEventHookExecutionStatus"
+            Resource:
+              !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*'
+        - Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Action:
+              - "lambda:InvokeFunction"
+            Resource: !Ref HelloWorldFunction.Version
+      Runtime: nodejs14.x
+      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+      Environment:
+        Variables:
+          NewVersion: !Ref HelloWorldFunction.Version
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: PreTrafficHook
         Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
 
   HelloWorldTable:
