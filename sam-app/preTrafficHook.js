@@ -37,7 +37,7 @@ exports.handler = (event, context, callback) => {
       //    "statusCode": 200,
       //    "body": 51
       // }
-      if(result.body.message == "hello world"){
+      if(JSON.parse(result.body).message == "hello world"){
         lambdaResult = "Succeeded";
         console.log ("Validation testing succeeded!");
       }
