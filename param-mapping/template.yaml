@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Creating SSM parameters based on ENVs using cloudformation mapping.
+
+Resources:
+  BasicParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: command
+      Type: String
+      Value: date
+      Description: SSM Parameter for running date command.
+      AllowedPattern: "^[a-zA-Z]{1,10}$"
+      Tags:
+        Environment: DEV
+
