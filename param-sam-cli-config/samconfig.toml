@@ -1,0 +1,15 @@
+version = 0.1
+
+
+[staging.deploy.parameters]
+parameter_overrides = [
+    "BasicParamValue=defaultStage",
+    "Environment=staging"
+]
+
+[production.deploy.parameters]
+parameter_overrides = [
+    "BasicParamValue=defaultProd",
+    "Environment=production"
+]
+

@@ -12,20 +12,17 @@ Parameters:
       - staging
       - production
 
-Mappings:
-  BasicParameterValue:
-    Environment:
-      staging: "staging"
-      production: "production"
+  BasicParamValue:
+    Type: String
+
 
 Resources:
   BasicParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Value: !FindInMap [BasicParameterValue, Environment, !Ref Environment]
+      Value: !Ref BasicParamValue
       AllowedPattern: "^[a-zA-Z]+$"
-
 
 
 

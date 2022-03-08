@@ -1,0 +1,56 @@
+name: Param Mapping build and deploy
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./param-sam-cli-config
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Set up SAM cli
+        uses: aws-actions/setup-sam@v1
+
+      - name: Set up AWS creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.PARAM_SAM_GH_ACTIONS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: SAM validate
+        run: sam validate
+
+      - name: SAM build and test
+        run: sam build --use-container
+
+      - name: Upload lambdas to S3
+        env:
+          ARTIFACT_BUCKET: ${{ secrets.PARAM_SAM_ARTIFACT_SOURCE_BUCKET_NAME }}
+          SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
+        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml #--signing-profiles HelloWorldFunction="$SIGNING_PROFILE" HelloWorldFunction2="$SIGNING_PROFILE"
+
+      - name: Zip the cloudformation template
+        run: zip template.zip cf-template.yaml samconfig.toml
+
+      - name: Upload zipped cloudformation artifact to S3
+        env:
+          ARTIFACT_BUCKET: ${{ secrets.PARAM_SAM_ARTIFACT_SOURCE_BUCKET_NAME }}
+        run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip"
