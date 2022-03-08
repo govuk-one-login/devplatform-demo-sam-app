@@ -3,15 +3,30 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Creating SSM parameters based on ENVs using cloudformation mapping.
 
+
+Parameters:
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - staging
+      - production
+
+Mappings:
+  BasicParameterValue:
+    Environment:
+      staging: "staging"
+      production: "production"
+
 Resources:
   BasicParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: command
       Type: String
-      Value: date
-      Description: SSM Parameter for running date command.
+      Value: !FindInMap [BasicParameterValue, Environment, !Ref Environment]
       AllowedPattern: "^[a-zA-Z]{1,10}$"
-      Tags:
-        Environment: DEV
+
+
+
+
 
