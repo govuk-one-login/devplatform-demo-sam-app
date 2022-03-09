@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  ssm-params
+
+  A configuration stack using SSM
+
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  FooParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /Foo/Bar
+      Type: String
+      Value: bar
+
+  FooParameterReadRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "arn:aws:iam::223594937353:root"
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: ReadFooParameterPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "ssm:GetParameter"
+                Resource: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/foo/bar"
