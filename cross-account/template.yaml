@@ -35,4 +35,4 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: "ssm:GetParameter"
-                Resource: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/foo/bar"
+                Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Foo/Bar"
