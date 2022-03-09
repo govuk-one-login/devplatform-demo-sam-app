@@ -1,4 +1,4 @@
-name: Param Mapping build and deploy
+name: Parameters build and deploy
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ./param-mapping
+    working-directory: ./parameters
 
 jobs:
   deploy:
@@ -32,7 +32,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.PARAM_MAPPING_GH_ACTIONS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.PARAMETERS_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload lambdas to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.PARAM_MAPPING_ARTIFACT_SOURCE_BUCKET_NAME }}
+          ARTIFACT_BUCKET: ${{ secrets.PARAMETERS_ARTIFACT_SOURCE_BUCKET_NAME }}
           SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
         run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml #--signing-profiles HelloWorldFunction="$SIGNING_PROFILE" HelloWorldFunction2="$SIGNING_PROFILE"
 
@@ -52,5 +52,5 @@ jobs:
 
       - name: Upload zipped cloudformation artifact to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.PARAM_MAPPING_ARTIFACT_SOURCE_BUCKET_NAME }}
+          ARTIFACT_BUCKET: ${{ secrets.PARAMETERS_ARTIFACT_SOURCE_BUCKET_NAME }}
         run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip"
