@@ -9,6 +9,9 @@ Parameters:
   CodeSigningConfigArn:
     Type: String
     Description: Asserts that lambdas are signed when deployed.
+  Bar:
+    Type: String
+    Description: SSM parameter injection example
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
