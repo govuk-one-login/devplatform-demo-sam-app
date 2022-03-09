@@ -1,23 +1,28 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: |
-  ssm-params
+  cross-account
 
-  A configuration stack using SSM
+  A cross-account configuration stack using SSM Parameter Store
 
 Globals:
   Function:
     Timeout: 20
 
+Outputs:
+  FooBarParameterReadRoleARN:
+    Description: The ARN for the role used to read the /Foo/Bar parameter
+    Value: !GetAtt FooBarParameterReadRole.Arn
+
 Resources:
-  FooParameter:
+  FooBarParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Name: /Foo/Bar
       Type: String
       Value: bar
 
-  FooParameterReadRole:
+  FooBarParameterReadRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -29,7 +34,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-        - PolicyName: ReadFooParameterPolicy
+        - PolicyName: ReadFooBarParameterPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
