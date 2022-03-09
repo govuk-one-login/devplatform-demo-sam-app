@@ -5,6 +5,11 @@ Description: >
 
   Sample SAM Template for sam-app2
 
+Parameters:
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -20,6 +25,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
