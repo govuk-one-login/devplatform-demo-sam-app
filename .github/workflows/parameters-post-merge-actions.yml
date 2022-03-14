@@ -39,7 +39,7 @@ jobs:
         run: sam validate
 
       - name: SAM build and test
-        run: sam build --use-container
+        run: sam build
 
       - name: Upload lambdas to S3
         env:
