@@ -9,13 +9,26 @@ Parameters:
   CodeSigningConfigArn:
     Type: String
     Description: Asserts that lambdas are signed when deployed.
+    Default: "none"
+
   Bar:
     Type: String
     Description: SSM parameter injection example
 
+Conditions:
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
     Timeout: 20
 
 Resources:
@@ -49,7 +62,6 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       AutoPublishAlias: HelloWorldFunction
       DeploymentPreference:
         Type: Canary10Percent5Minutes
@@ -85,7 +97,6 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
-      CodeSigningConfigArn: !Ref CodeSigningConfigArn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
