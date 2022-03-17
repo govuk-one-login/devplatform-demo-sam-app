@@ -11,21 +11,71 @@ Parameters:
     AllowedValues:
       - staging
       - production
+      - local
+
+  LocalName:
+    Description: Unique name component used in ephemeral deploys
+    Type: String
+    Default: ""
+
+  LocalBasicParameterValue:
+    Description: Override of the BasicParameterValue for ephemeral deploy
+    Type: String
+    Default: "local"
+
+Rules:
+  LocalNameRequiredForLocalEnvironment:
+    RuleCondition: !Equals [ !Ref Environment, "local" ]
+    Assertions:
+      - Assert: !Not [ !Equals [ !Ref LocalName, "" ] ]
+        AssertDescription: >
+          Must specify LocalName when Environment is "local"
+
+  LocalNameEmptyForNonLocalEnvironment:
+    RuleCondition: !Not [ !Equals [ !Ref Environment, "local" ] ]
+    Assertions:
+      - Assert: !Equals [ !Ref LocalName, "" ]
+        AssertDescription: >
+          Must not specify LocalName when Environment is not "local"
+
+Conditions:
+  IsLocal:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref Environment
+          - "local"
 
 Mappings:
   BasicParameterValue:
     Environment:
       staging: "staging"
       production: "production"
+      local: "unused"
+
+  AnotherBasicParameterValue:
+    Environment:
+      staging: "this-is-staging"
+      production: "this-is-production"
+      local: "this-is-local"
 
 Resources:
   BasicParameter:
     Type: AWS::SSM::Parameter
     Properties:
+      Name: !Sub "/${Environment}${LocalName}/BasicParameter"
       Type: String
-      Value: !FindInMap [BasicParameterValue, Environment, !Ref Environment]
+      Value: !If
+        - IsLocal
+        - !Ref LocalBasicParameterValue
+        - !FindInMap [BasicParameterValue, Environment, !Ref Environment]
       AllowedPattern: "^[a-zA-Z]+$"
 
+  AnotherBasicParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${Environment}${LocalName}/AnotherBasicParameter"
+      Type: String
+      Value: !FindInMap [AnotherBasicParameterValue, Environment, !Ref Environment]
 
 
 
