@@ -30,7 +30,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: "arn:aws:iam::223594937353:root"
+              AWS:
+                - "arn:aws:iam::223594937353:root"
+                - "arn:aws:iam::092449966640:root"
             Action:
               - 'sts:AssumeRole'
       Policies:
