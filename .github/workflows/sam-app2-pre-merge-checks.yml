@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -26,6 +29,12 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+
+      - name: Set up AWS creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.SAM_APP2_ROLE_TO_ASSUME }}
+          aws-region: eu-west-2
 
       - name: Build lambda1
         run: ./gradlew clean build
