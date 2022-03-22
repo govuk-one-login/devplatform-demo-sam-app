@@ -47,22 +47,3 @@ jobs:
           skip_check: CKV_AWS_7,CKV_AWS_116
           quiet: true
           output_format: cli
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-
-      - name: Set up SAM cli
-        uses: aws-actions/setup-sam@v1
-
-
-      - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.SAM_APP_ROLE_TO_ASSUME }}
-          aws-region: eu-west-2
-
-      - name: SAM validate
-        run: sam validate
-        working-directory: ./sam-app
