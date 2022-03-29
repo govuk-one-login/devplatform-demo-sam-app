@@ -9,6 +9,13 @@ Globals:
   Function:
     Timeout: 20
 
+Parameters:
+  OtherAccountDeployRoleArns:
+    Type: CommaDelimitedList
+    Description: >
+      Comma separated list of role ARNs in other accounts which are required to
+      read some SSM parameters from this stack.
+
 Outputs:
   FooBarParameterReadRoleARN:
     Description: The ARN for the role used to read the /Foo/Bar parameter
@@ -21,6 +28,14 @@ Resources:
       Name: /Foo/Bar
       Type: String
       Value: bar
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: FooBarParameter
+        Source: alphagov/di-devplatform-demo-sam-app/cross-account/template.yaml
 
   FooBarParameterReadRole:
     Type: AWS::IAM::Role
@@ -30,11 +45,10 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS:
-                - "arn:aws:iam::223594937353:root"
-                - "arn:aws:iam::092449966640:root"
+              AWS: !Ref OtherAccountDeployRoleArns
             Action:
               - 'sts:AssumeRole'
+
       Policies:
         - PolicyName: ReadFooBarParameterPolicy
           PolicyDocument:
@@ -43,3 +57,18 @@ Resources:
               - Effect: Allow
                 Action: "ssm:GetParameter"
                 Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Foo/Bar"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: FooBarParameterReadRole
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/cross-account/template.yaml

@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  demo-package
+  demo-sam-app
 
-  Sample SAM Template for demo-package
+  Sample SAM Template for demo-sam-app
 
 Parameters:
   CodeSigningConfigArn:
@@ -13,6 +13,7 @@ Parameters:
 
   Bar:
     Type: String
+    Default: "none"
     Description: SSM parameter injection example
 
 Conditions:
@@ -32,6 +33,48 @@ Globals:
     Timeout: 20
 
 Resources:
+
+  APIGatewayAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: APIGatewayAccessLogGroup
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+  HelloWorldRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      AccessLogSetting:
+        Format: "$context.requestId $context.httpMethod $context.path"
+        DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
+      CacheClusterEnabled: true
+      CacheClusterSize: "0.5"
+      TracingEnabled: true
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldRestApi
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -62,6 +105,7 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+            RestApiId: !Ref HelloWorldRestApi
       AutoPublishAlias: HelloWorldFunction
       DeploymentPreference:
         Type: Canary10Percent5Minutes
@@ -76,7 +120,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -97,6 +141,7 @@ Resources:
           Properties:
             Path: /hello2
             Method: get
+            RestApiId: !Ref HelloWorldRestApi
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -104,7 +149,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
@@ -150,7 +195,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: PreTrafficHook
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
@@ -182,7 +227,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTable
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
@@ -239,11 +284,12 @@ Resources:
         - Key: Name
           Value: HelloWorldBucket
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Statement:
@@ -252,6 +298,36 @@ Resources:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action: 'kms:*'
             Resource: '*'
+          - Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource: "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldKmsKey
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+
 
   HelloWorldTopic:
     Type: AWS::SNS::Topic
@@ -271,7 +347,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTopic
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldQueue:
     Type: AWS::SQS::Queue
@@ -291,7 +367,7 @@ Resources:
         - Key: Name
           Value: HelloWorldQueue
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldFunctionTooManyRequestsAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -312,12 +388,9 @@ Resources:
       TreatMissingData: notBreaching
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${HelloWorldRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
