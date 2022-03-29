@@ -28,6 +28,14 @@ Resources:
       Name: /Foo/Bar
       Type: String
       Value: bar
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: FooBarParameter
+        Source: alphagov/di-devplatform-demo-sam-app/cross-account/template.yaml
 
   FooBarParameterReadRole:
     Type: AWS::IAM::Role
@@ -49,3 +57,18 @@ Resources:
               - Effect: Allow
                 Action: "ssm:GetParameter"
                 Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Foo/Bar"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: FooBarParameterReadRole
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/cross-account/template.yaml

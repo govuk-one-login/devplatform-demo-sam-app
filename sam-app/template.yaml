@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  demo-package
+  demo-sam-app
 
-  Sample SAM Template for demo-package
+  Sample SAM Template for demo-sam-app
 
 Parameters:
   CodeSigningConfigArn:
@@ -53,7 +53,7 @@ Resources:
         - Key: Name
           Value: APIGatewayAccessLogGroup
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
@@ -65,6 +65,15 @@ Resources:
       CacheClusterEnabled: true
       CacheClusterSize: "0.5"
       TracingEnabled: true
+      Tags:
+        BillingOrganization: GDS
+        BillingProgramme: One Login for Government
+        BillingProject: Dev Platform
+        BillingEnvironment: Demo
+        Service: backend
+        Name: HelloWorldRestApi
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
 
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -111,7 +120,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -140,7 +149,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
@@ -186,7 +195,7 @@ Resources:
         BillingEnvironment: Demo
         Service: backend
         Name: PreTrafficHook
-        Source: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
@@ -218,7 +227,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTable
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
@@ -275,7 +284,7 @@ Resources:
         - Key: Name
           Value: HelloWorldBucket
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
@@ -302,6 +311,23 @@ Resources:
             Condition:
               ArnLike:
                 "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Tags:
+        - Key: BillingOrganization
+          Value: GDS
+        - Key: BillingProgramme
+          Value: One Login for Government
+        - Key: BillingProject
+          Value: Dev Platform
+        - Key: BillingEnvironment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldKmsKey
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+
 
   HelloWorldTopic:
     Type: AWS::SNS::Topic
@@ -321,7 +347,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTopic
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldQueue:
     Type: AWS::SQS::Queue
@@ -341,7 +367,7 @@ Resources:
         - Key: Name
           Value: HelloWorldQueue
         - Key: Source
-          Value: alphagov/di-devplatform-build-demo/demo-package/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldFunctionTooManyRequestsAlarm:
     Type: AWS::CloudWatch::Alarm
