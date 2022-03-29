@@ -9,6 +9,13 @@ Globals:
   Function:
     Timeout: 20
 
+Parameters:
+  OtherAccountDeployRoleArns:
+    Type: CommaDelimitedList
+    Description: >
+      Comma separated list of role ARNs in other accounts which are required to
+      read some SSM parameters from this stack.
+
 Outputs:
   FooBarParameterReadRoleARN:
     Description: The ARN for the role used to read the /Foo/Bar parameter
@@ -30,11 +37,10 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS:
-                - "arn:aws:iam::223594937353:root"
-                - "arn:aws:iam::092449966640:root"
+              AWS: !Ref OtherAccountDeployRoleArns
             Action:
               - 'sts:AssumeRole'
+
       Policies:
         - PolicyName: ReadFooBarParameterPolicy
           PolicyDocument:
