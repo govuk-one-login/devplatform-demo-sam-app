@@ -9,6 +9,7 @@ Parameters:
     Description: The environment type
     Type: String
     AllowedValues:
+      - build
       - staging
       - production
       - local
