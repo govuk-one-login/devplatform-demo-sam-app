@@ -54,8 +54,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" samconfig.toml
-          sed -i "s|VPC-STACK-NAME-PLACEHOLDER|$VPC_STACK_NAME|" samconfig.toml
+          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" template.yaml
+          sed -i "s|VPC-STACK-NAME-PLACEHOLDER|$VPC_STACK_NAME|" template.yaml
 
       - name: Zip the cloudformation template
         run: zip template.zip cf-template.yaml samconfig.toml
