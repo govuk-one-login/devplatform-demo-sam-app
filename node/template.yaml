@@ -8,12 +8,14 @@ Parameters:
     Type: String
     AllowedPattern: "^(?!\\w+://).+:.+"
     ConstraintDescription: must not contain a scheme and must include a tag
+    Default: "CONTAINER-IMAGE-PLACEHOLDER"
 
   VpcStackName:
     Description: >
       The name of the stack that defines the VPC in which this container will
       run.
     Type: String
+    Default: "VPC-STACK-NAME-PLACEHOLDER"
 
 Mappings:
   ElasticLoadBalancerAccountIds:
