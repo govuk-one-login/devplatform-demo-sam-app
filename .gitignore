@@ -136,7 +136,6 @@ replay_pid*
 # Icon must end with two \r
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -262,7 +261,6 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,sam,java,macos,direnv,terraform,intellij+all,visualstudiocode,gradle
 
-
 ### asdf ###
 **/.tool-versions
 
@@ -322,6 +320,7 @@ gradle-app.setting
 
 .settings
 
-
 # Compiled template
 cf-template.yaml
+
+node_modules
