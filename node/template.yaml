@@ -3,11 +3,11 @@ Description: >
   Demo application container for deployment into AWS Fargate.
 
 Parameters:
-  ContainerRepositoryUri:
-    Description: The image repository URI that stores the container to deploy.
+  ContainerImage:
+    Description: The image to deploy (including both name and tag).
     Type: String
-    AllowedPattern: "^(?!\\w+://).*"
-    ConstraintDescription: must not contain a scheme
+    AllowedPattern: "^(?!\\w+://).+:.+"
+    ConstraintDescription: must not contain a scheme and must include a tag
 
   VpcStackName:
     Description: >
@@ -111,7 +111,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: node-server
-          Image: !Sub "${ContainerRepositoryUri}:latest"
+          Image: !Ref ContainerImage
           PortMappings:
             - ContainerPort: 8000
               Protocol: tcp

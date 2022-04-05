@@ -1,0 +1,66 @@
+name: Node server build and deploy
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./node
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Set up AWS creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.NODE_ROLE_TO_ASSUME }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push frontend images to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+
+      - name: Package template
+        env:
+          ARTIFACT_BUCKET: ${{ secrets.NODE_ARTIFACT_BUCKET }}
+        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml
+
+      - name: Update SAM configuration fail
+        env:
+          VPC_STACK_NAME: ${{ secrets.VPC_STACK_NAME }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" samconfig.toml
+          sed -i "s|VPC-STACK-NAME-PLACEHOLDER|$VPC_STACK_NAME|" samconfig.toml
+
+      - name: Zip the cloudformation template
+        run: zip template.zip cf-template.yaml samconfig.toml
+
+      - name: Upload CloudFormation artifacts to S3
+        env:
+          ARTIFACT_BUCKET: ${{ secrets.NODE_ARTIFACT_BUCKET }}
+        run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip"
