@@ -9,16 +9,10 @@ Parameters:
     AllowedPattern: "^(?!\\w+://).*"
     ConstraintDescription: must not contain a scheme
 
-  VpcId:
-    Description: The ID of the VPC in which the container shall run.
-    Type: AWS::EC2::VPC::Id
-
-  PrivateSubnetIds:
-    Description: The IDs of the private subnets used by the container.
-    Type: List<AWS::EC2::Subnet::Id>
-
-  VpcLinkId:
-    Description: The ID of the VPC Link that connects to the private subnets.
+  VpcStackName:
+    Description: >
+      The name of the stack that defines the VPC in which this container will
+      run.
     Type: String
 
 Mappings:
@@ -58,7 +52,11 @@ Resources:
         AwsvpcConfiguration:
           SecurityGroups:
             - !GetAtt ContainerServiceSecurityGroup.GroupId
-          Subnets: !Ref PrivateSubnetIds
+          Subnets:
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
       TaskDefinition: !Ref TaskDefinition
       Tags:
@@ -93,7 +91,9 @@ Resources:
           IpProtocol: tcp
           FromPort: 8000
           ToPort: 8000
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerServiceSecurityGroup"
@@ -171,7 +171,9 @@ Resources:
     Properties:
       ApiId: !Ref ApiGateway
       IntegrationType: HTTP_PROXY
-      ConnectionId: !Ref VpcLinkId
+      ConnectionId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcLinkId"
       ConnectionType: VPC_LINK
       IntegrationMethod: ANY
       IntegrationUri: !Ref ApplicationLoadBalancerListener
@@ -208,7 +210,11 @@ Resources:
       Scheme: internal
       SecurityGroups:
         - !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      Subnets: !Ref PrivateSubnetIds
+      Subnets:
+        - Fn::ImportValue:
+            !Sub "${VpcStackName}-PrivateSubnetIdA"
+        - Fn::ImportValue:
+            !Sub "${VpcStackName}-PrivateSubnetIdB"
       LoadBalancerAttributes:
         - Key: access_logs.s3.enabled
           Value: "true"
@@ -235,7 +241,9 @@ Resources:
       Matcher:
         HttpCode: "200-499"
       TargetType: ip
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerTargetGroup"
@@ -273,7 +281,9 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerSecurityGroup"
