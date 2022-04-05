@@ -1,0 +1,24 @@
+name: Node server template check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.1254.0
+        with:
+          framework: cloudformation
+          directory: node/
+          quiet: true
+          output_format: cli

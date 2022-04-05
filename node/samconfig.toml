@@ -1,0 +1,4 @@
+version = 0.1
+
+[default.deploy.parameters]
+parameter_overrides = "ContainerImage=\"CONTAINER-IMAGE-PLACEHOLDER\" VpcStackName=\"VPC-STACK-NAME-PLACEHOLDER\""
