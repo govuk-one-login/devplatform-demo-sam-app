@@ -35,7 +35,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push frontend images to Amazon ECR
+      - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -48,14 +48,14 @@ jobs:
           ARTIFACT_BUCKET: ${{ secrets.NODE_ARTIFACT_BUCKET }}
         run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml
 
-      - name: Update SAM configuration fail
+      - name: Update SAM template
         env:
           VPC_STACK_NAME: ${{ secrets.VPC_STACK_NAME }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
-          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" template.yaml
-          sed -i "s|VPC-STACK-NAME-PLACEHOLDER|$VPC_STACK_NAME|" template.yaml
+          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" cf-template.yaml
+          sed -i "s|VPC-STACK-NAME-PLACEHOLDER|$VPC_STACK_NAME|" cf-template.yaml
 
       - name: Zip the cloudformation template
         run: zip template.zip cf-template.yaml samconfig.toml
