@@ -117,6 +117,13 @@ Resources:
             - ContainerPort: 8000
               Protocol: tcp
           Essential: true
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: "/ecs/server"
+              awslogs-region: "eu-west-2"
+              awslogs-create-group: "true"
+              awslogs-stream-prefix: "ecs"
       Cpu: 256
       Memory: 512
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
@@ -145,6 +152,15 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      Policies:
+        - PolicyName: CreateLogGroup
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskExecutionRole"
@@ -236,6 +252,7 @@ Resources:
     Properties:
       HealthCheckPort: 8000
       HealthCheckProtocol: HTTP
+      HealthCheckPath: /test
       Port: 8000
       Protocol: HTTP
       ProtocolVersion: HTTP1
