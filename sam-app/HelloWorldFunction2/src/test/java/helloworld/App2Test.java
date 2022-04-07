@@ -1,4 +1,4 @@
-package helloworld;
+package helloworld2;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import static org.junit.Assert.assertEquals;

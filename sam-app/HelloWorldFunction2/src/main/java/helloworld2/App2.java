@@ -1,4 +1,4 @@
-package helloworld;
+package helloworld2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
