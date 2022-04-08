@@ -63,6 +63,11 @@ Resources:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
       CacheClusterEnabled: true
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./openapi-spec.yaml
       CacheClusterSize: "0.5"
       TracingEnabled: true
       Tags:
