@@ -11,6 +11,11 @@ Parameters:
     Description: Asserts that lambdas are signed when deployed.
     Default: "none"
 
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: String
+    Default: "none"
+
   Bar:
     Type: String
     Default: "none"
@@ -23,12 +28,22 @@ Conditions:
           - !Ref CodeSigningConfigArn
           - "none"
 
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     CodeSigningConfigArn: !If
       - UseCodeSigning
       - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
 
