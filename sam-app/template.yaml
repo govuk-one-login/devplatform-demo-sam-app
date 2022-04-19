@@ -133,6 +133,7 @@ Resources:
           - !Ref HelloWorldFunctionTooManyRequestsAlarm
         Hooks:
           PreTraffic: !Ref PreTrafficHook
+        Role: !GetAtt CodeDeployServiceRole.Arn
       Tags:
         BillingOrganization: GDS
         BillingProgramme: One Login for Government
@@ -141,6 +142,22 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+  CodeDeployServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
+      PermissionsBoundary: !Ref PermissionsBoundary
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
