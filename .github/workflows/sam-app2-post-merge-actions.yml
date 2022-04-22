@@ -60,8 +60,11 @@ jobs:
         env:
           ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET }}
           SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
-        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE" --metadata repo=$GITHUB_REPOSITORY,commitsha=$GITHUB_SHA
+        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE"
 
+      - name: Write lambda provenance
+        run: '.github/scripts/write-lambda-provenance.sh'
+        shell: bash
 
       - name: Zip the cloudformation template
         run: zip template.zip cf-template.yaml
