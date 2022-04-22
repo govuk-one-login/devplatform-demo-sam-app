@@ -63,7 +63,7 @@ jobs:
         run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE"
 
       - name: Write lambda provenance
-        run: '.github/scripts/write-lambda-provenance.sh'
+        run: '../.github/scripts/write-lambda-provenance.sh'
         shell: bash
 
       - name: Zip the cloudformation template
