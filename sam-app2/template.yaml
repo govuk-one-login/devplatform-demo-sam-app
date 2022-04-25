@@ -67,6 +67,7 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116
 
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
@@ -105,6 +106,7 @@ Resources:
         Service: backend
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+        CheckovRulesToSkip: CKV_AWS_73.CKV_AWS_76.CKV_AWS_120
 
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
