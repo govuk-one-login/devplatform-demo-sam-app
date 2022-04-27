@@ -94,7 +94,6 @@ Resources:
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
-
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -114,6 +113,8 @@ Resources:
         - DynamoDBWritePolicy:
             TableName: !Ref HelloWorldTable
         - S3ReadPolicy:
+            BucketName: !Ref HelloWorldBucket
+        - S3WritePolicy:
             BucketName: !Ref HelloWorldBucket
         - SNSPublishMessagePolicy:
             TopicName: !Ref HelloWorldTopic
