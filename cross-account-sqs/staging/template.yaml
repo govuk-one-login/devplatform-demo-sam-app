@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  cross-account encrypted queue consumer
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - build
+      - staging
+      - production
+      - local
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: String
+    Default: "none"
+  CodeSigningConfigArn:
+    Type: String
+    Description: "The ARN of the code signing config to use when creating Lambdas"
+    Default: "none"
+  ProducerQueue:
+    Type: String
+    Description: "The ARN of the queue to read messages from when Environment=local"
+    Default: "none"
+  ProducerKey:
+    Type: String
+    Description: "The ARN of the KMS key used to encrypt the messages when Environment=local"
+    Default: "none"
+
+Mappings:
+  EnvironmentSettings:
+    staging:
+      ProducerQueue: "arn:aws:sqs:eu-west-2:372033887444:crossaccount-sqs-producer-TestQueue-cpvEDp9GohG0"
+      ProducerKey: "arn:aws:kms:eu-west-2:372033887444:key/948b38b1-be9a-41b1-96d5-9dc7831e412f"
+    local:
+      ProducerQueue: "unused"
+      ProducerKey: "unused"
+
+Conditions:
+  IsLocal:
+    Fn::Equals:
+      - !Ref Environment
+      - "local"
+
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+
+Globals:
+  Function:
+    Handler: app.lambda_handler
+    Runtime: "python3.9"
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+    Architectures:
+      - x86_64
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+
+Resources:
+  Consumer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: sqs-consumer/src
+      Role: !GetAtt ConsumerRole.Arn
+      Events:
+        TestEvent:
+          Type: SQS
+          Properties:
+            Queue: !If
+              - IsLocal
+              - !Ref ProducerQueue
+              - !FindInMap [EnvironmentSettings, !Ref Environment, "ProducerQueue"]
+            BatchSize: 1
+      Tags:
+        CheckovRulesToSkip: "CKV_AWS_116"
+
+  ConsumerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # Need predictable role name for sharing across accounts
+      RoleName: !Sub "${AWS::StackName}-ConsumerRole-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+      Policies:
+        - PolicyName: "KMS"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "kms:Decrypt"
+                  - "kms:GenerateDataKey"
+                Resource:
+                  - !If
+                    - IsLocal
+                    - !Ref ProducerKey
+                    - !FindInMap [EnvironmentSettings, !Ref Environment, "ProducerKey"]
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue

@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  cross-account encrypted queue producer
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Description: The environment type
+    Type: String
+    AllowedValues:
+      - build
+      - staging
+      - production
+      - local
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: String
+    Default: "none"
+  CodeSigningConfigArn:
+    Type: String
+    Description: "The ARN of the code signing config to use when creating Lambdas"
+    Default: "none"
+  ConsumerRole:
+    Type: String
+    Description: "The role to grant permissions to read from the queue to"
+    Default: "none"
+
+Mappings:
+  EnvironmentSettings:
+    build:
+      ConsumerRole: "arn:aws:iam::223594937353:root"
+#      ConsumerRole: "arn:aws:iam::223594937353:role/crossaccount-sqs-consumer-ConsumerRole-staging"
+    local:
+      ConsumerRole: "unused"
+
+Conditions:
+  IsLocal:
+    Fn::Equals:
+      - !Ref Environment
+      - "local"
+
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+
+Globals:
+  Function:
+    Handler: app.lambda_handler
+    Runtime: "python3.9"
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+    Architectures:
+      - x86_64
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+
+Resources:
+  KmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+            Action:
+              - "kms:*"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Principal:
+              AWS: !If
+                - IsLocal
+                - !Ref ConsumerRole
+                - !FindInMap [ EnvironmentSettings, !Ref Environment, "ConsumerRole" ]
+            Action:
+              - "kms:Decrypt"
+              - "kms:GenerateDataKey"
+            Resource:
+              - "*"
+
+  TestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      KmsMasterKeyId: !Ref KmsKey
+
+  TestQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref TestQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "sqs:DeleteMessage"
+              - "sqs:GetQueueAttributes"
+              - "sqs:ChangeMessageVisibility"
+              - "sqs:ReceiveMessage"
+            Resource:
+              - !GetAtt TestQueue.Arn
+            Principal:
+              AWS:
+                - !If
+                  - IsLocal
+                  - !Ref ConsumerRole
+                  - !FindInMap [ EnvironmentSettings, !Ref Environment, "ConsumerRole" ]
+
+  Producer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: sqs-producer/src
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt TestQueue.QueueName
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "kms:Decrypt"
+                - "kms:GenerateDataKey"
+              Resource:
+                - !GetAtt KmsKey.Arn
+      Environment:
+        Variables:
+          TEST_QUEUE_URL: !Ref TestQueue
+      Tags:
+        CheckovRulesToSkip: "CKV_AWS_116"
+
+Outputs:
+  ProducerQueue:
+    Value: !GetAtt TestQueue.Arn
+
+  ProducerKey:
+    Value: !GetAtt KmsKey.Arn
