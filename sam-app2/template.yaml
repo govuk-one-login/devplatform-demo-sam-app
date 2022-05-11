@@ -17,22 +17,20 @@ Parameters:
     Default: "none"
 
 Conditions:
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
   UseCodeSigning:
     Fn::Not:
       - Fn::Equals:
           - !Ref CodeSigningConfigArn
           - "none"
 
-  UsePermissionsBoundary:
-    Fn::Not:
-      - Fn::Equals:
-          - !Ref PermissionsBoundary
-          - "none"
-
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 20
     CodeSigningConfigArn: !If
       - UseCodeSigning
       - !Ref CodeSigningConfigArn
@@ -41,6 +39,7 @@ Globals:
       - UsePermissionsBoundary
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
+    Timeout: 20
 
 Resources:
   HelloWorldFunction:
@@ -67,7 +66,6 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
-
 
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
@@ -109,7 +107,6 @@ Resources:
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
 
-
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
     Properties:
@@ -150,6 +147,32 @@ Resources:
           Value: HelloWorldKmsKey
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+
+  HelloWaf:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      DefaultAction:
+        Block: { }
+      Scope: "REGIONAL"
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: false
+        MetricName: "hello-waf-metric"
+        SampledRequestsEnabled: false
+      Rules:
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 1
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          OverrideAction:
+            None: { }
+
+  HelloWafGatewayAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${HelloWorldRestApi}/stages/${HelloWorldRestApi.Stage}"
+      WebACLArn: !GetAtt HelloWaf.Arn
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
