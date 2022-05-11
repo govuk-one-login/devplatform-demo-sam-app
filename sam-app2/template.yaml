@@ -158,6 +158,15 @@ Resources:
         CloudWatchMetricsEnabled: false
         MetricName: "hello-waf-metric"
         SampledRequestsEnabled: false
+      Rules:
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 1
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          OverrideAction:
+            None: { }
 
   HelloWafGatewayAssociation:
     Type: AWS::WAFv2::WebACLAssociation
