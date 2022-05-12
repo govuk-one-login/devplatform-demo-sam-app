@@ -152,7 +152,7 @@ Resources:
     Type: AWS::WAFv2::WebACL
     Properties:
       DefaultAction:
-        Block: { }
+        Allow: { }
       Scope: "REGIONAL"
       VisibilityConfig:
         CloudWatchMetricsEnabled: false
@@ -167,6 +167,22 @@ Resources:
               Name: AWSManagedRulesKnownBadInputsRuleSet
           OverrideAction:
             None: { }
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "managed-rule-metric"
+            SampledRequestsEnabled: true
+        - Name: Custom-BlockIpCustomRule
+          Priority: 2
+          Statement:
+            RateBasedStatement:
+              Limit: 101
+              AggregateKeyType: IP
+          Action:
+            Block: { }
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: "custom-rule-metric"
+            SampledRequestsEnabled: true
 
   HelloWafGatewayAssociation:
     Type: AWS::WAFv2::WebACLAssociation
