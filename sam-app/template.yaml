@@ -16,11 +16,6 @@ Parameters:
     Type: String
     Default: "none"
 
-  Bar:
-    Type: String
-    Default: "none"
-    Description: SSM parameter injection example
-
 Conditions:
   UseCodeSigning:
     Fn::Not:
