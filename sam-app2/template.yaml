@@ -155,9 +155,9 @@ Resources:
         Allow: { }
       Scope: "REGIONAL"
       VisibilityConfig:
-        CloudWatchMetricsEnabled: false
+        CloudWatchMetricsEnabled: true
         MetricName: "hello-waf-metric"
-        SampledRequestsEnabled: false
+        SampledRequestsEnabled: true
       Rules:
         - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
           Priority: 1
