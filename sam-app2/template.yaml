@@ -91,7 +91,8 @@ Resources:
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: prod
+      OpenApiVersion: 3.0.3
+      StageName: Prod
       AccessLogSetting:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
