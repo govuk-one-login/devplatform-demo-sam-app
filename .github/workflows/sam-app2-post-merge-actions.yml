@@ -47,7 +47,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.SAM_APP2_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.SAM_APP2_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -58,8 +58,8 @@ jobs:
 
       - name: Upload lambdas to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET }}
-          SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
+          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
+          SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE_NAME }}
         run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE"
 
       - name: Write lambda provenance
@@ -71,5 +71,5 @@ jobs:
 
       - name: Upload zipped cloudformation artifact to S3
         env:
-          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET }}
+          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
         run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip" --metadata "repository=$GITHUB_REPOSITORY,commitsha=$GITHUB_SHA"
