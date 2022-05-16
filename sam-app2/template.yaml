@@ -191,6 +191,28 @@ Resources:
       ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${HelloWorldRestApi}/stages/${HelloWorldRestApi.Stage}"
       WebACLArn: !GetAtt HelloWaf.Arn
 
+  HelloWafLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: aws-waf-logs-hello-waf
+      RetentionInDays: 1
+      KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
+      Tags:
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWafLogGroup
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+
+  HelloWafLogs:
+    Type: AWS::WAFv2::LoggingConfiguration
+    Properties:
+      LogDestinationConfigs:
+        - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HelloWafLogGroup}"
+      ResourceArn: !GetAtt HelloWaf.Arn
+
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
