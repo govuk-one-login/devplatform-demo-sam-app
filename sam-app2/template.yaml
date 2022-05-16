@@ -44,6 +44,7 @@ Globals:
 Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    #checkov:skip=CKV_AWS_116
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -212,6 +213,100 @@ Resources:
         - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HelloWafLogGroup}"
       ResourceArn: !GetAtt HelloWaf.Arn
 
+  CloudFrontAccessLogBucket:
+    Type: AWS::S3::Bucket
+    #checkov:skip=CKV_AWS_18
+    Properties:
+      BucketName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "cloudfrontaccesslog"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - '-'
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - /
+                          - Ref: AWS::StackId
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: CheckovRulesToSkip
+          Value: CKV_AWS_18
+
+  CloudFrontOriginBucket:
+    Type: AWS::S3::Bucket
+    #checkov:skip=CKV_AWS_18
+    Properties:
+      BucketName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "cloudfrontorigin"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - '-'
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - /
+                          - Ref: AWS::StackId
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: CheckovRulesToSkip
+          Value: CKV_AWS_18
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "woah this is an identity"
+
+  HelloCloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        WebACLId: !GetAtt HelloWaf.Arn
+        Logging:
+          Bucket: !GetAtt CloudFrontAccessLogBucket.DomainName
+        ViewerCertificate:
+          MinimumProtocolVersion: "TLSv1.2_2018"
+          CloudFrontDefaultCertificate: false
+        DefaultCacheBehavior:
+          TargetOriginId: CloudFrontOriginBucket
+          ViewerProtocolPolicy: https-only
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !GetAtt HelloWorldFunction.Arn
+        Origins:
+          - DomainName: !GetAtt CloudFrontOriginBucket.DomainName
+            Id: CloudFrontOriginBucket
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+
+      # TODO: Add tags
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
