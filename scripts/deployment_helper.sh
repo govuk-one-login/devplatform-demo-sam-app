@@ -12,9 +12,10 @@ function login() {
 }
 
 function build() {
+  local project_dir=$(git rev-parse --show-toplevel)
   local app_to_deploy="$1"
   echo "Going into $app_to_deploy"
-  cd "$PROJECT_DIR/$app_to_deploy"
+  cd "$project_dir/$app_to_deploy"
   echo "Building sam app"
   sam build
 }
