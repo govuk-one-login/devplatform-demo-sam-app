@@ -50,13 +50,11 @@ Resources:
       RetentionInDays: 7
       KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend
@@ -81,10 +79,9 @@ Resources:
       CacheClusterSize: "0.5"
       TracingEnabled: true
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
@@ -132,10 +129,9 @@ Resources:
           PreTraffic: !Ref PreTrafficHook
         Role: !GetAtt CodeDeployServiceRole.Arn
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
@@ -178,10 +174,9 @@ Resources:
             Method: get
             RestApiId: !Ref HelloWorldRestApi
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
@@ -224,10 +219,9 @@ Resources:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: PreTrafficHook
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
@@ -249,13 +243,11 @@ Resources:
         SSEEnabled: true
         SSEType: "KMS"
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend
@@ -306,13 +298,11 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend
@@ -347,13 +337,11 @@ Resources:
               ArnLike:
                 "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend
@@ -367,13 +355,11 @@ Resources:
     Properties:
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend
@@ -387,13 +373,11 @@ Resources:
     Properties:
       KmsMasterKeyId: !Ref HelloWorldKmsKey
       Tags:
-        - Key: BillingOrganization
-          Value: GDS
-        - Key: BillingProgramme
-          Value: One Login for Government
-        - Key: BillingProject
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
           Value: Dev Platform
-        - Key: BillingEnvironment
+        - Key: Environment
           Value: Demo
         - Key: Service
           Value: backend

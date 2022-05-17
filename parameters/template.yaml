@@ -71,10 +71,9 @@ Resources:
         - !FindInMap [BasicParameterValue, Environment, !Ref Environment]
       AllowedPattern: "^[a-zA-Z]+$"
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: BasicParameter
         Source: alphagov/di-devplatform-demo-sam-app/parameters/template.yaml
@@ -87,10 +86,9 @@ Resources:
       Type: String
       Value: !FindInMap [AnotherBasicParameterValue, Environment, !Ref Environment]
       Tags:
-        BillingOrganization: GDS
-        BillingProgramme: One Login for Government
-        BillingProject: Dev Platform
-        BillingEnvironment: Demo
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
         Service: backend
         Name: AnotherBasicParameter
         Source: alphagov/di-devplatform-demo-sam-app/parameters/template.yaml
