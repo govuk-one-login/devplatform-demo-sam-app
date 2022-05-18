@@ -251,6 +251,12 @@ Resources:
       Tags:
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_18
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
 
   CloudFrontOriginBucket:
     Type: AWS::S3::Bucket
@@ -283,6 +289,12 @@ Resources:
       Tags:
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_18
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
 
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -313,8 +325,12 @@ Resources:
       Tags:
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_68
-
-      # TODO: Add tags
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
