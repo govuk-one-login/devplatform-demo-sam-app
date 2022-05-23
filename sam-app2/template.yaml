@@ -47,6 +47,7 @@ Resources:
     #checkov:skip=CKV_AWS_116
     Properties:
       CodeUri: HelloWorldFunction
+      AutoPublishAlias: latestVersion
       Handler: helloworld.App::handleRequest
       Runtime: java11
       Architectures:
