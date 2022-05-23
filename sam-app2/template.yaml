@@ -105,6 +105,41 @@ Resources:
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
 
+  AutoScalingHelloWorldScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 3
+      MinCapacity: 1
+      RoleARN: !Join
+        - ':'
+        - - 'arn:aws:iam:'
+          - !Ref 'AWS::AccountId'
+          - role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency
+      ServiceNamespace: lambda
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'latestVersion'
+
+    HelloWorldLambdaAutoScalingPolicy:
+      Type: AWS::ApplicationAutoScaling::ScalingPolicy
+      Properties:
+        PolicyName: "hello-world-lambda-autoscaling-policy"
+        PolicyType: TargetTrackingScaling
+        ResourceId: !Join
+          - ':'
+          - - 'function'
+            - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+            - 'latestVersion'
+        ScalableDimension: lambda:function:ProvisionedConcurrency
+        ServiceNamespace: lambda
+        TargetTrackingScalingPolicyConfiguration:
+          PredefinedMetricSpecification:
+            PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+          TargetValue: 0.7
+
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
     Properties:
