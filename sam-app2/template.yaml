@@ -123,22 +123,22 @@ Resources:
           - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
           - 'latestVersion'
 
-    HelloWorldLambdaAutoScalingPolicy:
-      Type: AWS::ApplicationAutoScaling::ScalingPolicy
-      Properties:
-        PolicyName: "hello-world-lambda-autoscaling-policy"
-        PolicyType: TargetTrackingScaling
-        ResourceId: !Join
-          - ':'
-          - - 'function'
-            - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
-            - 'latestVersion'
-        ScalableDimension: lambda:function:ProvisionedConcurrency
-        ServiceNamespace: lambda
-        TargetTrackingScalingPolicyConfiguration:
-          PredefinedMetricSpecification:
-            PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
-          TargetValue: 0.7
+  HelloWorldLambdaAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: "hello-world-lambda-autoscaling-policy"
+      PolicyType: TargetTrackingScaling
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'latestVersion'
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ServiceNamespace: lambda
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+        TargetValue: 0.7
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
