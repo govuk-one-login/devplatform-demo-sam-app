@@ -47,7 +47,7 @@ Resources:
     #checkov:skip=CKV_AWS_116
     Properties:
       CodeUri: HelloWorldFunction
-      AutoPublishAlias: latestVersion
+      AutoPublishAlias: LatestVersion
       Handler: helloworld.App::handleRequest
       Runtime: java11
       Architectures:
@@ -108,6 +108,8 @@ Resources:
 
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
+    # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
+    DependsOn: HelloWorldFunctionAliasLatestVersion
     Properties:
       MaxCapacity: 3
       MinCapacity: 1
@@ -122,10 +124,11 @@ Resources:
         - ':'
         - - 'function'
           - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
-          - 'latestVersion'
+          - 'LatestVersion'
 
   HelloWorldLambdaAutoScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    DependsOn: AutoScalingHelloWorldScalableTarget
     Properties:
       PolicyName: "hello-world-lambda-autoscaling-policy"
       PolicyType: TargetTrackingScaling
@@ -133,7 +136,7 @@ Resources:
         - ':'
         - - 'function'
           - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
-          - 'latestVersion'
+          - 'LatestVersion'
       ScalableDimension: lambda:function:ProvisionedConcurrency
       ServiceNamespace: lambda
       TargetTrackingScalingPolicyConfiguration:
