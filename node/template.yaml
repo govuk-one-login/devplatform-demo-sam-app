@@ -82,6 +82,42 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
     DependsOn: ApplicationLoadBalancerListener
 
+  ContainerAutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 3
+      MinCapacity: 1
+      ResourceId: !Join
+        - '/'
+        - - "service"
+          - !Ref FargateCluster
+          - !GetAtt ContainerService.Name
+      RoleARN: !Join
+        - ':'
+        - - 'arn:aws:iam:'
+          - !Ref 'AWS::AccountId'
+          - role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  ContainerAutoScalingPolicy:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: containerAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ResourceId: !Join
+        - '/'
+        - - "service"
+          - !Ref FargateCluster
+          - !GetAtt ContainerService.Name
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        TargetValue: 0.7
+
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

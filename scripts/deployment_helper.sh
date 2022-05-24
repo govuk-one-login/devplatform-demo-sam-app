@@ -2,16 +2,15 @@
 
 set -e -ou pipefail
 
-PROJECT_DIR=$(git rev-parse --show-toplevel)
 METADATA="repository=di-devplatform-demo-sam-app,commitsha=local-deployment"
 
 function login() {
   local account="$1"
   echo "login into $account"
-  eval "$(gds aws "$account-admin" -e)"
+  eval "$(gds aws "$account" -e)"
 }
 
-function build() {
+function sam_build() {
   local project_dir=$(git rev-parse --show-toplevel)
   local app_to_deploy="$1"
   echo "Going into $app_to_deploy"
@@ -20,7 +19,7 @@ function build() {
   sam build
 }
 
-function package() {
+function sam_package() {
   local src_bucket_name="$1"
   local signing_profile_name="$2"
   echo "Creating package"
@@ -31,6 +30,17 @@ function package() {
   echo "Adding provenance data"
   yq '.Resources.* | select(has("Type") and .Type == "AWS::Serverless::Function") | .Properties.CodeUri' cf-template.yaml \
     | xargs -L1 -I{} aws s3 cp "{}" "{}" --metadata $METADATA
+}
+
+function fargate_package() {
+  local src_bucket_name="$1"
+  local container_image="$2"
+  echo "Creating package"
+  sam package \
+      --s3-bucket="$src_bucket_name" \
+      --output-template-file=cf-template.yaml
+  echo "Populating placeholders in template"
+  sed -i'' -e "s%CONTAINER-IMAGE-PLACEHOLDER%$container_image%" cf-template.yaml
 }
 
 function upload_to_s3() {
