@@ -124,3 +124,13 @@ aws cloudformation delete-stack --stack-name sam-app2
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+
+## Adding application autoscaling
+
+### Gotchas
+- When setting up autoscaling for provisioned concurrency for a lambda function, the scalable target must be a version or version alias of a lambda function.
+This version or alias CANNOT point to `$LATEST`, therefore, the property `AutoPublishAlias` must be defined on the lambda resource. Since this is only created
+after the lambda function has been provisioned, the scalable target must have the property `depends_on` set to the alias logical ID. See an example of this in
+[template.yaml](template.yaml).
+
+- The autoscaling policy can only be provisioned after the target has been created, therefore, it must have the property `depends_on` set to the scalable target logical ID.
