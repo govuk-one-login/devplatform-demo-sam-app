@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Public Route53 Zone
+
+Resources:
+  PlatformHostedZone:
+    Type: AWS::Route53::HostedZone
+    DeletionPolicy: "Retain"
+    Properties:
+      Name: "platform.sandpit.account.gov.uk"
+      HostedZoneConfig:
+        Comment: "Delegated via alphagov/di-infrastructure repo"
+      HostedZoneTags:
+        - Key: "Product"
+          Value: "GOV.UK Sign In"
+        - Key: "System"
+          Value: "Dev Platform"
+        - Key: "Environment"
+          Value: "Demo"
+        - Key: "Name"
+          Value: "HostedZone"
+        - Key: "Source"
+          Value: "alphagov/di-devplatform-demo-sam-app/route53/template.yaml"
+
+Outputs:
+  PlatformHostedZonedId:
+    Value: !Ref PlatformHostedZone
+    Export:
+      Name: PlatformHostedZone
