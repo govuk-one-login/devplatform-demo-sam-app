@@ -106,11 +106,6 @@ Resources:
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
 
-  LambdaAutoScalingServiceLinkedRole:
-    Type: AWS::IAM::ServiceLinkedRole
-    Properties:
-      AWSServiceName: lambda.application-autoscaling.amazonaws.com
-
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"

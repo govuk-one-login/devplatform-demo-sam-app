@@ -82,11 +82,6 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
     DependsOn: ApplicationLoadBalancerListener
 
-  ECSAutoScalingServiceLinkedRole:
-    Type: AWS::IAM::ServiceLinkedRole
-    Properties:
-      AWSServiceName: ecs.application-autoscaling.amazonaws.com
-
   ContainerAutoScalingTarget:
     DependsOn: ECSAutoScalingServiceLinkedRole
     Type: AWS::ApplicationAutoScaling::ScalableTarget
