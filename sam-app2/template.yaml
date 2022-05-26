@@ -109,7 +109,7 @@ Resources:
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
-    DependsOn: [ HelloWorldFunctionAliasLatestVersion, LambdaAutoScalingServiceLinkedRole ]
+    DependsOn: HelloWorldFunctionAliasLatestVersion
     Properties:
       MaxCapacity: 3
       MinCapacity: 1

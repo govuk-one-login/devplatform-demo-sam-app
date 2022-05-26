@@ -83,7 +83,6 @@ Resources:
     DependsOn: ApplicationLoadBalancerListener
 
   ContainerAutoScalingTarget:
-    DependsOn: ECSAutoScalingServiceLinkedRole
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MaxCapacity: 3
