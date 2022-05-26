@@ -43,7 +43,6 @@ Globals:
     Timeout: 20
 
 Resources:
-
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -403,6 +402,33 @@ Resources:
       Threshold: 10
       ComparisonOperator: GreaterThanOrEqualToThreshold
       TreatMissingData: notBreaching
+
+  #
+  # Route 53
+  #
+  HelloWorldPublicHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: "dev-platform.di.cabinet-office.gov.uk."
+      HostedZoneConfig:
+        Comment: "An example public hosted zone"
+      HostedZoneTags:
+        - Key: Name
+          Value: HelloWorldPublicHostedZone
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
+
+  HelloWorldDnsTextRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: "example.dev-platform.di.cabinet-office.gov.uk."
+      ResourceRecords:
+        - '"bar"'
+      Type: TXT
+      TTL: 60
+      HostedZoneId: !Ref HelloWorldPublicHostedZone
 
 Outputs:
   HelloWorldApi:
