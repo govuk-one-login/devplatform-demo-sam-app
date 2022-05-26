@@ -92,11 +92,7 @@ Resources:
         - - "service"
           - !Ref FargateCluster
           - !GetAtt ContainerService.Name
-      RoleARN: !Join
-        - ':'
-        - - 'arn:aws:iam:'
-          - !Ref 'AWS::AccountId'
-          - role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
+      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
