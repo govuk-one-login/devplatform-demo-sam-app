@@ -16,6 +16,10 @@ Parameters:
     Type: String
     Default: "none"
 
+  Environment:
+    Description: "The name of the environment to deploy to"
+    Type: "String"
+
 Conditions:
   UseCodeSigning:
     Fn::Not:
@@ -28,6 +32,18 @@ Conditions:
       - Fn::Equals:
           - !Ref PermissionsBoundary
           - "none"
+
+  # We are using this condition since we don't have a domain for each environment.
+  # Normally this condition won't be required.
+  UseCertificate:
+    Fn::Equals:
+      - !Ref Environment
+      - "build"
+
+Mappings:
+  APIDomainNames:
+    build:
+      DomainName: "platform.sandpit.account.gov.uk"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -84,6 +100,38 @@ Resources:
         Service: backend
         Name: HelloWorldRestApi
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+
+  HelloWorldRestAPIDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Condition: UseCertificate
+    Properties:
+      DomainName: !FindInMap
+        - APIDomainNames
+        - !Ref Environment
+        - DomainName
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Ref ApiGatewayCertificate
+      SecurityPolicy: TLS_1_2
+      Tags:
+        - Key: Name
+          Value: ApiGatewayCertificate
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
+
+  HelloWorldRestAPIBasePath:
+    Type: AWS::ApiGateway::BasePathMapping
+    Condition: UseCertificate
+    Properties:
+      DomainName: !FindInMap
+        - APIDomainNames
+        - !Ref Environment
+        - DomainName
+      RestApiId: !Ref HelloWorldRestApi
+      Stage: !Sub "${HelloWorldRestApi.Stage}"
 
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -149,7 +197,7 @@ Resources:
                 - codedeploy.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
-      PermissionsBoundary: !Ref PermissionsBoundary
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -403,32 +451,48 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       TreatMissingData: notBreaching
 
-  #
-  # Route 53
-  #
-  HelloWorldPublicHostedZone:
-    Type: AWS::Route53::HostedZone
+  HelloWorldCertificateRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: UseCertificate
     Properties:
-      Name: "dev-platform.di.cabinet-office.gov.uk."
-      HostedZoneConfig:
-        Comment: "An example public hosted zone"
-      HostedZoneTags:
+      Name: !FindInMap
+        - APIDomainNames
+        - !Ref Environment
+        - DomainName
+      Type: A
+      HostedZoneId:
+        Fn::ImportValue: PlatformHostedZone
+      AliasTarget:
+        DNSName: !GetAtt HelloWorldRestAPIDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt HelloWorldRestAPIDomainName.RegionalHostedZoneId
+
+  #
+  # Certificates
+  #
+  ApiGatewayCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Condition: UseCertificate
+    Properties:
+      DomainName: !FindInMap
+        - APIDomainNames
+        - !Ref Environment
+        - DomainName
+      DomainValidationOptions:
+        - DomainName: !FindInMap
+          - APIDomainNames
+          - !Ref Environment
+          - DomainName
+          HostedZoneId:
+            Fn::ImportValue: PlatformHostedZone
+      ValidationMethod: DNS
+      CertificateTransparencyLoggingPreference: DISABLED
+      Tags:
         - Key: Name
-          Value: HelloWorldPublicHostedZone
+          Value: ApiGatewayCertificate
         - Key: Service
           Value: backend
         - Key: Source
           Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
-
-  HelloWorldDnsTextRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      Name: "example.dev-platform.di.cabinet-office.gov.uk."
-      ResourceRecords:
-        - '"bar"'
-      Type: TXT
-      TTL: 60
-      HostedZoneId: !Ref HelloWorldPublicHostedZone
 
 Outputs:
   HelloWorldApi:
