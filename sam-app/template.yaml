@@ -70,12 +70,12 @@ Resources:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
       CacheClusterEnabled: true
+      CacheClusterSize: "0.5"
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
           Parameters:
             Location: ./openapi-spec.yaml
-      CacheClusterSize: "0.5"
       TracingEnabled: true
       Tags:
         Product: GOV.UK Sign In
