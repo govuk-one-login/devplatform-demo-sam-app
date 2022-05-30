@@ -84,4 +84,4 @@ jobs:
         with:
             artifact-bucket-name: ${{ secrets.SAM_APP_ARTIFACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-            working-directory: $(pwd)
+            working-directory: ${{ pwd }}
