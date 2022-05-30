@@ -80,7 +80,7 @@ jobs:
         run: ls -laH
 
       - name: Deploy SAM app
-        uses: alphagov/sam-push@5f5ee925d983db73e6aedfc8bdfb55c0e801db61
+        uses: alphagov/di-devplatform-upload-action@25dd2b17a774489fc030f657d3c631a755b8da4f
         with:
             artifact-bucket-name: ${{ secrets.SAM_APP_ARTIFACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
