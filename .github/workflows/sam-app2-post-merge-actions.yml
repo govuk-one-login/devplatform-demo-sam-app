@@ -56,20 +56,9 @@ jobs:
       - name: SAM build and test
         run: sam build
 
-      - name: Upload lambdas to S3
-        env:
-          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
-          SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE_NAME }}
-        run: sam package --s3-bucket="$ARTIFACT_BUCKET" --output-template-file=cf-template.yaml --signing-profiles HelloWorldFunction="$SIGNING_PROFILE"
-
-      - name: Write lambda provenance
-        run: '../.github/scripts/write-lambda-provenance.sh'
-        shell: bash
-
-      - name: Zip the cloudformation template
-        run: zip template.zip cf-template.yaml
-
-      - name: Upload zipped cloudformation artifact to S3
-        env:
-          ARTIFACT_BUCKET: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
-        run: aws s3 cp template.zip "s3://$ARTIFACT_BUCKET/template.zip" --metadata "repository=$GITHUB_REPOSITORY,commitsha=$GITHUB_SHA"
+      - name: Deploy SAM app
+        uses: alphagov/di-devplatform-upload-action@v1
+        with:
+          artifact-bucket-name: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: ./sam-app2
