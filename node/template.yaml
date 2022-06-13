@@ -419,6 +419,7 @@ Resources:
   ApplicationElastiCacheLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
+      KmsKeyId: !GetAtt LoggingKmsKey.Arn
       LogGroupName: elasticache-replication-group-logs
       RetentionInDays: 1
       Tags:
