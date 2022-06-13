@@ -419,7 +419,7 @@ Resources:
   ApplicationElastiCacheLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      KmsKeyId: !GetAtt LoggingKmsKey.Arn
+      KmsKeyId: !GetAtt KmsKey.Arn
       LogGroupName: elasticache-replication-group-logs
       RetentionInDays: 1
       Tags:
@@ -430,9 +430,33 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
+  ApplicationAuthPass:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: elasticache-application
+      Description: Random password for elastiCache
+      GenerateSecretString:
+        ExcludeLowercase: false
+        ExcludeNumbers: false
+        ExcludePunctuation: true
+        ExcludeUppercase: false
+        IncludeSpace: false
+        PasswordLength: 17
+      KmsKeyId: !GetAtt KmsKey.Arn
+      Tags:
+        - Key: Name
+          Value: ApplicationAuthPass
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
   ApplicationReplicationGroup:
     Type: AWS::ElastiCache::ReplicationGroup
     Properties:
+      TransitEncryptionEnabled: true
+      AtRestEncryptionEnabled: true
+      AuthToken: !Sub '{{resolve:secretsmanager:${ApplicationAuthPass}}}'
       AutomaticFailoverEnabled: true
       CacheNodeType: cache.t2.micro
       CacheSubnetGroupName: !Ref ApplicationCacheSubnetGroup
@@ -469,7 +493,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 7
-      KmsKeyId: !GetAtt LoggingKmsKey.Arn
+      KmsKeyId: !GetAtt KmsKey.Arn
       Tags:
         - Key: Name
           Value: ApiGatewayAccessLogGroup
@@ -552,7 +576,7 @@ Resources:
               StringEquals:
                 "aws:SourceAccount": !Ref AWS::AccountId
 
-  LoggingKmsKey:
+  KmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -582,7 +606,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Name
-          Value: !Sub "${AWS::StackName}-LoggingKmsKey"
+          Value: !Sub "${AWS::StackName}-KmsKey"
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
