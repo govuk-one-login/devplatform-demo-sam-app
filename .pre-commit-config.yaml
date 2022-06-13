@@ -47,4 +47,10 @@ repos:
         stages: [commit-msg]
         args: ['--verbose']
         verbose: true  # print warnings
+  - repo: https://github.com/bridgecrewio/checkov.git
+    rev: '2.0.917'
+    hooks:
+      - id: checkov
+        args: ['--framework', 'cloudformation', '--quiet']
+        files: ^(?!\..*).*/template\.(yml|yaml)$
 # - repo: https://github.com/mattlqx/pre-commit-sign

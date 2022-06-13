@@ -135,6 +135,7 @@ Resources:
 
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -201,6 +202,7 @@ Resources:
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     Properties:
       CodeUri: HelloWorldFunction2
       Handler: helloworld2.App2::handleRequest
@@ -230,6 +232,7 @@ Resources:
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     Properties:
       FunctionName: !Join
         - "_"
