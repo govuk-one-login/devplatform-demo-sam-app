@@ -401,26 +401,6 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
-  ApplicationElastiCacheCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    Properties:
-      AZMode: single-az
-      CacheNodeType: cache.t2.micro
-      CacheSubnetGroupName: !Ref ApplicationCacheSubnetGroup
-      ClusterName: elastiCacheTestCluster
-      Engine: redis
-      NumCacheNodes: 1
-      VpcSecurityGroupIds:
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-AWSServicesEndpointSecurityGroupId"
-      Tags:
-        - Key: Name
-          Value: ApplicationElastiCacheCluster
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
   ApplicationParameterGroup:
     Type: AWS::ElastiCache::ParameterGroup
     Properties:
@@ -452,7 +432,6 @@ Resources:
   ApplicationReplicationGroup:
     Type: AWS::ElastiCache::ReplicationGroup
     Properties:
-      ReplicationGroupId: replication-group-name
       AutomaticFailoverEnabled: true
       CacheNodeType: cache.t2.micro
       CacheSubnetGroupName: !Ref ApplicationCacheSubnetGroup
@@ -466,8 +445,8 @@ Resources:
           LogFormat: json
           LogType: engine-log
       MultiAZEnabled: true
-      NumNodeGroups: 2
-      ReplicasPerNodeGroup: 3
+      NumNodeGroups: 1
+      ReplicasPerNodeGroup: 1
       ReplicationGroupDescription: Replication group for elasticache
       SecurityGroupIds:
         - Fn::ImportValue:
