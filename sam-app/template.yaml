@@ -125,6 +125,7 @@ Resources:
   HelloWorldRestAPIBasePath:
     Type: AWS::ApiGateway::BasePathMapping
     Condition: UseCertificate
+    DependsOn: HelloWorldRestAPIDomainName
     Properties:
       DomainName: !FindInMap
         - APIDomainNames
