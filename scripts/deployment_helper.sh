@@ -58,8 +58,8 @@ function deploy() {
   local signing_profile_name="$4"
 
   login "$account"
-  build "$app_to_deploy"
-  package "$src_bucket_name" "$signing_profile_name"
+  sam_build "$app_to_deploy"
+  sam_package "$src_bucket_name" "$signing_profile_name"
   upload_to_s3 "$src_bucket_name"
 }
 

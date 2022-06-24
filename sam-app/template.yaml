@@ -498,6 +498,27 @@ Resources:
         - Key: Source
           Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
 
+  #
+  # State Machine
+  #
+  StateMachineWithExternalDefinition:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: "state-machine-definition.json"
+      PermissionsBoundary: !Ref PermissionsBoundary
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Deny
+              Resource: "*"
+              Action:
+                - "*"
+      Tags:
+        Service: backend
+        Name: StateMachineWithExternalDefinition
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+      Type: EXPRESS
+
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
