@@ -1,0 +1,310 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Test Role ARN
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Description: "The environment that the stack is being deployed into"
+    Type: "String"
+    AllowedValues:
+      - "demo"
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: "String"
+    Default: "none"
+  CodeSigningConfigArn:
+    Type: "String"
+    Description: "The ARN of the code signing config to use"
+    Default: "none"
+  VpcStackName:
+    Type: "String"
+    Description: "The name of the stack that defines the VPC to use"
+    Default: "none"
+  TestRoleArn:
+    Type: "String"
+    Description: "The ARN of the role that will used for integration tests"
+    Default: "none"
+    AllowedPattern: "(none)|(arn:aws:iam::.*:role/.*)"
+
+Conditions:
+  UseCodeSigning: !Not [ !Equals [ !Ref CodeSigningConfigArn, "none" ] ]
+  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundary, "none" ] ]
+  UseVpc: !Not [ !Equals [ !Ref VpcStackName, "none" ] ]
+  UseTestRole: !Not [ !Equals [ !Ref TestRoleArn, "none" ]]
+
+Globals:
+  Function:
+    Runtime: "python3.9"
+    PermissionsBoundary: !If [ UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue ]
+    Architectures:
+      - x86_64
+    CodeSigningConfigArn: !If [ UseCodeSigning, !Ref CodeSigningConfigArn, !Ref AWS::NoValue ]
+    VpcConfig: !If
+      - UseVpc
+      - SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue:
+              !Sub "${VpcStackName}-PrivateSubnetIdA"
+          - Fn::ImportValue:
+              !Sub "${VpcStackName}-PrivateSubnetIdB"
+      - !Ref AWS::NoValue
+    Tracing: "Active"
+
+Resources:
+  # Security group for Lambdas
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: UseVpc
+    Properties:
+      GroupDescription: "Security group for Lambda that allows outbound HTTPS traffic"
+      GroupName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "LambdaSecurityGroup"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - "-"
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - "/"
+                          - Ref: AWS::StackId
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
+      SecurityGroupEgress:
+        - Description: "Outbound HTTPS"
+          CidrIp: "0.0.0.0/0"
+          FromPort: 443
+          ToPort: 443
+          IpProtocol: "tcp"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${AWS::StackName}-LambdaSecurityGroup"
+        - Key: "Service"
+          Value: "test-role-arn"
+
+  # KMS key for logs
+  LogsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+            Action:
+              - "kms:*"
+            Resource:
+              - "*"
+          - Effect: "Allow"
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource:
+              - "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${AWS::StackName}-LogsKey"
+        - Key: "Service"
+          Value: "test-role-arn"
+
+  # KMS key for environment variables
+  EnvVarKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+            Action:
+              - "kms:*"
+            Resource:
+              - "*"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${AWS::StackName}-EnvVarKey"
+        - Key: "Service"
+          Value: "test-role-arn"
+
+  #
+  # Event Handler Lambda
+  #
+  EventHandlerLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${EventHandlerLambda}"
+      RetentionInDays: 7
+      KmsKeyId: !GetAtt LogsKey.Arn
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${AWS::StackName}-EventHandlerLambdaLogGroup"
+        - Key: "Service"
+          Value: "test-role-arn"
+
+  EventHandlerLambda:
+    # checkov:skip=CKV_AWS_116:This function is invoked by an API Gateway, a DLQ will offer no value
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: event-handler.lambda.lambda_handler
+      CodeUri: event-handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      KmsKeyArn: !GetAtt EnvVarKey.Arn
+      Tags:
+        Name: !Sub "${AWS::StackName}-EventHandlerLambda"
+        Service: "test-role-arn"
+        CheckovRulesToSkip: "CKV_AWS_116"
+
+  EventHandlerTestGetFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Condition: UseTestRole
+    Properties:
+      Action: lambda:GetFunction
+      FunctionName: !Ref EventHandlerLambda
+      Principal: !Ref TestRoleArn
+
+  EventHandlerTestInvokePermission:
+    Type: AWS::Lambda::Permission
+    Condition: UseTestRole
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref EventHandlerLambda
+      Principal: !Ref TestRoleArn
+
+  #
+  # Log subscription with Kinesis Firehose that delivers logs into S3 bucket
+  #
+
+  AuditBucket:
+    Type: AWS::S3::Bucket
+    # checkov:skip=CKV_AWS_18:This is just a demo
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+
+  AuditBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AuditBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Deny"
+            Resource:
+              - !GetAtt AuditBucket.Arn
+              - !Sub "${AuditBucket.Arn}/*"
+            Principal: "*"
+            Action: "*"
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
+
+  AuditFirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "firehose.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: "s3"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:AbortMultipartUpload"
+                  - "s3:GetBucketLocation"
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                  - "s3:ListBucketMultipartUploads"
+                  - "s3:PutObject"
+                Resource:
+                  - !GetAtt AuditBucket.Arn
+                  - !Sub "${AuditBucket.Arn}/*"
+      PermissionsBoundary: !Ref PermissionsBoundary
+
+  AuditFirehose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt AuditBucket.Arn
+        RoleARN: !GetAtt AuditFirehoseRole.Arn
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 1
+
+  AuditLogFirehoseSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !GetAtt AuditFirehose.Arn
+      FilterPattern: ""
+      LogGroupName: !Ref EventHandlerLambdaLogGroup
+      RoleArn: !GetAtt AuditLogFirehoseSubscriptionRole.Arn
+
+  AuditLogFirehoseSubscriptionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+            Condition:
+              StringLike:
+                "aws:SourceArn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Policies:
+        - PolicyName: "kinesis"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "firehose:PutRecord*"
+                Resource:
+                  - !GetAtt AuditFirehose.Arn
+      PermissionsBoundary: !Ref PermissionsBoundary
+
+Outputs:
+  EventHandlerLambdaArn:
+    Value: !GetAtt EventHandlerLambda.Arn
+
+  EventHandlerLambdaLogGroup:
+    Value: !Ref EventHandlerLambdaLogGroup
+
+  AuditBucket:
+    Value: !Ref AuditBucket
