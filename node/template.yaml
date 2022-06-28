@@ -3,13 +3,6 @@ Description: >
   Demo application container for deployment into AWS Fargate.
 
 Parameters:
-  ContainerImage:
-    Description: The image to deploy (including both name and tag).
-    Type: String
-    AllowedPattern: "^(?!\\w+://).+:.+"
-    ConstraintDescription: must not contain a scheme and must include a tag
-    Default: "CONTAINER-IMAGE-PLACEHOLDER"
-
   VpcStackName:
     Description: >
       The name of the stack that defines the VPC in which this container will
@@ -157,7 +150,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: node-server
-          Image: !Ref ContainerImage
+          Image: "CONTAINER-IMAGE-PLACEHOLDER"
           PortMappings:
             - ContainerPort: 8000
               Protocol: tcp
@@ -363,8 +356,8 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp: 0.0.0.0/0
-      Description: Allow traffic from anyone on port 80
+      CidrIp: 10.0.0.0/16
+      Description: Allow traffic from the VPC on port 80
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
