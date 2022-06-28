@@ -530,6 +530,8 @@ Resources:
           Value: ci/cd
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        - Key: CheckovRulesToSkip
+          Value: CKV_AWS_18
 
   AccessLogsBucketPolicy:
     Type: AWS::S3::BucketPolicy
