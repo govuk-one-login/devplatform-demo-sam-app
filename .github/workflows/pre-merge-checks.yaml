@@ -1,0 +1,49 @@
+name: Pre-merge checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Cache Python packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip3.9-${{ hashFiles('.github/workflows/pre-merge-checks.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip3.9-
+
+      - name: Install linters
+        run: pip install 'cfn-lint~=0.58.2' 'checkov~=2.0.936' 'poetry~=1.1.13'
+
+      - name: Lint templates
+        run: '.github/scripts/lint.sh'
+        shell: bash
+
+      - name: Analyse templates
+        run: '.github/scripts/analyse.sh'
+        shell: bash
+
+      - name: Lint Python
+        uses: py-actions/flake8@v2
+
+      - name: Lint Shell
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: --shell=bash --external-sources
+

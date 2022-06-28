@@ -11,7 +11,8 @@ function login() {
 }
 
 function sam_build() {
-  local project_dir=$(git rev-parse --show-toplevel)
+  local project_dir
+  project_dir=$(git rev-parse --show-toplevel)
   local app_to_deploy="$1"
   echo "Going into $app_to_deploy"
   cd "$project_dir/$app_to_deploy"
