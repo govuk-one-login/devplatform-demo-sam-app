@@ -47,7 +47,3 @@ jobs:
         env:
           SHELLCHECK_OPTS: --shell=bash --external-sources
 
-      - name: Run tests
-        run: '.github/scripts/test_packages.sh test_all_packages'
-        shell: bash
-
