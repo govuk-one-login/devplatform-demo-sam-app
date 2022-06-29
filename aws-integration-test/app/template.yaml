@@ -218,15 +218,19 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Deny"
-            Resource:
-              - !GetAtt AuditBucket.Arn
-              - !Sub "${AuditBucket.Arn}/*"
-            Principal: "*"
-            Action: "*"
-            Condition:
-              Bool:
-                "aws:SecureTransport": false
+          - !If
+            - UseTestRole
+            - Effect: "Allow"
+              Resource:
+                - !GetAtt AuditBucket.Arn
+                - !Sub "${AuditBucket.Arn}/*"
+              Principal:
+                AWS: !Ref TestRoleArn
+              Action: "*"
+              Condition:
+                Bool:
+                  "aws:SecureTransport": true
+            - !Ref AWS::NoValue
 
   AuditFirehoseRole:
     Type: AWS::IAM::Role

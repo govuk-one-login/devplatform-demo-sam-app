@@ -15,11 +15,6 @@ To run these tests locally, first provision the pipeline and stack in [../app](.
 stack_name=<name of stack used to deploy ../app>
 
 docker build -t aws-integration-test .
-repositoryuri=$(aws cloudformation describe-stacks \
-  --stack-name ${stack_name}-demo-ecr-repository \
-  --query 'Stacks[0].Outputs[?OutputKey==`TestRunnerImageEcrRepositoryUri`].OutputValue' \
-  --output text)
-docker tag aws-integration-test:latest $repositoryuri
 
 eventhandlerlambdaarn=$(aws cloudformation describe-stacks \
   --stack-name $stack_name \
@@ -51,6 +46,4 @@ docker run -t \
   -e CFN_AuditBucket="$auditbucket" \
   -e CFN_RecordProducerLambdaArn="$recordproducerlambdaarn" \
   aws-integration-test:latest
-
-docker push $repositoryuri
 ```

@@ -50,7 +50,6 @@ def step_impl(context, text):
                 queryId=query_id['queryId']
             )
             print(f'Query {queries}; Try {tries}')
-            print(results)
             if results['status'] == "Complete":
                 break
             time.sleep(2)
@@ -59,3 +58,38 @@ def step_impl(context, text):
         time.sleep(5)
 
     assert len(results['results']) > 0
+
+
+def get_last_modified_date(client, bucket_name):
+    # get last modified date
+    now = datetime.utcnow()
+
+    result = client.list_objects_v2(
+        Bucket=bucket_name,
+        Prefix=f'{now.year}/{now.month:02d}/{now.day:02d}/'
+    )
+
+    last_modified = None
+    for obj in result['Contents']:
+        if last_modified is None or last_modified < obj['LastModified']:
+            last_modified = obj['LastModified']
+
+    return last_modified
+
+
+@then("The audit message is written to an S3 bucket")
+def step_impl(context):
+    bucket_name = context.config.userdata['AuditBucket']
+    client = boto3.client('s3')
+
+    last_modified = get_last_modified_date(client, bucket_name)
+
+    updated = False
+    for tries in range(0, 18):
+        time.sleep(5)
+        new_last_modified = get_last_modified_date(client, bucket_name)
+        if new_last_modified is not None and new_last_modified != last_modified:
+            updated = True
+            break
+
+    assert updated
