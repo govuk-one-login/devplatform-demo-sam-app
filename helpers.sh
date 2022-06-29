@@ -8,11 +8,11 @@ function apply_aws_integration_test() {
   local test_role_arn="$2"
   echo "Applying aws-int-test template to stack: $stack_name ..."
 
-  if [[ "$(basename $(pwd))" == "di-devplatform-demo-sam-app" ]]; then
+  if [[ "$(basename "$(pwd)")" == "di-devplatform-demo-sam-app" ]]; then
     cd aws-integration-test/app
-  elif [[ "$(basename $(pwd))" == "aws-int-test" ]]; then
+  elif [[ "$(basename "$(pwd)")" == "aws-int-test" ]]; then
     cd app
-  elif [[ "$(basename $(pwd))" != "app" ]]; then
+  elif [[ "$(basename "$(pwd)")" != "app" ]]; then
     echo "Unable to locate integration test app directory"
     exit 1
   fi
@@ -42,7 +42,7 @@ function apply_aws_integration_test() {
     | xargs -L1 -I{} aws s3 cp "{}" "{}" --metadata "repository=$metadata_repo,commitsha=$metadata_commitsha"
 
   test_role_arn_parameter=""
-  if [[ ! -z "$test_role_arn" ]]; then
+  if [[ -n "$test_role_arn" ]]; then
     test_role_arn_parameter="ParameterKey=TestRoleArn,ParameterValue=$test_role_arn"
   fi
 
@@ -53,6 +53,7 @@ function apply_aws_integration_test() {
      --capabilities CAPABILITY_IAM \
      --parameter-overrides \
         ParameterKey=Environment,ParameterValue=demo \
+        # shellcheck disable=SC2086
         $test_role_arn_parameter \
      --tags System="Dev Platform" \
             Product="GOV.UK Sign In" \
@@ -224,6 +225,7 @@ function apply_pipeline() {
        ParameterKey=Environment,ParameterValue="$environment" \
        ParameterKey=SigningProfileArn,ParameterValue="$signing_profile_arn"  \
        ParameterKey=SigningProfileVersionArn,ParameterValue="$signing_profile_version_arn"  \
+       # shellcheck disable=SC2086
        $promotion_param $test_ecr_repository_param "$pipeline_source_param" \
         && aws cloudformation wait stack-"$create_or_update"-complete \
               --stack-name="$pipe_stack_name" \
