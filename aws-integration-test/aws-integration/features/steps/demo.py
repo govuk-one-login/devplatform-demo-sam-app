@@ -29,7 +29,7 @@ def step_impl(context, text):  # noqa: F811
 
 
 @then("The audit message \"{text}\" is emitted to a CloudWatch Log")
-def step_impl(context, text):
+def step_impl(context, text):  # noqa: F811
     client = boto3.client('logs')
     now = calendar.timegm(datetime.utcnow().timetuple())
     results = {}
@@ -78,7 +78,7 @@ def get_last_modified_date(client, bucket_name):
 
 
 @then("The audit message is written to an S3 bucket")
-def step_impl(context):
+def step_impl(context):  # noqa: F811
     bucket_name = context.config.userdata['AuditBucket']
     client = boto3.client('s3')
 
@@ -96,7 +96,7 @@ def step_impl(context):
 
 
 @given("I have an audit Firehose deployed")
-def step_impl(context):
+def step_impl(context):  # noqa: F811
     firehose_name = context.config.userdata['AuditFirehose']
     record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
     client = boto3.client('lambda')
@@ -115,7 +115,7 @@ def step_impl(context):
 
 
 @when("I write the audit message \"{text}\" onto the Firehose")
-def step_impl(context, text):
+def step_impl(context, text):  # noqa: F811
     firehose_name = context.config.userdata['AuditFirehose']
     record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
     client = boto3.client('lambda')
@@ -133,4 +133,3 @@ def step_impl(context, text):
     assert result['StatusCode'] == 200
     response = json.load(result['Payload'])
     print(response)
-
