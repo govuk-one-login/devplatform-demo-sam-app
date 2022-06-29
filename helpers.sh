@@ -47,13 +47,13 @@ function apply_aws_integration_test() {
   fi
 
   echo "Deploying aws-int-test ..."
+  # shellcheck disable=SC2086
   sam deploy \
      --stack-name="$stack_name" \
      --template="cf-template.yaml" \
      --capabilities CAPABILITY_IAM \
      --parameter-overrides \
         ParameterKey=Environment,ParameterValue=demo \
-        # shellcheck disable=SC2086
         $test_role_arn_parameter \
      --tags System="Dev Platform" \
             Product="GOV.UK Sign In" \
@@ -216,6 +216,7 @@ function apply_pipeline() {
       && echo update \
       || echo create)"
 
+  # shellcheck disable=SC2086
   aws cloudformation "$create_or_update"-stack \
       --stack-name="$pipe_stack_name" \
       --template-url="https://template-storage-templatebucket-1upzyw6v9cs42.s3.amazonaws.com/sam-deploy-pipeline/template.yaml" \
@@ -225,7 +226,6 @@ function apply_pipeline() {
        ParameterKey=Environment,ParameterValue="$environment" \
        ParameterKey=SigningProfileArn,ParameterValue="$signing_profile_arn"  \
        ParameterKey=SigningProfileVersionArn,ParameterValue="$signing_profile_version_arn"  \
-       # shellcheck disable=SC2086
        $promotion_param $test_ecr_repository_param "$pipeline_source_param" \
         && aws cloudformation wait stack-"$create_or_update"-complete \
               --stack-name="$pipe_stack_name" \
