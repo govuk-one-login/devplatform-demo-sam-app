@@ -345,10 +345,15 @@ Resources:
       CodeUri: record-producer
       Policies:
         - AWSLambdaBasicExecutionRole
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "firehose:DescribeDeliveryStream"
+                - "firehose:PutRecord"
+              Resource:
+                - !GetAtt AuditFirehose.Arn
       KmsKeyArn: !GetAtt EnvVarKey.Arn
-      Environment:
-        Variables:
-          DELIVERY_STREAM: !Ref AuditFirehose
       Tags:
         Name: !Sub "${AWS::StackName}-RecordProducerLambda"
         Service: "aws-integration-test"
@@ -368,6 +373,9 @@ Outputs:
 
   EventHandlerLambdaLogGroup:
     Value: !Ref EventHandlerLambdaLogGroup
+
+  AuditFirehose:
+    Value: !Ref AuditFirehose
 
   AuditBucket:
     Value: !Ref AuditBucket

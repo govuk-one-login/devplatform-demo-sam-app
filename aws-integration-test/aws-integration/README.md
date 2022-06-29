@@ -24,6 +24,10 @@ eventhandlerlambdaloggroup=$(aws cloudformation describe-stacks \
   --stack-name $stack_name \
   --query 'Stacks[0].Outputs[?OutputKey==`EventHandlerLambdaLogGroup`].OutputValue' \
   --output text)
+auditfirehose=$(aws cloudformation describe-stacks \
+  --stack-name $stack_name \
+  --query 'Stacks[0].Outputs[?OutputKey==`AuditFirehose`].OutputValue' \
+  --output text)
 auditbucket=$(aws cloudformation describe-stacks \
   --stack-name $stack_name \
   --query 'Stacks[0].Outputs[?OutputKey==`AuditBucket`].OutputValue' \
@@ -43,6 +47,7 @@ docker run -t \
   -e TEST_REPORT_ABSOLUTE_DIR="/root" \
   -e CFN_EventHandlerLambdaArn="$eventhandlerlambdaarn" \
   -e CFN_EventHandlerLambdaLogGroup="$eventhandlerlambdaloggroup" \
+  -e CFN_AuditFirehose="$auditfirehose" \
   -e CFN_AuditBucket="$auditbucket" \
   -e CFN_RecordProducerLambdaArn="$recordproducerlambdaarn" \
   aws-integration-test:latest

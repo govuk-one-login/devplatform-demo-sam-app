@@ -93,3 +93,44 @@ def step_impl(context):
             break
 
     assert updated
+
+
+@given("I have an audit Firehose deployed")
+def step_impl(context):
+    firehose_name = context.config.userdata['AuditFirehose']
+    record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
+    client = boto3.client('lambda')
+    result = client.invoke(
+        FunctionName=record_producer_lambda,
+        InvocationType='RequestResponse',
+        Payload=json.dumps({
+            "DeliveryStreamName": firehose_name,
+            "Type": "Describe"
+        })
+    )
+    assert result['StatusCode'] == 200
+    response = json.load(result['Payload'])
+    print(response)
+    assert response['DeliveryStreamDescription']['DeliveryStreamStatus'] == 'ACTIVE'
+
+
+@when("I write the audit message \"{text}\" onto the Firehose")
+def step_impl(context, text):
+    firehose_name = context.config.userdata['AuditFirehose']
+    record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
+    client = boto3.client('lambda')
+    result = client.invoke(
+        FunctionName=record_producer_lambda,
+        InvocationType='RequestResponse',
+        Payload=json.dumps({
+            "DeliveryStreamName": firehose_name,
+            "Type": "PutRecord",
+            "Data": {
+                "Message": text
+            }
+        })
+    )
+    assert result['StatusCode'] == 200
+    response = json.load(result['Payload'])
+    print(response)
+
