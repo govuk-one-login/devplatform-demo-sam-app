@@ -53,16 +53,6 @@ jobs:
         run: ./gradlew clean build
         working-directory: ./sam-app/HelloWorldFunction2
 
-      - name: Run Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@v12.1254.0
-        with:
-          framework: cloudformation
-          directory: sam-app/
-          skip_check: CKV_AWS_7,CKV_AWS_116
-          quiet: true
-          output_format: cli
-
       - name: SAM validate
         run: sam validate
         working-directory: ./sam-app
