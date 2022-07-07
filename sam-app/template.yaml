@@ -307,6 +307,48 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
+  StackSet:
+    Type: AWS::CloudFormation::StackSet
+    Properties:
+      Description: Multiple S3 buckets in multiple regions
+      PermissionModel: SELF_MANAGED
+      StackInstancesGroup:
+        - DeploymentTargets:
+            Accounts:
+              - !Ref "AWS::AccountId"
+          Regions:
+            - eu-west-2
+            - eu-west-1
+      StackSetName: S3
+      TemplateBody: |
+        AWSTemplateFormatVersion: 2010-09-09
+        Description: Create a S3 bucket
+        Resources:
+          s3bucketInRegion:
+            Type: AWS::S3::Bucket
+            Properties:
+              BucketName: !Sub myNewBucket-${AWS::Region}
+              AccessControl: Private
+              LifecycleConfiguration:
+                Rules:
+                - ExpirationInDays: 3
+                  Id: "Remove files after 3 days"
+                  Status: Enabled
+                  Prefix: "upload/3d"
+              CorsConfiguration:
+                CorsRules:
+                - AllowedHeaders:
+                  - "*"
+                  AllowedMethods:
+                  - GET
+                  - POST
+                  AllowedOrigins:
+                  - "*"
+                  MaxAge: 3600
+              Tags:
+                - Key: Company
+                  Value: myCompany
+
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
