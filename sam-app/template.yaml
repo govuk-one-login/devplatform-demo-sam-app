@@ -327,7 +327,7 @@ Resources:
           s3bucketInRegion:
             Type: AWS::S3::Bucket
             Properties:
-              BucketName: !Sub myNewBucket-${AWS::Region}
+              BucketName: !Sub PLAT-74-a68f3ndjdd3r8-${AWS::Region}
               AccessControl: Private
               LifecycleConfiguration:
                 Rules:
