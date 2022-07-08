@@ -307,47 +307,31 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
-  StackSet:
-    Type: AWS::CloudFormation::StackSet
+  HelloLambdaRole:
+    Type: AWS::IAM::Role
     Properties:
-      Description: Multiple S3 buckets in multiple regions
-      PermissionModel: SELF_MANAGED
-      StackInstancesGroup:
-        - DeploymentTargets:
-            Accounts:
-              - !Ref "AWS::AccountId"
-          Regions:
-            - eu-west-2
-            - eu-west-1
-      StackSetName: S3
-      TemplateBody: |
-        AWSTemplateFormatVersion: 2010-09-09
-        Description: Create a S3 bucket
-        Resources:
-          s3bucketInRegion:
-            Type: AWS::S3::Bucket
-            Properties:
-              BucketName: !Sub PLAT-74-a68f3ndjdd3r8-${AWS::Region}
-              AccessControl: Private
-              LifecycleConfiguration:
-                Rules:
-                - ExpirationInDays: 3
-                  Id: "Remove files after 3 days"
-                  Status: Enabled
-                  Prefix: "upload/3d"
-              CorsConfiguration:
-                CorsRules:
-                - AllowedHeaders:
-                  - "*"
-                  AllowedMethods:
-                  - GET
-                  - POST
-                  AllowedOrigins:
-                  - "*"
-                  MaxAge: 3600
-              Tags:
-                - Key: Company
-                  Value: myCompany
+      RoleName: HelloLambdaRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+
+  HelloLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: HelloLambdaFunction
+      Role: !GetAtt HelloLambdaRole.Arn
+      Runtime: python3.7
+      Handler: index.my_handler
+      Code:
+        ZipFile: |
+          def my_handler(event, context):
+            import boto3
+            s3 = boto3.resource('s3') 
+            b = s3.Bucket('PLAT-74-kdsjt304jt02349j-eu-west-1') 
+            b.create(CreateBucketConfiguration={ 'LocationConstraint': 'eu-west-1' }
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
