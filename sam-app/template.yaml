@@ -307,31 +307,17 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
-  HelloLambdaRole:
-    Type: AWS::IAM::Role
+  MyServerlessFunctionLogicalID:
+    Type: AWS::Serverless::Function
     Properties:
-      RoleName: HelloLambdaRole
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-
-  HelloLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: HelloLambdaFunction
-      Role: !GetAtt HelloLambdaRole.Arn
+      Handler: index.handler
       Runtime: python3.7
-      Handler: index.my_handler
-      Code:
-        ZipFile: |
+      InlineCode: |
           def my_handler(event, context):
             import boto3
-            s3 = boto3.resource('s3') 
-            b = s3.Bucket('PLAT-74-kdsjt304jt02349j-eu-west-1') 
-            b.create(CreateBucketConfiguration={ 'LocationConstraint': 'eu-west-1' }
+            s3 = boto3.resource('s3')
+            b = s3.Bucket('PLAT-74-kdsjt304jt02349j-eu-west-1')
+            b.create(CreateBucketConfiguration={ 'LocationConstraint': 'eu-west-1' })
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
