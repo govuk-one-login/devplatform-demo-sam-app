@@ -310,14 +310,9 @@ Resources:
   MyServerlessFunctionLogicalID:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: s3://plat740-sam-app-pipeline-githubartifactsourcebuck-9k3nt2rbc8lv/serverless-test.py.zip
       Handler: index.handler
       Runtime: python3.7
-      InlineCode: |
-          def my_handler(event, context):
-            import boto3
-            s3 = boto3.resource('s3')
-            b = s3.Bucket('PLAT-74-kdsjt304jt02349j-eu-west-1')
-            b.create(CreateBucketConfiguration={ 'LocationConstraint': 'eu-west-1' })
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
