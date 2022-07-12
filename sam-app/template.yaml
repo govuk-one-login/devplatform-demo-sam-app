@@ -325,8 +325,19 @@ Resources:
               - !Ref "AWS::AccountId"
           Regions:
             - eu-west-2
-            - eu-west-1
-      StackSetName: S3
+      StackSetName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "StackSet"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - '-'
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - /
+                          - Ref: AWS::StackId
       TemplateBody: |
         AWSTemplateFormatVersion: 2010-09-09
         Description: Create a S3 bucket
