@@ -78,6 +78,14 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
+  # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
+  CSLSFirehoseSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prod
+      FilterPattern: ""
+      LogGroupName: !Ref APIGatewayAccessLogGroup
+
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
     Properties:
