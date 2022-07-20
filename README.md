@@ -11,6 +11,7 @@ repository.
 
 The GitHub workflows make use of the following secrets:
 
+* CONTAINER_SIGN_KMS_KEY - The ARN of the KMS key to sign container images pushed to ECR. Images from [node](node), [sam-app](sam-app) and [aws-integration-test](aws-integration-test/aws-integration)
 * NODE_ARTIFACT_BUCKET - The name of the S3 bucket to deploy [node](node) to
 * NODE_ROLE_TO_ASSUME - The ARN of the AWS role to assume when deploying [node](node)
 * PARAMETERS_ARTIFACT_SOURCE_BUCKET_NAME - The name of the S3 bucket to deploy [parameters](parameters) to
