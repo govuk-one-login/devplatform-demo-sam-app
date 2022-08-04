@@ -9,6 +9,11 @@ Parameters:
       run.
     Type: String
 
+  PipelineStackName:
+    Description: "The name of the pipeline stack that deploys this application stack"
+    Type: String
+    Default: "none"
+
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
@@ -18,8 +23,14 @@ Conditions:
   UsePermissionsBoundary:
     Fn::Not:
       - Fn::Equals:
-          - !Ref PermissionsBoundary
-          - "none"
+        - !Ref PermissionsBoundary
+        - "none"
+
+  OutputPipelineStackName:
+    Fn::Not:
+      - Fn::Equals:
+        - !Ref PipelineStackName
+        - "none"
 
 Mappings:
   # see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
@@ -609,3 +620,8 @@ Outputs:
   ApiGatewayEndpoint:
     Description: The base URI for this application.
     Value: !GetAtt ApiGateway.ApiEndpoint
+
+  PipelineStackName:
+    Condition: OutputPipelineStackName
+    Description: "The name of the pipeline stack that deploys this application stack"
+    Value: !Ref PipelineStackName
