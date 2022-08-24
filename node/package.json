@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.29.4",
     "ronin-mocks": "^0.1.6",
     "ronin-server": "^0.1.3"
   }
