@@ -1,13 +1,60 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: >
-  Demo application container for deployment into AWS Fargate.
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  ECS fargate example deployment template using blue green.
+  Replace PLACEHOLDER_VPC_STACK_NAME with the VPC stack name.
+  Replace CONTAINER-IMAGE-PLACEHOLDER with the ECR image arn.
+Transform:
+  - AWS::Serverless-2016-10-31
+  - AWS::CodeDeployBlueGreen
+
+Hooks:
+  CodeDeployBlueGreenHook:
+    Properties:
+      TrafficRoutingConfig:
+        Type: TimeBasedCanary
+        TimeBasedCanary:
+          StepPercentage: 15
+          BakeTimeMins: 5
+      Applications:
+        - Target:
+            Type: 'AWS::ECS::Service'
+            LogicalID: ContainerService
+          ECSAttributes:
+            TaskDefinitions:
+              - BlueTaskDefinition
+              - GreenTaskDefinition
+            TaskSets:
+              - BlueTaskSet
+              - GreenTaskSet
+            TrafficRouting:
+              ProdTrafficRoute:
+                Type: 'AWS::ElasticLoadBalancingV2::Listener'
+                LogicalID: ApplicationLoadBalancerListener
+              TargetGroups:
+                - ApplicationLoadBalancerTargetGroupBlue
+                - ApplicationLoadBalancerTargetGroupGreen
+    Type: 'AWS::CodeDeploy::BlueGreen'
 
 Parameters:
-  VpcStackName:
-    Description: >
-      The name of the stack that defines the VPC in which this container will
-      run.
-    Type: String
+  PrivateSubnetA:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Private Subnet A Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"
+
+  PrivateSubnetB:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Private Subnet B Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"
+
+  VpcId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
+
+  VpcLinkId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Link Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
 
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
@@ -44,68 +91,23 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
   ContainerService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref FargateCluster
-      LaunchType: FARGATE
-      LoadBalancers:
-        - ContainerName: node-server
-          ContainerPort: 8000
-          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          SecurityGroups:
-            - !GetAtt ContainerServiceSecurityGroup.GroupId
-          Subnets:
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdA"
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdB"
+      DeploymentController:
+        Type: EXTERNAL
       PropagateTags: SERVICE
-      TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
     DependsOn: ApplicationLoadBalancerListener
-
-  ContainerAutoScalingTarget:
-    Type: AWS::ApplicationAutoScaling::ScalableTarget
-    Properties:
-      MaxCapacity: 3
-      MinCapacity: 1
-      ResourceId: !Join
-        - '/'
-        - - "service"
-          - !Ref FargateCluster
-          - !GetAtt ContainerService.Name
-      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
-      ScalableDimension: ecs:service:DesiredCount
-      ServiceNamespace: ecs
-
-  ContainerAutoScalingPolicy:
-    DependsOn: ContainerAutoScalingTarget
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    Properties:
-      PolicyName: containerAutoScalingPolicy
-      PolicyType: TargetTrackingScaling
-      ResourceId: !Join
-        - '/'
-        - - "service"
-          - !Ref FargateCluster
-          - !GetAtt ContainerService.Name
-      ScalableDimension: ecs:service:DesiredCount
-      ServiceNamespace: ecs
-      TargetTrackingScalingPolicyConfiguration:
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ECSServiceAverageCPUUtilization
-        TargetValue: 0.7
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -125,42 +127,39 @@ Resources:
                           - "/"
                           - Ref: AWS::StackId
       SecurityGroupIngress:
-        - Description: Allow traffic from the load balancer on port 8000
+        - Description: Allow traffic from the load balancer on port 5000
           SourceSecurityGroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
           IpProtocol: tcp
-          FromPort: 8000
-          ToPort: 8000
-      VpcId:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-VpcId"
+          FromPort: 5000
+          ToPort: 5000
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerServiceSecurityGroup"
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
   #
   # Fargate tasks
   #
 
-  TaskDefinition:
+  BlueTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-        - Name: node-server
+        - Name: server
           Image: "CONTAINER-IMAGE-PLACEHOLDER"
           PortMappings:
-            - ContainerPort: 8000
+            - ContainerPort: 5000
               Protocol: tcp
           Essential: true
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: "/ecs/server"
-              awslogs-region: "eu-west-2"
-              awslogs-create-group: "true"
+              awslogs-group: !Sub "/ecs/${AWS::StackName}/server"
+              awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: "ecs"
       Cpu: 256
       Memory: 512
@@ -175,7 +174,14 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  TaskLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ecs/${AWS::StackName}/server"
+      RetentionInDays: 1
+      KmsKeyId: !GetAtt LoggingKmsKey.Arn
 
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -190,15 +196,6 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-      Policies:
-        - PolicyName: CreateLogGroup
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
@@ -209,7 +206,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
   #
   # API Gateway
@@ -218,21 +215,19 @@ Resources:
   ApiGateway:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-      Name: node-server-endpoint
+      Name: server-endpoint
       ProtocolType: HTTP
       Tags:
         Name: !Sub "${AWS::StackName}-ApiGateway"
         Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        Source: alphagov/di-devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
 
   ApiGatewayIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref ApiGateway
       IntegrationType: HTTP_PROXY
-      ConnectionId:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-VpcLinkId"
+      ConnectionId: !Ref VpcLinkId
       ConnectionType: VPC_LINK
       IntegrationMethod: ANY
       IntegrationUri: !Ref ApplicationLoadBalancerListener
@@ -257,7 +252,7 @@ Resources:
       Tags:
         Name: !Sub "${AWS::StackName}-ApiDefaultStage"
         Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        Source: alphagov/di-devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
 
   #
   # Load balancing
@@ -270,10 +265,8 @@ Resources:
       SecurityGroups:
         - !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
       Subnets:
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdA"
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdB"
+        - !Ref PrivateSubnetA
+        - !Ref PrivateSubnetB
       LoadBalancerAttributes:
         - Key: access_logs.s3.enabled
           Value: "true"
@@ -287,30 +280,57 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
-  ApplicationLoadBalancerTargetGroup:
+  ApplicationLoadBalancerTargetGroupBlue:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckPort: 8000
+      HealthCheckPort: 5000
       HealthCheckProtocol: HTTP
-      HealthCheckPath: /test
-      Port: 8000
+      HealthCheckPath: /
+      Port: 5000
       Protocol: HTTP
       ProtocolVersion: HTTP1
       Matcher:
         HttpCode: "200-499"
       TargetType: ip
-      VpcId:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-VpcId"
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: "deregistration_delay.timeout_seconds"
+          Value: "5"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerTargetGroup"
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  ApplicationLoadBalancerTargetGroupGreen:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckPort: 5000
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: /
+      Port: 5000
+      Protocol: HTTP
+      ProtocolVersion: HTTP1
+      Matcher:
+        HttpCode: "200-499"
+      TargetType: ip
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: "deregistration_delay.timeout_seconds"
+          Value: "5"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerTargetGroup"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -318,11 +338,61 @@ Resources:
       # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
       # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
-        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroupBlue
           Type: forward
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 80
       Protocol: HTTP
+
+  ApplicationLoadBalancerListenerRule:
+    Type: 'AWS::ElasticLoadBalancingV2::ListenerRule'
+    Properties:
+      Actions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroupBlue
+                Weight: 1
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: User-Agent
+            Values:
+              - Mozilla
+      ListenerArn: !Ref ApplicationLoadBalancerListener
+      Priority: 1
+
+  BlueTaskSet:
+    Type: 'AWS::ECS::TaskSet'
+    Properties:
+      Cluster: !Ref FargateCluster
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsVpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !GetAtt ContainerServiceSecurityGroup.GroupId
+          Subnets:
+            - !Ref PrivateSubnetA
+            - !Ref PrivateSubnetB
+      PlatformVersion: 1.4.0
+      Scale:
+        Unit: PERCENT
+        Value: 100
+      Service: !Ref ContainerService
+      TaskDefinition: !Ref BlueTaskDefinition
+      LoadBalancers:
+        - ContainerName: server
+          ContainerPort: 5000
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroupBlue
+  PrimaryTaskSet:
+    Type: 'AWS::ECS::PrimaryTaskSet'
+    Properties:
+      Cluster: !Ref FargateCluster
+      Service: !Ref ContainerService
+      TaskSetId: !GetAtt
+        - BlueTaskSet
+        - Id
 
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -341,23 +411,21 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerSecurityGroup"
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp: 10.0.0.0/16
-      Description: Allow traffic from the VPC on port 80
+      CidrIp: 0.0.0.0/0
+      Description: Allow traffic from anyone on port 80
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
@@ -367,116 +435,10 @@ Resources:
     Properties:
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
       DestinationSecurityGroupId: !GetAtt ContainerServiceSecurityGroup.GroupId
-      Description: Allow traffic to Container Service on port 8000
+      Description: Allow traffic to Container Service on port 5000
       IpProtocol: tcp
-      FromPort: 8000
-      ToPort: 8000
-
-  #
-  #  ElastiCache
-  #
-
-  ApplicationCacheSubnetGroup:
-    Type: AWS::ElastiCache::SubnetGroup
-    Properties:
-      CacheSubnetGroupName: application-cache-subnet-group
-      Description: Cache Subnet Group
-      SubnetIds:
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdA"
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdB"
-      Tags:
-        - Key: Name
-          Value: ApplicationCacheSubnetGroup
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
-  ApplicationParameterGroup:
-    Type: AWS::ElastiCache::ParameterGroup
-    Properties:
-      CacheParameterGroupFamily: redis6.x
-      Description: Hello! This is a nice description
-      Properties:
-        cluster-enabled: "yes"
-      Tags:
-        - Key: Name
-          Value: ApplicationElastiCacheCluster
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
-  ApplicationElastiCacheLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      KmsKeyId: !GetAtt KmsKey.Arn
-      LogGroupName: elasticache-replication-group-logs
-      RetentionInDays: 1
-      Tags:
-        - Key: Name
-          Value: ApplicationElastiCacheCluster
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
-  ApplicationAuthPass:
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Name: elasticache-application
-      Description: Random password for elastiCache
-      GenerateSecretString:
-        ExcludeLowercase: false
-        ExcludeNumbers: false
-        ExcludePunctuation: true
-        ExcludeUppercase: false
-        IncludeSpace: false
-        PasswordLength: 17
-      KmsKeyId: !GetAtt KmsKey.Arn
-      Tags:
-        - Key: Name
-          Value: ApplicationAuthPass
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
-  ApplicationReplicationGroup:
-    Type: AWS::ElastiCache::ReplicationGroup
-    Properties:
-      TransitEncryptionEnabled: true
-      AtRestEncryptionEnabled: true
-      AuthToken: !Sub '{{resolve:secretsmanager:${ApplicationAuthPass}}}'
-      AutomaticFailoverEnabled: true
-      CacheNodeType: cache.t2.micro
-      CacheSubnetGroupName: !Ref ApplicationCacheSubnetGroup
-      CacheParameterGroupName: !Ref ApplicationParameterGroup
-      Engine: redis
-      LogDeliveryConfigurations:
-        - DestinationDetails:
-            CloudWatchLogsDetails:
-              LogGroup: !Ref ApplicationElastiCacheLogGroup
-          DestinationType: cloudwatch-logs
-          LogFormat: json
-          LogType: engine-log
-      MultiAZEnabled: true
-      NumNodeGroups: 1
-      ReplicasPerNodeGroup: 1
-      ReplicationGroupDescription: Replication group for elasticache
-      SecurityGroupIds:
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-AWSServicesEndpointSecurityGroupId"
-      Tags:
-        - Key: Name
-          Value: ApplicationElastiCacheCluster
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
-
+      FromPort: 5000
+      ToPort: 5000
 
   #
   # Logging
@@ -485,8 +447,9 @@ Resources:
   ApiGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
+      LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}"
       RetentionInDays: 7
-      KmsKeyId: !GetAtt KmsKey.Arn
+      KmsKeyId: !GetAtt LoggingKmsKey.Arn
       Tags:
         - Key: Name
           Value: ApiGatewayAccessLogGroup
@@ -529,7 +492,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_18
 
@@ -549,6 +512,9 @@ Resources:
             Action:
               - s3:PutObject
             Resource: !Sub "${AccessLogsBucket.Arn}/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              Bool:
+                "aws:SecureTransport": true
           - Sid: AllowAwsLogDeliveryToLogToS3
             Effect: Allow
             Principal:
@@ -560,6 +526,8 @@ Resources:
               StringEquals:
                 "s3:x-amz-acl": bucket-owner-full-control
                 "aws:SourceAccount": !Ref AWS::AccountId
+              Bool:
+                "aws:SecureTransport": true
           - Sid: AllowAwsLogDeliveryToReadBucketAcl
             Effect: Allow
             Principal:
@@ -570,8 +538,10 @@ Resources:
             Condition:
               StringEquals:
                 "aws:SourceAccount": !Ref AWS::AccountId
+              Bool:
+                "aws:SecureTransport": true
 
-  KmsKey:
+  LoggingKmsKey:
     Type: AWS::KMS::Key
     Properties:
       EnableKeyRotation: true
@@ -601,9 +571,9 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Name
-          Value: !Sub "${AWS::StackName}-KmsKey"
+          Value: !Sub "${AWS::StackName}-LoggingKmsKey"
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
 Outputs:
   ApiGatewayEndpoint:
