@@ -43,8 +43,10 @@ Conditions:
 Mappings:
   APIDomainNames:
     build:
-      DomainName: "demoapp.platform.sandpit.account.gov.uk"
-
+      DomainName: !Sub 
+        - "${StackUid}.demoapp.platform.sandpit.account.gov.uk"
+        - StackUid: !Select [2, !Split ['/', !Ref AWS::StackId]]
+            
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -522,3 +524,9 @@ Outputs:
   HelloWorldFunctionIamRole2:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunction2Role.Arn
+  HelloWorldApiDomain:
+    Description: "API Gateway domain"
+    Value: !FindInMap
+      - APIDomainNames
+      - !Ref Environment
+      - DomainName
