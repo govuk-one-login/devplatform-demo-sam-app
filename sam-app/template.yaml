@@ -43,9 +43,7 @@ Conditions:
 Mappings:
   APIDomainNames:
     build:
-      DomainName: !Sub 
-        - "${StackUid}.demoapp.platform.sandpit.account.gov.uk"
-        - StackUid: !Select [2, !Split ['/', !Ref AWS::StackId]]
+      DomainName: !Sub "${AWS::StackName}.demoapp.platform.sandpit.account.gov.uk"
             
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
