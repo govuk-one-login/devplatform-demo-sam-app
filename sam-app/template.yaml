@@ -498,8 +498,8 @@ Resources:
           - !Ref Environment
           - DomainName
       DomainValidationOptions:
-        DomainName: !Sub
-          - '${AWS::StackName}.${DomainName}'
+        - DomainName: !Sub
+          - "${AWS::StackName}.${DomainName}"
           - DomainName: !FindInMap
             - APIDomainNames
             - !Ref Environment
