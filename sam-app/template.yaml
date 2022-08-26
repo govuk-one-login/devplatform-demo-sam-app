@@ -471,7 +471,7 @@ Resources:
     Type: AWS::Route53::RecordSet
     Condition: UseCertificate
     Properties:
-      DomainName: !Sub
+      Name: !Sub
         - '${AWS::StackName}.${DomainName}'
         - DomainName: !FindInMap
           - APIDomainNames
