@@ -43,8 +43,8 @@ Conditions:
 Mappings:
   APIDomainNames:
     build:
-      DomainName: "demoapp.platform.sandpit.account.gov.uk"
-
+      DomainName: 'demoapp.platform.sandpit.account.gov.uk'
+            
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -113,10 +113,12 @@ Resources:
     Type: AWS::ApiGateway::DomainName
     Condition: UseCertificate
     Properties:
-      DomainName: !FindInMap
-        - APIDomainNames
-        - !Ref Environment
-        - DomainName
+      DomainName: !Sub 
+        - '${AWS::StackName}.${DomainName}'
+        - DomainName: !FindInMap
+          - APIDomainNames
+          - !Ref Environment
+          - DomainName
       EndpointConfiguration:
         Types:
           - REGIONAL
@@ -135,10 +137,12 @@ Resources:
     Condition: UseCertificate
     DependsOn: HelloWorldRestAPIDomainName
     Properties:
-      DomainName: !FindInMap
-        - APIDomainNames
-        - !Ref Environment
-        - DomainName
+      DomainName: !Sub
+        - '${AWS::StackName}.${DomainName}'
+        - DomainName: !FindInMap
+          - APIDomainNames
+          - !Ref Environment
+          - DomainName
       RestApiId: !Ref HelloWorldRestApi
       Stage: !Sub "${HelloWorldRestApi.Stage}"
 
@@ -467,10 +471,12 @@ Resources:
     Type: AWS::Route53::RecordSet
     Condition: UseCertificate
     Properties:
-      Name: !FindInMap
-        - APIDomainNames
-        - !Ref Environment
-        - DomainName
+      Name: !Sub
+        - '${AWS::StackName}.${DomainName}'
+        - DomainName: !FindInMap
+          - APIDomainNames
+          - !Ref Environment
+          - DomainName
       Type: A
       HostedZoneId:
         Fn::ImportValue: PlatformHostedZone
@@ -485,15 +491,19 @@ Resources:
     Type: AWS::CertificateManager::Certificate
     Condition: UseCertificate
     Properties:
-      DomainName: !FindInMap
-        - APIDomainNames
-        - !Ref Environment
-        - DomainName
-      DomainValidationOptions:
+      DomainName: !Sub
+        - '${AWS::StackName}.${DomainName}'
         - DomainName: !FindInMap
           - APIDomainNames
           - !Ref Environment
           - DomainName
+      DomainValidationOptions:
+        - DomainName: !Sub
+          - "${AWS::StackName}.${DomainName}"
+          - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
           HostedZoneId:
             Fn::ImportValue: PlatformHostedZone
       ValidationMethod: DNS
@@ -522,3 +532,11 @@ Outputs:
   HelloWorldFunctionIamRole2:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunction2Role.Arn
+  HelloWorldApiDomain:
+    Description: "API Gateway domain"
+    Value: !Sub
+      - '${AWS::StackName}.${DomainName}'
+      - DomainName: !FindInMap
+         - APIDomainNames
+         - !Ref Environment
+         - DomainName
