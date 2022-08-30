@@ -48,6 +48,8 @@ Mappings:
       DomainName: 'staging.demoapp.platform.sandpit.account.gov.uk'
     integration:
       DomainName: 'integration.demoapp.platform.sandpit.account.gov.uk'
+    demo:
+      DomainName: 'demo.demoapp.platform.sandpit.account.gov.uk'
     prod:
       DomainName: 'prod.demoapp.platform.sandpit.account.gov.uk'
             
