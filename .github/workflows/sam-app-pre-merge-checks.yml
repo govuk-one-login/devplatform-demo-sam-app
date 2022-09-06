@@ -53,6 +53,20 @@ jobs:
         run: ./gradlew clean build
         working-directory: ./sam-app/HelloWorldFunction2
 
+      - name: Test lambda1
+        run: ./gradlew clean test
+        working-directory: ./sam-app/HelloWorldFunction
+
+      - name: Test lambda2
+        run: ./gradlew clean test
+        working-directory: ./sam-app/HelloWorldFunction2
+        
+      - name: Publish test results
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
       - name: SAM validate
         run: sam validate
         working-directory: ./sam-app
