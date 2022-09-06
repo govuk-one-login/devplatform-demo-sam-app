@@ -19,10 +19,10 @@ jobs:
       contents: read
     steps:
       - name: Upload to ECR and tag
-        uses: alphagov/di-devplatform-upload-action-ecr@main
+        uses: alphagov/di-devplatform-upload-action-ecr@1.0.0
         with:
           role-to-assume-arn: ${{ secrets.NODE_ROLE_TO_ASSUME }}
           container-sign-kms-key-arn: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
-          working-directory: "node"
+          working-directory: node
           ecr-repo-name: ${{ secrets.ECR_REPOSITORY }}
           artifact-bucket-name: ${{ secrets.NODE_ARTIFACT_BUCKET }}
