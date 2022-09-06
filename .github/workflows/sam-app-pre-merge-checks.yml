@@ -4,14 +4,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-permissions:
-  checks: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
+      checks: write
       id-token: write
       contents: read
     steps:
