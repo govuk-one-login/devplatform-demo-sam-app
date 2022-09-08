@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   demo-sam-app
@@ -43,14 +43,14 @@ Conditions:
 Mappings:
   APIDomainNames:
     build:
-      DomainName: 'build.demoapp.platform.sandpit.account.gov.uk'
+      DomainName: "build.demoapp.platform.sandpit.account.gov.uk"
     staging:
-      DomainName: 'staging.demoapp.platform.sandpit.account.gov.uk'
+      DomainName: "staging.demoapp.platform.sandpit.account.gov.uk"
     integration:
-      DomainName: 'integration.demoapp.platform.sandpit.account.gov.uk'
+      DomainName: "integration.demoapp.platform.sandpit.account.gov.uk"
     prod:
-      DomainName: 'prod.demoapp.platform.sandpit.account.gov.uk'
-            
+      DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -119,12 +119,12 @@ Resources:
     Type: AWS::ApiGateway::DomainName
     Condition: UseCertificate
     Properties:
-      DomainName: !Sub 
-        - '${AWS::StackName}.${DomainName}'
+      DomainName: !Sub
+        - "${AWS::StackName}.${DomainName}"
         - DomainName: !FindInMap
-          - APIDomainNames
-          - !Ref Environment
-          - DomainName
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
       EndpointConfiguration:
         Types:
           - REGIONAL
@@ -144,11 +144,11 @@ Resources:
     DependsOn: HelloWorldRestAPIDomainName
     Properties:
       DomainName: !Sub
-        - '${AWS::StackName}.${DomainName}'
+        - "${AWS::StackName}.${DomainName}"
         - DomainName: !FindInMap
-          - APIDomainNames
-          - !Ref Environment
-          - DomainName
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
       RestApiId: !Ref HelloWorldRestApi
       Stage: !Sub "${HelloWorldRestApi.Stage}"
 
@@ -207,7 +207,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Action:
               - sts:AssumeRole
@@ -217,7 +217,12 @@ Resources:
                 - codedeploy.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundary, !Ref AWS::NoValue]
+      PermissionsBoundary:
+        !If [
+          UsePermissionsBoundary,
+          !Ref PermissionsBoundary,
+          !Ref AWS::NoValue,
+        ]
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -261,7 +266,7 @@ Resources:
           - Fn::Select:
               - 4
               - Fn::Split:
-                  - '-'
+                  - "-"
                   - Fn::Select:
                       - 2
                       - Fn::Split:
@@ -274,8 +279,7 @@ Resources:
             - Effect: "Allow"
               Action:
                 - "codedeploy:PutLifecycleEventHookExecutionStatus"
-              Resource:
-                !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*'
+              Resource: !Sub "arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*"
         - Version: "2012-10-17"
           Statement:
             - Effect: "Allow"
@@ -325,6 +329,7 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
+  # Need to add CSLS egress for the access-logs stored in this bucket = PLAT-218
   HelloWorldBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -335,7 +340,7 @@ Resources:
           - Fn::Select:
               - 4
               - Fn::Split:
-                  - '-'
+                  - "-"
                   - Fn::Select:
                       - 2
                       - Fn::Split:
@@ -354,7 +359,7 @@ Resources:
             - Fn::Select:
                 - 4
                 - Fn::Split:
-                    - '-'
+                    - "-"
                     - Fn::Select:
                         - 2
                         - Fn::Split:
@@ -380,6 +385,23 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
+  HelloWorldBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref HelloWorldBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Resource:
+              - !Sub "HelloWorldBucket.Arn"
+              - !Sub "${HelloWorldBucket.Arn}/*"
+            Principal:
+              AWS: arn:aws:logs:eu-west-2:885513274347:root #CSLS account - can limit this further if we know the specific lambda
+            Action:
+              - "s3:Get*"
+              - "s3:List*"
+
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
     Properties:
@@ -390,8 +412,8 @@ Resources:
           - Effect: Allow
             Principal:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action: 'kms:*'
-            Resource: '*'
+            Action: "kms:*"
+            Resource: "*"
           - Effect: Allow
             Principal:
               Service: !Sub "logs.${AWS::Region}.amazonaws.com"
@@ -478,11 +500,11 @@ Resources:
     Condition: UseCertificate
     Properties:
       Name: !Sub
-        - '${AWS::StackName}.${DomainName}'
+        - "${AWS::StackName}.${DomainName}"
         - DomainName: !FindInMap
-          - APIDomainNames
-          - !Ref Environment
-          - DomainName
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
       Type: A
       HostedZoneId:
         Fn::ImportValue: PlatformHostedZone
@@ -498,18 +520,18 @@ Resources:
     Condition: UseCertificate
     Properties:
       DomainName: !Sub
-        - '${AWS::StackName}.${DomainName}'
+        - "${AWS::StackName}.${DomainName}"
         - DomainName: !FindInMap
-          - APIDomainNames
-          - !Ref Environment
-          - DomainName
-      DomainValidationOptions:
-        - DomainName: !Sub
-          - "${AWS::StackName}.${DomainName}"
-          - DomainName: !FindInMap
             - APIDomainNames
             - !Ref Environment
             - DomainName
+      DomainValidationOptions:
+        - DomainName: !Sub
+            - "${AWS::StackName}.${DomainName}"
+            - DomainName: !FindInMap
+                - APIDomainNames
+                - !Ref Environment
+                - DomainName
           HostedZoneId:
             Fn::ImportValue: PlatformHostedZone
       ValidationMethod: DNS
@@ -541,8 +563,8 @@ Outputs:
   HelloWorldApiDomain:
     Description: "API Gateway domain"
     Value: !Sub
-      - '${AWS::StackName}.${DomainName}'
+      - "${AWS::StackName}.${DomainName}"
       - DomainName: !FindInMap
-         - APIDomainNames
-         - !Ref Environment
-         - DomainName
+          - APIDomainNames
+          - !Ref Environment
+          - DomainName
