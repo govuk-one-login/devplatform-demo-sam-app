@@ -335,7 +335,19 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       AccessControl: LogDeliveryWrite
-      BucketName: !Sub "${AWS::StackName}-accesslogsbucket-${AWS::StackId}" # This does the same thing as BucketName in HelloWorldBucket, but I find it easier to read.
+      BucketName: !Join
+        - "-"
+        - - !Ref AWS::StackName
+          - "accesslogsbucket"
+          - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - "-"
+                  - Fn::Select:
+                      - 2
+                      - Fn::Split:
+                          - /
+                          - Ref: AWS::StackId
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -360,10 +372,10 @@ Resources:
           Value: Demo
         - Key: Service
           Value: backend
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-accesslogsbucket-${AWS::StackId}"
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        - Key: CheckovRulesToSkip
+          Value: "CKV_AWS_18.CKV_AWS_21"
 
   AccessLogsBucketPolicy:
     Type: AWS::S3::BucketPolicy
