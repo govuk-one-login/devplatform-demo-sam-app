@@ -378,6 +378,7 @@ Resources:
               - !Sub "${AccessLogsBucket.Arn}/*"
             Principal:
               AWS: arn:aws:logs:eu-west-2:885513274347:root #CSLS account - can limit this further if we know the specific lambda role arn
+              # Lambda role ARN: arn:aws:iam::885513274347:role/csls_prodpython/csls_process_s3_logs_lambda_prodpython
             Action:
               - "s3:Get*"
               - "s3:List*"
