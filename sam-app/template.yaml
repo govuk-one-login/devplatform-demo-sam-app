@@ -378,23 +378,23 @@ Resources:
         - Key: CheckovRulesToSkip
           Value: "CKV_AWS_18.CKV_AWS_21"
 
-  AccessLogsBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref AccessLogsBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Resource:
-              - !Sub "AccessLogsBucket.Arn"
-              - !Sub "${AccessLogsBucket.Arn}/*"
-            Principal:
-              AWS: arn:aws:logs:eu-west-2:885513274347:root #CSLS account - can limit this further if we know the specific lambda role arn
-              # Lambda role ARN: arn:aws:iam::885513274347:role/csls_prodpython/csls_process_s3_logs_lambda_prodpython
-            Action:
-              - "s3:Get*"
-              - "s3:List*"
+  # AccessLogsBucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     Bucket: !Ref AccessLogsBucket
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Resource:
+  #             - !Sub "AccessLogsBucket.Arn"
+  #             - !Sub "${AccessLogsBucket.Arn}/*"
+  #           Principal:
+  #             AWS: arn:aws:logs:eu-west-2:885513274347:root #CSLS account - can limit this further if we know the specific lambda role arn
+  #             # Lambda role ARN: arn:aws:iam::885513274347:role/csls_prodpython/csls_process_s3_logs_lambda_prodpython
+  #           Action:
+  #             - "s3:Get*"
+  #             - "s3:List*"
 
   HelloWorldBucket:
     Type: AWS::S3::Bucket
