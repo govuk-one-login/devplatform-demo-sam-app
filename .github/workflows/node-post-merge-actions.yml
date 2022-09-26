@@ -1,6 +1,7 @@
 name: Node server build and deploy
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
