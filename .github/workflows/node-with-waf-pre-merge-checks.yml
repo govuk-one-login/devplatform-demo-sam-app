@@ -1,5 +1,4 @@
-
-name: Node server template check
+name: Node with waf server template check
 
 on:
   pull_request:

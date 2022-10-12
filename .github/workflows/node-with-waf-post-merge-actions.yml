@@ -1,4 +1,4 @@
-name: Node server build and deploy
+name: Node with waf server build and deploy
 
 on:
   push:
