@@ -279,9 +279,10 @@ Resources:
       RestApiId: !Ref RestApiGateway
       AccessLogSetting:
         DestinationArn: !Ref AccessLogsBucket
-        Format: $context.requestId $context.apiId 
+        Format: $context.requestId $context.apiId
       CacheClusterEnabled: true
       CacheClusterSize: 0.5
+      TracingEnabled: true
       MethodSettings:
         - ResourcePath: /
           HttpMethod: GET
