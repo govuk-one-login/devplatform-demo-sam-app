@@ -285,28 +285,6 @@ Resources:
       TargetArns:
         - !Ref NetworkLoadBalancer
 
-
-# ApiRoute:
-#   Type: AWS::ApiGatewayV2::Route
-#   Properties:
-#     ApiId: !Ref ApiGateway
-#     RouteKey: "ANY /{proxy+}"
-#     Target: !Sub "integrations/${ApiGatewayIntegration}"
-
-#  ApiDefaultStage:
-#    Type: AWS::ApiGatewayV2::Stage
-#    Properties:
-#      ApiId: !Ref ApiGateway
-#      StageName: "$default"
-#      AutoDeploy: true
-#      AccessLogSettings:
-#        Format: "$context.requestId $context.httpMethod $context.path"
-#        DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
-#      Tags:
-#        Name: !Sub "${AWS::StackName}-ApiDefaultStage"
-#        Service: ci/cd
-#        Source: alphagov/toby-helloworld/template.yaml
-
   # Network Load  balancing
   #
 
