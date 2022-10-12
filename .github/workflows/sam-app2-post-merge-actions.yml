@@ -1,6 +1,7 @@
 name: SAM app 2 test and build and deploy
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
