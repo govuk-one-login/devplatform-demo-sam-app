@@ -246,7 +246,6 @@ Resources:
       StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
 
   RestApiGatewayMethod:
-    DependsOn: ApiGatewayVpcLink
     Type: AWS::ApiGateway::Method
     Properties:
       HttpMethod: GET
@@ -277,7 +276,6 @@ Resources:
           DataTraceEnabled: 'false'
 
   ApiGatewayVpcLink:
-    DependsOn: NetworkLoadBalancer
     Type: AWS::ApiGateway::VpcLink
     Properties:
       Description: Link from REST API Gateway to NetworkLoadBalancer
@@ -311,7 +309,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Source: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
 
   NetworkLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -342,7 +340,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Source: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
 
   # Application Load balancing
   #
@@ -371,7 +369,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Source: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
 
   ApplicationLoadBalancerTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -687,7 +685,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-KmsKey"
         - Key: Source
-          Source: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
   
   
   WAFv2ACLAssociation:
