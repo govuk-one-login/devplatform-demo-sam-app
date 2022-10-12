@@ -244,6 +244,14 @@ Resources:
     Properties:
       RestApiId: !Ref RestApiGateway
       StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
+      StageDescription:
+        CacheClusterEnabled: true
+        CacheClusterSize: 0.5
+        CacheDataEncrypted: true
+        CacheTtlInSeconds: 300
+        CachingEnabled: true
+
+
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
@@ -251,7 +259,7 @@ Resources:
       HttpMethod: GET
       ResourceId: !GetAtt RestApiGateway.RootResourceId
       RestApiId: !Ref RestApiGateway
-      AuthorizationType: NONE
+      AuthorizationType: CUSTOM
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
@@ -269,6 +277,11 @@ Resources:
         - "${AWS::StackName}-RestApiGatewayStage-${StackId}"
         - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
       RestApiId: !Ref RestApiGateway
+      AccessLogSetting:
+        DestinationArn: !Ref AccessLogsBucket
+        Format: $context.requestId $context.apiId 
+      CacheClusterEnabled: true
+      CacheClusterSize: 0.5
       MethodSettings:
         - ResourcePath: /
           HttpMethod: GET
