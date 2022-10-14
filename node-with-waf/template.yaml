@@ -255,11 +255,16 @@ Resources:
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_59"
+            comment: "API should have AuthorizationType if appropriate - this is intentionally public"
     Properties:
       HttpMethod: GET
       ResourceId: !GetAtt RestApiGateway.RootResourceId
       RestApiId: !Ref RestApiGateway
-      AuthorizationType: CUSTOM
+      AuthorizationType: NONE
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
@@ -278,7 +283,7 @@ Resources:
         - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
       RestApiId: !Ref RestApiGateway
       AccessLogSetting:
-        DestinationArn: !Ref AccessLogsBucket
+        DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
         Format: $context.requestId $context.apiId
       CacheClusterEnabled: true
       CacheClusterSize: 0.5
@@ -475,7 +480,7 @@ Resources:
   ApplicationCacheSubnetGroup:
     Type: AWS::ElastiCache::SubnetGroup
     Properties:
-      CacheSubnetGroupName: application-cache-subnet-group
+      CacheSubnetGroupName: node-with-waf-application-cache-subnet-group
       Description: Cache Subnet Group
       SubnetIds:
         - Fn::ImportValue:
@@ -509,7 +514,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt KmsKey.Arn
-      LogGroupName: elasticache-replication-group-logs
+      LogGroupName: noe-with-waf-elasticache-replication-group-logs
       RetentionInDays: 1
       Tags:
         - Key: Name
@@ -522,7 +527,7 @@ Resources:
   ApplicationAuthPass:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: elasticache-application
+      Name: node-with-waf-elasticache-application
       Description: Random password for elastiCache
       GenerateSecretString:
         ExcludeLowercase: false
