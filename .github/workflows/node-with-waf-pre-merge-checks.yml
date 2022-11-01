@@ -23,3 +23,12 @@ jobs:
           directory: node-with-waf/
           quiet: true
           output_format: cli
+
+      - name: Run Checkov on WAFv2
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.1805.0
+        with:
+          framework: cloudformation
+          directory: node-with-waf/WAFv2
+          quiet: true
+          output_format: cli

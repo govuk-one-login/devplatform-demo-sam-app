@@ -705,8 +705,8 @@ Resources:
           Value: !Sub "${AWS::StackName}-KmsKey"
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
-  
-  
+
+
   WAFv2ACLAssociation:
     Type: AWS::WAFv2::WebACLAssociation
     Properties:

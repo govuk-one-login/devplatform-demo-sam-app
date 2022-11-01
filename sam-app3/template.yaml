@@ -39,12 +39,12 @@ Parameters:
   PrivateSubnetA:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet A Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
 
   PrivateSubnetB:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet B Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
 
   VpcId:
     Type: AWS::SSM::Parameter::Value<String>

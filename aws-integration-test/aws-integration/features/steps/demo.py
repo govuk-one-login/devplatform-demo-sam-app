@@ -1,63 +1,57 @@
 import calendar
+import json
 import time
 from datetime import datetime
-import json
 
 import boto3
-from behave import given, when, then
+from behave import given, then, when
 
 
 @given("I have an event handler deployed")
 def step_impl(context):  # noqa: F811
-    client = boto3.client('lambda')
-    client.get_function(
-        FunctionName=context.config.userdata['EventHandlerLambdaArn']
-    )
+    client = boto3.client("lambda")
+    client.get_function(FunctionName=context.config.userdata["EventHandlerLambdaArn"])
 
 
-@when("I invoke with an audit message \"{text}\"")
+@when('I invoke with an audit message "{text}"')
 def step_impl(context, text):  # noqa: F811
-    client = boto3.client('lambda')
+    client = boto3.client("lambda")
     result = client.invoke(
-        FunctionName=context.config.userdata['EventHandlerLambdaArn'],
-        InvocationType='Event',
-        Payload=json.dumps({
-            "Message": text
-        })
+        FunctionName=context.config.userdata["EventHandlerLambdaArn"],
+        InvocationType="Event",
+        Payload=json.dumps({"Message": text}),
     )
-    assert result['StatusCode'] == 202
+    assert result["StatusCode"] == 202
 
 
-@then("The audit message \"{text}\" is emitted to a CloudWatch Log")
+@then('The audit message "{text}" is emitted to a CloudWatch Log')
 def step_impl(context, text):  # noqa: F811
-    client = boto3.client('logs')
+    client = boto3.client("logs")
     now = calendar.timegm(datetime.utcnow().timetuple())
     results = {}
     for queries in range(0, 5):
         query_id = client.start_query(
-            logGroupName=context.config.userdata['EventHandlerLambdaLogGroup'],
+            logGroupName=context.config.userdata["EventHandlerLambdaLogGroup"],
             startTime=now - (20 * 1000),
             endTime=now,
-            queryString=f'''
+            queryString=f"""
     fields @timestamp, Message
         | filter Message = "{text}"
         | sort @timestamp desc
         | limit 10
-    '''
+    """,
         )
         for tries in range(0, 5):
-            results = client.get_query_results(
-                queryId=query_id['queryId']
-            )
-            print(f'Query {queries}; Try {tries}')
-            if results['status'] == "Complete":
+            results = client.get_query_results(queryId=query_id["queryId"])
+            print(f"Query {queries}; Try {tries}")
+            if results["status"] == "Complete":
                 break
             time.sleep(2)
-        if len(results['results']) > 0:
+        if len(results["results"]) > 0:
             break
         time.sleep(5)
 
-    assert len(results['results']) > 0
+    assert len(results["results"]) > 0
 
 
 def get_last_modified_date(client, bucket_name):
@@ -65,22 +59,21 @@ def get_last_modified_date(client, bucket_name):
     now = datetime.utcnow()
 
     result = client.list_objects_v2(
-        Bucket=bucket_name,
-        Prefix=f'{now.year}/{now.month:02d}/{now.day:02d}/'
+        Bucket=bucket_name, Prefix=f"{now.year}/{now.month:02d}/{now.day:02d}/"
     )
 
     last_modified = None
-    for obj in result['Contents']:
-        if last_modified is None or last_modified < obj['LastModified']:
-            last_modified = obj['LastModified']
+    for obj in result["Contents"]:
+        if last_modified is None or last_modified < obj["LastModified"]:
+            last_modified = obj["LastModified"]
 
     return last_modified
 
 
 @then("The audit message is written to an S3 bucket")
 def step_impl(context):  # noqa: F811
-    bucket_name = context.config.userdata['AuditBucket']
-    client = boto3.client('s3')
+    bucket_name = context.config.userdata["AuditBucket"]
+    client = boto3.client("s3")
 
     last_modified = get_last_modified_date(client, bucket_name)
 
@@ -97,39 +90,36 @@ def step_impl(context):  # noqa: F811
 
 @given("I have an audit Firehose deployed")
 def step_impl(context):  # noqa: F811
-    firehose_name = context.config.userdata['AuditFirehose']
-    record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
-    client = boto3.client('lambda')
+    firehose_name = context.config.userdata["AuditFirehose"]
+    record_producer_lambda = context.config.userdata["RecordProducerLambdaArn"]
+    client = boto3.client("lambda")
     result = client.invoke(
         FunctionName=record_producer_lambda,
-        InvocationType='RequestResponse',
-        Payload=json.dumps({
-            "DeliveryStreamName": firehose_name,
-            "Type": "Describe"
-        })
+        InvocationType="RequestResponse",
+        Payload=json.dumps({"DeliveryStreamName": firehose_name, "Type": "Describe"}),
     )
-    assert result['StatusCode'] == 200
-    response = json.load(result['Payload'])
+    assert result["StatusCode"] == 200
+    response = json.load(result["Payload"])
     print(response)
-    assert response['DeliveryStreamDescription']['DeliveryStreamStatus'] == 'ACTIVE'
+    assert response["DeliveryStreamDescription"]["DeliveryStreamStatus"] == "ACTIVE"
 
 
-@when("I write the audit message \"{text}\" onto the Firehose")
+@when('I write the audit message "{text}" onto the Firehose')
 def step_impl(context, text):  # noqa: F811
-    firehose_name = context.config.userdata['AuditFirehose']
-    record_producer_lambda = context.config.userdata['RecordProducerLambdaArn']
-    client = boto3.client('lambda')
+    firehose_name = context.config.userdata["AuditFirehose"]
+    record_producer_lambda = context.config.userdata["RecordProducerLambdaArn"]
+    client = boto3.client("lambda")
     result = client.invoke(
         FunctionName=record_producer_lambda,
-        InvocationType='RequestResponse',
-        Payload=json.dumps({
-            "DeliveryStreamName": firehose_name,
-            "Type": "PutRecord",
-            "Data": {
-                "Message": text
+        InvocationType="RequestResponse",
+        Payload=json.dumps(
+            {
+                "DeliveryStreamName": firehose_name,
+                "Type": "PutRecord",
+                "Data": {"Message": text},
             }
-        })
+        ),
     )
-    assert result['StatusCode'] == 200
-    response = json.load(result['Payload'])
+    assert result["StatusCode"] == 200
+    response = json.load(result["Payload"])
     print(response)
