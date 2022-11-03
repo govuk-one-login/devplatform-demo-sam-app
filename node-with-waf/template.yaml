@@ -268,11 +268,15 @@ Resources:
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
-        ConnectionId: !Ref ApiGatewayVpcLink
+        ConnectionId:
+          Fn::ImportValue:
+            !Sub "${VpcStackName}-ApiGatewayVpcLinkId"
         IntegrationHttpMethod: GET
         Uri: !Sub
           - "http://${LBDNS}"
-          - LBDNS: !GetAtt NetworkLoadBalancer.DNSName
+          - LBDNS:
+              Fn::ImportValue:
+                !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLBDNS"
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
@@ -294,49 +298,15 @@ Resources:
           MetricsEnabled: 'true'
           DataTraceEnabled: 'false'
 
-  ApiGatewayVpcLink:
-    Type: AWS::ApiGateway::VpcLink
-    Properties:
-      Description: Link from REST API Gateway to NetworkLoadBalancer
-      Name: !Sub "${AWS::StackName}-ApiVpcLink"
-      TargetArns:
-        - !Ref NetworkLoadBalancer
-
-  # Network Load  balancing
-  #
-
-  NetworkLoadBalancer:
-    DependsOn: ApplicationLoadBalancer
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Scheme: internal
-      Type: network
-      Subnets:
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdA"
-        - Fn::ImportValue:
-            !Sub "${VpcStackName}-PrivateSubnetIdB"
-      LoadBalancerAttributes:
-        - Key: access_logs.s3.enabled
-          Value: "true"
-        - Key: access_logs.s3.bucket
-          Value: !Ref AccessLogsBucket
-
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-NetworkLoadBalancer"
-        - Key: Service
-          Value: ci/cd
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node-with-waf/template.yaml
-
   NetworkLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref NetworkLoadBalancerTargetGroup
-      LoadBalancerArn: !Ref NetworkLoadBalancer
+      LoadBalancerArn:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
       Port: 80
       Protocol: TCP
 
@@ -514,7 +484,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt KmsKey.Arn
-      LogGroupName: noe-with-waf-elasticache-replication-group-logs
+      LogGroupName: node-with-waf-elasticache-replication-group-logs
       RetentionInDays: 1
       Tags:
         - Key: Name
