@@ -21,10 +21,10 @@ jobs:
         working-directory: ./aws-integration-test/aws-integration
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ secrets.AWS_INTEGRATION_TEST_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
@@ -65,7 +65,7 @@ jobs:
         working-directory: ./aws-integration-test/app
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Python
         uses: actions/setup-python@v2
@@ -84,10 +84,10 @@ jobs:
         run: pip install 'poetry'
 
       - name: Set up SAM cli
-        uses: aws-actions/setup-sam@v1
+        uses: aws-actions/setup-sam@v2
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ secrets.AWS_INTEGRATION_TEST_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2

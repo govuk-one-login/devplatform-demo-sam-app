@@ -17,7 +17,7 @@ jobs:
 
       - name: Run Checkov
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.1805.0
+        uses: bridgecrewio/checkov-action@master
         with:
           framework: cloudformation
           directory: node-with-waf/
