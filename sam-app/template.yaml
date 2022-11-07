@@ -363,7 +363,7 @@ Resources:
       #     - Event: "s3:ObjectCreated:*"
       #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
       #     - Event: "s3:ObjectRestore:*"
-      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython" 
+      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
       Tags:
         - Key: Product
           Value: GOV.UK Sign In

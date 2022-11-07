@@ -4,7 +4,7 @@ This directory consists of a set of BDD integration tests that interact directly
 AWS resources (instead of automating a UI) to demonstrate how a stack can provide tests
 with the required permissions to do this and work around AWS limitations where necessary.
 
-The integration tests are written in Python using the Behave BDD framework and packaged 
+The integration tests are written in Python using the Behave BDD framework and packaged
 as a Docker image that can be used with the secure delivery pipelines.
 
 ## Running
@@ -36,7 +36,7 @@ recordproducerlambdaarn=$(aws cloudformation describe-stacks \
   --stack-name $stack_name \
   --query 'Stacks[0].Outputs[?OutputKey==`RecordProducerLambdaArn`].OutputValue' \
   --output text)
-  
+
 docker run -t \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
   -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
