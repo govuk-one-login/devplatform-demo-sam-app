@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   Creating SSM parameters based on ENVs using cloudformation mapping.
-
+  Managed by dev-platform
 
 Parameters:
   Environment:

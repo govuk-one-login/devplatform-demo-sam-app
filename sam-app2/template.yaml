@@ -1,9 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  sam-app2
-
-  Sample SAM Template for sam-app2
+  Sample SAM Template for sam-app2.
+  Managed by dev-platform
 
 Parameters:
   CodeSigningConfigArn:

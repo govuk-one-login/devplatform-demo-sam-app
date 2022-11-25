@@ -1,6 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
-  AWS Resource Based Integration Test
+  AWS Resource Based Integration Test template.
+  Managed by dev-platform
+
 Transform:
   - AWS::Serverless-2016-10-31
 
