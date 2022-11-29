@@ -63,6 +63,8 @@ Globals:
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
+    Layers:
+      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:21"
 
 Resources:
   APIGatewayAccessLogGroup:
@@ -168,6 +170,7 @@ Resources:
         Variables:
           PARAM1: VALUE
       Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
         - DynamoDBReadPolicy:
             TableName: !Ref HelloWorldTable
         - DynamoDBWritePolicy:
@@ -239,6 +242,8 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
