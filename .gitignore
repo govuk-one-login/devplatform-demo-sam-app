@@ -112,6 +112,7 @@ fabric.properties
 *.nar
 *.ear
 *.zip
+!sam-app/LambdaInsightsExtension/LambdaInsightsExtension-*.zip
 *.tar.gz
 *.rar
 

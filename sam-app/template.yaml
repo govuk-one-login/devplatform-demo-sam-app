@@ -51,9 +51,9 @@ Mappings:
       DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
 
   # see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html
-  LambdaInsightsExtAccountIds:
-    eu-west-2:
-      AccountId: 580247275435
+  # LambdaInsightsExtAccountIds:
+  #   eu-west-2:
+  #     AccountId: 580247275435
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -68,9 +68,7 @@ Globals:
       - !Ref AWS::NoValue
     Timeout: 20
     Layers:
-      - !Sub
-        - "arn:aws:lambda:${AWS::Region}:${LambdaInsightsExtAccountId}:layer:LambdaInsightsExtension:14"
-        - LambdaInsightsExtAccountId: !FindInMap [ LambdaInsightsExtAccountIds, !Ref AWS::Region, AccountId ]
+      - !Ref LambdaInsightsExtension
 
 Resources:
   APIGatewayAccessLogGroup:
@@ -99,6 +97,16 @@ Resources:
       DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
       FilterPattern: ""
       LogGroupName: !Ref APIGatewayAccessLogGroup
+
+  LambdaInsightsExtension:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: LambdaInsightsExtension/LambdaInsightsExtension-19c2a414-10d8-4fe5-80be-91cd17aa607d.zip
+      Description: CloudWatch Lambda Insights Extension
+      LayerName: LambdaInsightsExtension
+      LicenseInfo: Apache-2.0
+      CompatibleArchitectures:
+        - x86_64
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
