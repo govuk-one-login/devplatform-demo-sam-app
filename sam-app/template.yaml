@@ -50,6 +50,11 @@ Mappings:
     prod:
       DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
 
+  # see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html
+  LambdaInsightsExtAccountIds:
+    eu-west-2:
+      AccountId: 580247275435
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -62,6 +67,10 @@ Globals:
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
+    Layers:
+      - !Sub
+        - "arn:aws:lambda:${AWS::Region}:${LambdaInsightsExtAccountId}:layer:LambdaInsightsExtension:14"
+        - LambdaInsightsExtAccountId: !FindInMap [ LambdaInsightsExtAccountIds, !Ref AWS::Region, AccountId ]
 
 Resources:
   APIGatewayAccessLogGroup:
@@ -167,6 +176,7 @@ Resources:
         Variables:
           PARAM1: VALUE
       Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
         - DynamoDBReadPolicy:
             TableName: !Ref HelloWorldTable
         - DynamoDBWritePolicy:
@@ -238,6 +248,8 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      Policies:
+        - CloudWatchLambdaInsightsExecutionRolePolicy
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
