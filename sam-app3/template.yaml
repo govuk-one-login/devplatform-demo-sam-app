@@ -3,6 +3,8 @@ Description: >-
   ECS fargate example deployment template using blue green.
   Replace PLACEHOLDER_VPC_STACK_NAME with the VPC stack name.
   Replace CONTAINER-IMAGE-PLACEHOLDER with the ECR image arn.
+  Managed by dev-platform
+  
 Transform:
   - AWS::Serverless-2016-10-31
   - AWS::CodeDeployBlueGreen
