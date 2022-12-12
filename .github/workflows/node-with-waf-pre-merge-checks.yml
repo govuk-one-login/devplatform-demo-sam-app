@@ -25,7 +25,7 @@ jobs:
           output_format: cli
 
       - name: Run Checkov on WAFv2
-        id: checkov
+        id: checkovWAF
         uses: bridgecrewio/checkov-action@v12.1805.0
         with:
           framework: cloudformation
