@@ -154,6 +154,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -161,6 +162,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: Active
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -201,6 +203,7 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   CodeDeployServiceRole:
     Type: AWS::IAM::Role
@@ -226,6 +229,7 @@ Resources:
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       CodeUri: HelloWorldFunction2
       Handler: helloworld2.App2::handleRequest
@@ -233,6 +237,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: PassThrough
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -252,10 +257,12 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       FunctionName: !Join
         - "_"
@@ -290,6 +297,7 @@ Resources:
       Environment:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
+      ReservedConcurrentExecutions: 5
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -297,6 +305,8 @@ Resources:
         Service: backend
         Name: PreTrafficHook
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+
 
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
