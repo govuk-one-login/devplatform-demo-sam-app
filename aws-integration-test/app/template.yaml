@@ -159,16 +159,19 @@ Resources:
   EventHandlerLambda:
     Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116:This function is invoked by an API Gateway, a DLQ will offer no value
+    # checkov:skip=CKV_AWS_117: Internet access not required
+
     Properties:
       Handler: event-handler.lambda.lambda_handler
       CodeUri: event-handler
+      ReservedConcurrentExecutions: 5
       Policies:
         - AWSLambdaBasicExecutionRole
       KmsKeyArn: !GetAtt EnvVarKey.Arn
       Tags:
         Name: !Sub "${AWS::StackName}-EventHandlerLambda"
         Service: "aws-integration-test"
-        CheckovRulesToSkip: "CKV_AWS_116"
+        CheckovRulesToSkip: "CKV_AWS_116.CKV_AWS_117"
 
   EventHandlerTestGetFunctionPermission:
     Type: AWS::Lambda::Permission
