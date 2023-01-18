@@ -398,7 +398,7 @@ Resources:
   ApplicationParameterGroup:
     Type: AWS::ElastiCache::ParameterGroup
     Properties:
-      CacheParameterGroupFamily: redis6.x
+      CacheParameterGroupFamily: redis7
       Description: Hello! This is a nice description
       Properties:
         cluster-enabled: "yes"
@@ -571,6 +571,16 @@ Resources:
             Condition:
               StringEquals:
                 "aws:SourceAccount": !Ref AWS::AccountId
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Action:
+              - "s3:*"
+            Resource:
+              - !Sub "${AccessLogsBucket.Arn}/*"
+            Principal: "*"
+            Condition:
+              Bool:
+                "aws:SecureTransport": "false"
 
   KmsKey:
     Type: AWS::KMS::Key
