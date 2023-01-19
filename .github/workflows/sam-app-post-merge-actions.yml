@@ -85,6 +85,6 @@ jobs:
       - name: Deploy SAM app
         uses: alphagov/di-devplatform-upload-action@v2
         with:
-            artifact-bucket-name: ${{ secrets.SAM_APP_ARTIFACT_BUCKET_NAME }}
+            artifact-bucket-name: arn:aws:s3:::sbt001-test-pipeline-githubartifactsourcebucket-1tyean9n1dtzn
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
             working-directory: ./sam-app
