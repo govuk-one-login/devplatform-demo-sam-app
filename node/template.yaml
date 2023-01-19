@@ -414,7 +414,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       KmsKeyId: !GetAtt KmsKey.Arn
-      LogGroupName: elasticache-replication-group-logs
+      LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}-elasticache-replication-group-logs"
       RetentionInDays: 1
       Tags:
         - Key: Name
@@ -486,6 +486,7 @@ Resources:
   ApiGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
+      LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}"
       RetentionInDays: 7
       KmsKeyId: !GetAtt KmsKey.Arn
       Tags:
