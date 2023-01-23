@@ -47,7 +47,7 @@ Mappings:
       DomainName: "staging.demoapp.platform.sandpit.account.gov.uk"
     integration:
       DomainName: "integration.demoapp.platform.sandpit.account.gov.uk"
-    prod:
+    production:
       DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
