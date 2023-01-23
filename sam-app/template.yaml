@@ -47,7 +47,7 @@ Mappings:
       DomainName: "staging.demoapp.platform.sandpit.account.gov.uk"
     integration:
       DomainName: "integration.demoapp.platform.sandpit.account.gov.uk"
-    prod:
+    production:
       DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
@@ -339,8 +339,7 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
-    # checkov:skip=CKV_AWS_18: This is the accesslogs bucket, so it doesn't need access logging enabled.
-    # checkov:skip=CKV_AWS_21: Versioning should not be enabled on your accesslogs bucket.
+    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
     Type: "AWS::S3::Bucket"
     Properties:
       AccessControl: LogDeliveryWrite
@@ -357,6 +356,8 @@ Resources:
                       - Fn::Split:
                           - /
                           - Ref: AWS::StackId
+      VersioningConfiguration:
+        Status: Enabled
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -385,7 +386,7 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
         - Key: CheckovRulesToSkip
-          Value: "CKV_AWS_18.CKV_AWS_21"
+          Value: "CKV_AWS_18"
 
   # AccessLogsBucketPolicy:
   #   Type: AWS::S3::BucketPolicy
