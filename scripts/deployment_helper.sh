@@ -27,7 +27,8 @@ function sam_package() {
   sam package \
     --s3-bucket="$src_bucket_name" \
     --output-template-file=cf-template.yaml \
-    --signing-profiles HelloWorldFunction="$signing_profile_name"
+    --signing-profiles HelloWorldFunction="$signing_profile_name" \
+    --region="eu-west-2"
   echo "Adding provenance data"
   yq '.Resources.* | select(has("Type") and .Type == "AWS::Serverless::Function") | .Properties.CodeUri' cf-template.yaml \
     | xargs -L1 -I{} aws s3 cp "{}" "{}" --metadata $METADATA
@@ -59,8 +60,8 @@ function deploy() {
   local signing_profile_name="$4"
 
   login "$account"
-  build "$app_to_deploy"
-  package "$src_bucket_name" "$signing_profile_name"
+  sam_build "$app_to_deploy"
+  sam_package "$src_bucket_name" "$signing_profile_name"
   upload_to_s3 "$src_bucket_name"
 }
 
