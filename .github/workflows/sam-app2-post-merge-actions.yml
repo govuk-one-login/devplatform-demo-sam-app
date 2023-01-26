@@ -49,7 +49,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          role-to-assume: ${{ secrets.SAM_APP2_GH_ACTIONS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.SBT_SAM_APP2_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -61,6 +61,6 @@ jobs:
       - name: Deploy SAM app
         uses: alphagov/di-devplatform-upload-action@v2
         with:
-          artifact-bucket-name: ${{ secrets.SAM_APP2_ARTIFACT_BUCKET_NAME }}
+          artifact-bucket-name: ${{ secrets.SBT_SAM_APP_ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
           working-directory: ./sam-app2
