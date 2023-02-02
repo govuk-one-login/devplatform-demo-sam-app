@@ -243,16 +243,12 @@ Resources:
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
-    Metadata:
-      checkov:
-        skip:
-          - id: "CKV_AWS_59"
-            comment: "API should have AuthorizationType if appropriate - this is intentionally public"
     Properties:
       HttpMethod: GET
       ResourceId: !GetAtt RestApiGateway.RootResourceId
       RestApiId: !Ref RestApiGateway
       AuthorizationType: NONE
+      ApiKeyRequired: true                    # pragma: allowlist secret
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
@@ -286,6 +282,48 @@ Resources:
           MetricsEnabled: 'true'
           DataTraceEnabled: 'false'
           LoggingLevel: INFO
+
+  ApiGateWayApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref RestApiGateway
+          StageName: !Ref ApiGatewayStage
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-RestApiGateway-ApiKey"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
+  ApiKeyUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId: !Ref RestApiGateway
+          Stage: !Ref ApiGatewayStage
+      Quota:
+        Limit: 1000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 20
+        RateLimit: 10
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-RestApiKey-UsagePlan"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
+  ApiKeyUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref ApiGateWayApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref ApiKeyUsagePlan
 
   #
   # Rest api gateway vpc link
