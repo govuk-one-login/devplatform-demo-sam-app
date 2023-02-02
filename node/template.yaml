@@ -215,53 +215,116 @@ Resources:
   #
   # API Gateway
   #
-
-  ApiGateway:
-    Type: AWS::ApiGatewayV2::Api
+  #
+  RestApiGateway:
+    Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: node-server-endpoint
-      ProtocolType: HTTP
+      Name: !Sub "${AWS::StackName}-RestApiGateway"
       Tags:
-        Name: !Sub "${AWS::StackName}-ApiGateway"
-        Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-RestApiGateway"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
-  ApiGatewayIntegration:
-    Type: AWS::ApiGatewayV2::Integration
+  ApiGatewayDeployment:
+    DependsOn: RestApiGatewayMethod
+    Type: AWS::ApiGateway::Deployment
     Properties:
-      ApiId: !Ref ApiGateway
-      IntegrationType: HTTP_PROXY
-      ConnectionId:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-VpcLinkId"
-      ConnectionType: VPC_LINK
-      IntegrationMethod: ANY
-      IntegrationUri: !Ref ApplicationLoadBalancerListener
-      PayloadFormatVersion: 1.0
+      RestApiId: !Ref RestApiGateway
+      StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
+      StageDescription:
+        CacheClusterEnabled: true
+        CacheClusterSize: 0.5
+        CacheDataEncrypted: true
+        CacheTtlInSeconds: 300
+        CachingEnabled: true
 
-  ApiRoute:
-    Type: AWS::ApiGatewayV2::Route
+  RestApiGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_59"
+            comment: "API should have AuthorizationType if appropriate - this is intentionally public"
     Properties:
-      ApiId: !Ref ApiGateway
-      RouteKey: "ANY /{proxy+}"
-      Target: !Sub "integrations/${ApiGatewayIntegration}"
+      HttpMethod: GET
+      ResourceId: !GetAtt RestApiGateway.RootResourceId
+      RestApiId: !Ref RestApiGateway
+      AuthorizationType: NONE
+      Integration:
+        Type: HTTP_PROXY
+        ConnectionType: VPC_LINK
+        ConnectionId:
+          Fn::ImportValue:
+            !Sub "${VpcStackName}-ApiGatewayVpcLinkId"
+        IntegrationHttpMethod: GET
+        Uri: !Sub
+          - "http://${LBDNS}"
+          - LBDNS:
+              Fn::ImportValue:
+                !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLBDNS"
 
-  ApiDefaultStage:
-    Type: AWS::ApiGatewayV2::Stage
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
     Properties:
-      ApiId: !Ref ApiGateway
-      StageName: "$default"
-      AutoDeploy: true
-      AccessLogSettings:
-        Format: "$context.requestId $context.httpMethod $context.path"
+      DeploymentId: !Ref ApiGatewayDeployment
+      StageName: !Sub
+        - "${AWS::StackName}-RestApiGatewayStage-${StackId}"
+        - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
+      RestApiId: !Ref RestApiGateway
+      AccessLogSetting:
         DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
-      Tags:
-        Name: !Sub "${AWS::StackName}-ApiDefaultStage"
-        Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        Format: $context.extendedRequestId $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
+      CacheClusterEnabled: true
+      CacheClusterSize: 0.5
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: /
+          HttpMethod: GET
+          MetricsEnabled: 'true'
+          DataTraceEnabled: 'false'
+          LoggingLevel: INFO
 
   #
-  # Load balancing
+  # Rest api gateway vpc link
+  #
+
+  NetworkLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref NetworkLoadBalancerTargetGroup
+      LoadBalancerArn:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
+      Port: 80
+      Protocol: TCP
+
+  NetworkLoadBalancerTargetGroup:
+    DependsOn: ApplicationLoadBalancerListener
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AWS::StackName}-NLBTarGrp"
+      Port: 80
+      Protocol: TCP
+      Targets:
+        - Id: !Ref ApplicationLoadBalancer
+      TargetType: alb
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-NLBTarGrp"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
+  # Application Load balancing
   #
 
   ApplicationLoadBalancer:
@@ -357,7 +420,9 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp: 10.0.0.0/16
+      CidrIp:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcCidr"
       Description: Allow traffic from the VPC on port 80
       IpProtocol: tcp
       FromPort: 80
@@ -380,7 +445,7 @@ Resources:
   ApplicationCacheSubnetGroup:
     Type: AWS::ElastiCache::SubnetGroup
     Properties:
-      CacheSubnetGroupName: application-cache-subnet-group
+      CacheSubnetGroupName: !Sub "${AWS::StackName}-application-cache-subnet-group"
       Description: Cache Subnet Group
       SubnetIds:
         - Fn::ImportValue:
@@ -427,7 +492,7 @@ Resources:
   ApplicationAuthPass:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: elasticache-application
+      Name: !Sub "${AWS::StackName}-elasticache-application"
       Description: Random password for elastiCache
       GenerateSecretString:
         ExcludeLowercase: false
@@ -495,7 +560,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
   AccessLogsBucket:
     Type: AWS::S3::Bucket
@@ -617,7 +682,101 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
 
+  WAFv2ACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      DefaultAction:
+        Block: {}
+      Scope: REGIONAL
+      Rules:
+        # Optional rule set to restrict to GDS IP addresses.
+        # See WAFv2GDSIPSet resource further on.
+        - Name: GDSIPs
+          Action:
+            Allow: {}
+          Priority: 10
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt WAFv2GDSIPSet.Arn
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWMManagedRuleCommonRuleSet
+          OverrideAction:
+            None: {}
+          Priority: 20
+          Statement:
+            ManagedRuleGroupStatement:
+              Name: AWSManagedRulesCommonRuleSet
+              VendorName: AWS
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 30
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
+            SampledRequestsEnabled: FALSE
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: TRUE
+        MetricName: !Sub "${AWS::StackName}-WAFv2-hits"
+        SampledRequestsEnabled: FALSE
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
+# The IP address blocks below are referenced from here:
+# https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
+  WAFv2GDSIPSet:
+    Type: AWS::WAFv2::IPSet
+    Properties:
+      Addresses:
+        - "213.86.153.211/32"
+        - "213.86.153.212/32"
+        - "213.86.153.213/32"
+        - "213.86.153.214/32"
+        - "213.86.153.231/32"
+        - "213.86.153.235/32"
+        - "213.86.153.236/32"
+        - "213.86.153.237/32"
+        - "85.133.67.244/32"
+        - "51.149.8.0/25"
+        - "51.149.8.128/29"
+      IPAddressVersion: IPV4
+      Scope: REGIONAL
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+
+  WAFv2ACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub
+        - "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApiGateway}/stages/${ApiStage}"
+        - ApiStage: !Ref ApiGatewayStage #This is the hack to allow the API Gateway stage to be created before the association occurs.
+      WebACLArn: !GetAtt WAFv2ACL.Arn
+
 Outputs:
   ApiGatewayEndpoint:
     Description: The base URI for this application.
-    Value: !GetAtt ApiGateway.ApiEndpoint
+    Value: !Sub
+      - "https://${restapi_id}.execute-api.${AWS::Region}.amazonaws.com/${stage_name}/"
+      - restapi_id: !Ref RestApiGateway
+        stage_name: !Ref ApiGatewayStage
