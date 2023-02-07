@@ -1,4 +1,4 @@
-# node-fargate-app
+# Reference fargate app
 
 This project contains source code and supporting files for a fargate application, and ElastiCache clusters that you can deploy with the SAM CLI. It includes the following files and folders.
 
@@ -11,28 +11,55 @@ You can update the template to add AWS resources through the same deployment pro
 ## Deploy the sample application with the CLI
 
 - Follow the steps 1-3 of [How to deploy a container to Fargate with secure pipelines][1] docs to create a VPC, a pipeline and an ECR repo.
-- From the outputs of the pipeline and ECR, copy the `GitHubArtifactSourceBucketName` and the `ContainerRepositoryUri`
-- Add a tag to the `ContainerRepositoryUri` as shown in the example below
-- Use the [deployment_helper.sh][2] to package and upload the fargate app into s3
+- From the outputs of the pipeline, ECR and container-signer stacks, you would require the `GitHubArtifactSourceBucketName`, the `ContainerRepositoryUri` and the `ContainerSignerKmsKeyArn`
+- Checkout [di-devplatform-upload-action-ecr][2] repository. Use the [build-tag-push-ecr.sh][3] script to package and upload the fargate app to s3
 
-example use of the script:
+Example use of the script from the root directory of this repo:
+
 ```
-#!/usr/bin/env bash
+eval $(gds aws <AWS Account Alias> -e)
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com
 
-set -e -ou pipefail
+export ECR_REGISTRY=<AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com
+export ECR_REPO_NAME=<Use the ContainerRepositoryUri output from the ECR stack>
 
-source scripts/deployment_helper.sh
+export CONTAINER_SIGN_KMS_KEY_ARN=<Use the ContainerSignerKmsKeyArn output from the container-signer stack>
+export ARTIFACT_BUCKET_NAME=<Use the GitHubArtifactSourceBucketName output from the pipeline stack>
 
-ARTIFACT_BUCKET="{GitHubArtifactSourceBucketName}"
-CONTAINER_IMAGE="{ContainerRepositoryUri}:{tag}"
+export GITHUB_REPOSITORY=di-devplatform-demo-sam-app
+export GITHUB_SHA=$(git rev-parse HEAD)
 
-login "{gds_role_to_assume}"
+export WORKING_DIRECTORY=node
+export TEMPLATE_FILE=template.yaml
 
-cd {fargate_app_directory}
+<Path to di-devplatform-upload-action-ecr repo>/scripts/build-tag-push-ecr.sh
+```
 
-fargate_package $ARTIFACT_BUCKET $CONTAINER_IMAGE
-upload_to_s3 $ARTIFACT_BUCKET
+### Gotchas
+
+A few gotchas when running [build-tag-push-ecr.sh][3] on a Macbook:
+
+If using a Macbook with M1+ chip, ensure the docker image is built for platform to `linux/amd64`. Several ways to achieve that:
+1. Manually edit the docker build line in [build-tag-push-ecr.sh][3] to:
+```
+    docker buildx build --platform linux/amd64 -t "$ECR_REGISTRY/$ECR_REPO_NAME:$GITHUB_SHA" .
+```
+2. Set environment variable `DOCKER_DEFAULT_PLATFORM` for docker commands that take the --platform flag
+```
+    export DOCKER_DEFAULT_PLATFORM=linux/amd64
+```
+
+Additionally `sed` command with -i option fails on MacOS version of `sed`. Several ways to overcome this:
+1. Install gnu-sed and replace
+```
+    brew install gnu-sed
+    alias sed=gsed
+```
+2. Manually edit the sed -i in [build-tag-push-ecr.sh][3] to:
+```
+    sed -i '.bak' "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPO_NAME:$GITHUB_SHA|" cf-template.yaml
 ```
 
 [1]: https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3107258369/How+to+deploy+a+container+to+Fargate+with+secure+pipelines
-[2]: /scripts/deployment_helper.sh
+[2]: https://github.com/alphagov/di-devplatform-upload-action-ecr
+[3]: https://github.com/alphagov/di-devplatform-upload-action-ecr/blob/main/scripts/build-tag-push-ecr.sh
