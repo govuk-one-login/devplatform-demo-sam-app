@@ -1,4 +1,4 @@
-FROM node:12.22-alpine
+FROM --platform=linux/amd64 node:lts-slim
 ENV NODE_ENV=production
 
 WORKDIR /app
