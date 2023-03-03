@@ -29,7 +29,7 @@ jobs:
             ${{ runner.os }}-pip3.9-
 
       - name: Install linters
-        run: pip install 'cfn-lint~=0.72.3' 'poetry~=0.12.17' 'checkov~=2.2.130'
+        run: pip install 'cfn-lint~=0.74.0' 'poetry~=0.12.17' 'checkov~=2.2.130'
 
       - name: Lint templates
         run: '.github/scripts/lint.sh'
