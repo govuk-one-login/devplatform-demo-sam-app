@@ -21,7 +21,7 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 resource "aws_lambda_function" "helloworld_lambda" {
-  filename      = "../HelloWorldFunction/build/libs/HelloWorldFunction.jar"
+  filename      = "../../HelloWorldFunction/build/libs/HelloWorldFunction.jar"
   function_name = "helloworld_lambda-${random_id.id.hex}"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "helloworld.App::handleRequest"

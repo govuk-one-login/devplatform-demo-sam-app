@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "state" {
   bucket        = "di-devplatform-state-bucket"
-  force_destroy = false
+  force_destroy = var.force_destroy
 
   lifecycle {
     ignore_changes = [
