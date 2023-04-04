@@ -19,7 +19,7 @@ The commit code into GitHub. The pipeline will update the deployed stack.
 
 ### Locally
 
-After the pipeline is provisioned, the test container can be pushed. 
+After the pipeline is provisioned, the test container can be pushed.
 See [../aws-integration](../aws-integration).
 
 Finally, the stack can be deployed:

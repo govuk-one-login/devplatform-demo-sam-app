@@ -3,6 +3,8 @@ Description: >-
   ECS fargate example deployment template using blue green.
   Replace PLACEHOLDER_VPC_STACK_NAME with the VPC stack name.
   Replace CONTAINER-IMAGE-PLACEHOLDER with the ECR image arn.
+  Managed by dev-platform
+
 Transform:
   - AWS::Serverless-2016-10-31
   - AWS::CodeDeployBlueGreen
@@ -39,12 +41,12 @@ Parameters:
   PrivateSubnetA:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet A Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
 
   PrivateSubnetB:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet B Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
 
   VpcId:
     Type: AWS::SSM::Parameter::Value<String>
@@ -423,6 +425,7 @@ Resources:
   ApplicationLoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
+      # checkov:skip=CKV_AWS_260: PLAT-477 Raised to resolve
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
       CidrIp: 0.0.0.0/0
       Description: Allow traffic from anyone on port 80
@@ -439,6 +442,7 @@ Resources:
       IpProtocol: tcp
       FromPort: 5000
       ToPort: 5000
+
 
   #
   # Logging

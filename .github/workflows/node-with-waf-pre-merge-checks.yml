@@ -1,0 +1,34 @@
+name: Node with waf server template check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Run Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          framework: cloudformation
+          directory: node-with-waf/
+          quiet: true
+          output_format: cli
+
+      - name: Run Checkov on WAFv2
+        id: checkovWAF
+        uses: bridgecrewio/checkov-action@v12.1805.0
+        with:
+          framework: cloudformation
+          directory: node-with-waf/WAFv2
+          quiet: true
+          output_format: cli

@@ -4,7 +4,7 @@
 default_stages: [commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v4.4.0
     hooks:
       - id: detect-private-key
       - id: detect-aws-credentials
@@ -45,7 +45,7 @@ repos:
       - id: flake8
         exclude: ^.*\.aws-sam.*$
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
         name: isort (python)
@@ -58,12 +58,12 @@ repos:
         args: ['--verbose']
         verbose: true  # print warnings
   - repo: https://github.com/aws-cloudformation/cfn-python-lint
-    rev: v0.58.1
+    rev: v0.74.0
     hooks:
       - id: cfn-python-lint
         files: ^(?!\..*).*/template\.(json|yml|yaml)$
   - repo: https://github.com/bridgecrewio/checkov.git
-    rev: '2.0.917'
+    rev: '2.2.130'
     hooks:
       - id: checkov
         args: ['--framework', 'cloudformation', '--quiet']

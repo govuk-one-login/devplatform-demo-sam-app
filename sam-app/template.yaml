@@ -1,9 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  demo-sam-app
-
-  Sample SAM Template for demo-sam-app
+  Sample SAM Template for demo-sam-app.
+  Managed by dev-platform
 
 Parameters:
   CodeSigningConfigArn:
@@ -48,7 +47,7 @@ Mappings:
       DomainName: "staging.demoapp.platform.sandpit.account.gov.uk"
     integration:
       DomainName: "integration.demoapp.platform.sandpit.account.gov.uk"
-    prod:
+    production:
       DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
@@ -155,6 +154,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -162,6 +162,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: Active
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -202,6 +203,7 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   CodeDeployServiceRole:
     Type: AWS::IAM::Role
@@ -227,6 +229,7 @@ Resources:
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       CodeUri: HelloWorldFunction2
       Handler: helloworld2.App2::handleRequest
@@ -234,6 +237,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: PassThrough
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -253,10 +257,12 @@ Resources:
         Service: backend
         Name: HelloWorldFunction
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   PreTrafficHook:
     Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Properties:
       FunctionName: !Join
         - "_"
@@ -291,6 +297,7 @@ Resources:
       Environment:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
+      ReservedConcurrentExecutions: 5
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -298,6 +305,8 @@ Resources:
         Service: backend
         Name: PreTrafficHook
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+
 
   HelloWorldTable:
     Type: AWS::DynamoDB::Table
@@ -330,8 +339,7 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
-    # checkov:skip=CKV_AWS_18: This is the accesslogs bucket, so it doesn't need access logging enabled.
-    # checkov:skip=CKV_AWS_21: Versioning should not be enabled on your accesslogs bucket.
+    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
     Type: "AWS::S3::Bucket"
     Properties:
       AccessControl: LogDeliveryWrite
@@ -348,6 +356,8 @@ Resources:
                       - Fn::Split:
                           - /
                           - Ref: AWS::StackId
+      VersioningConfiguration:
+        Status: Enabled
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -363,7 +373,7 @@ Resources:
       #     - Event: "s3:ObjectCreated:*"
       #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
       #     - Event: "s3:ObjectRestore:*"
-      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython" 
+      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
       Tags:
         - Key: Product
           Value: GOV.UK Sign In
@@ -376,7 +386,7 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
         - Key: CheckovRulesToSkip
-          Value: "CKV_AWS_18.CKV_AWS_21"
+          Value: "CKV_AWS_18"
 
   # AccessLogsBucketPolicy:
   #   Type: AWS::S3::BucketPolicy

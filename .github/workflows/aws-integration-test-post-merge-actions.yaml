@@ -21,10 +21,10 @@ jobs:
         working-directory: ./aws-integration-test/aws-integration
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ secrets.AWS_INTEGRATION_TEST_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
@@ -39,7 +39,7 @@ jobs:
           cosign-release: 'v1.9.0'
 
       - name: Cache Image Layers
-        uses: satackey/action-docker-layer-caching@v0.0.11
+        uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
 
       - name: Build, tag, and push testing image to Amazon ECR
@@ -65,10 +65,10 @@ jobs:
         working-directory: ./aws-integration-test/app
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -84,10 +84,10 @@ jobs:
         run: pip install 'poetry'
 
       - name: Set up SAM cli
-        uses: aws-actions/setup-sam@v1
+        uses: aws-actions/setup-sam@v2
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ secrets.AWS_INTEGRATION_TEST_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
@@ -99,7 +99,7 @@ jobs:
         run: ./build.sh
 
       - name: Deploy
-        uses: alphagov/di-devplatform-upload-action@v2
+        uses: alphagov/di-devplatform-upload-action@v3.1-beta
         with:
           artifact-bucket-name: ${{ secrets.AWS_INTEGRATION_TEST_ARTIFACT_SOURCE_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}

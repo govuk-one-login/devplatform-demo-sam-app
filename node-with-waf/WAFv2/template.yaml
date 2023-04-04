@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: >
+  WAFv2 template.
+  Managed by dev-platform
+
+Resources:
+  WAFv2ACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      DefaultAction:
+        Block: {}
+      Scope: REGIONAL
+      Rules:
+        # Optional rule set to restrict to GDS IP addresses.
+        # See WAFv2GDSIPSet resource further on.
+        - Name: GDSIPs
+          Action:
+            Allow: {}
+          Priority: 10
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt WAFv2GDSIPSet.Arn
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWMManagedRuleCommonRuleSet
+          OverrideAction:
+            None: {}
+          Priority: 20
+          Statement:
+            ManagedRuleGroupStatement:
+              Name: AWSManagedRulesCommonRuleSet
+              VendorName: AWS
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 30
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
+            SampledRequestsEnabled: FALSE
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: TRUE
+        MetricName: !Sub "${AWS::StackName}-WAFv2-hits"
+        SampledRequestsEnabled: FALSE
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2"
+        - Key: Service
+          Value: "ci/cd"
+        - Key: Source
+          Value: "alphagov/di-devplatform-deploy/WAFv2/template.yaml"
+
+# The IP address blocks below are referenced from here:
+# https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
+  WAFv2GDSIPSet:
+    Type: AWS::WAFv2::IPSet
+    Properties:
+      Addresses:
+        - "213.86.153.211/32"
+        - "213.86.153.212/32"
+        - "213.86.153.213/32"
+        - "213.86.153.214/32"
+        - "213.86.153.231/32"
+        - "213.86.153.235/32"
+        - "213.86.153.236/32"
+        - "213.86.153.237/32"
+        - "85.133.67.244/32"
+        - "51.149.8.0/25"
+        - "51.149.8.128/29"
+      IPAddressVersion: IPV4
+      Scope: REGIONAL
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
+        - Key: Service
+          Value: "identity-broker"
+        - Key: Source
+          Value: "alphagov/di-devplatform-deploy/WAFv2/template.yaml"
+
+Outputs:
+  WAFv2ACLArn:
+    Description: The ARN of the ACL to associate with the REST API Gateway
+    Value: !GetAtt WAFv2ACL.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-Arn"
+
+  WAFv2ACLArnDEPRECATED:
+    Description: The ARN of the ACL to associate with the REST API Gateway DEPRECATED - Left for compatibility.
+    Value: !GetAtt WAFv2ACL.Arn
+    Export:
+      Name: !Sub "WAFv2ACLArn"
+
+# The following is the resource to add to the application's
+# template.yaml to associate the REST API Gateway with this WAF.
+#
+#WAFv2ACLAssociation:
+#  Type: AWS::WAFv2::WebACLAssociation
+#  Properties:
+#    ResourceArn: !Sub
+#      - "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApi}/stages/${ApiStage}"
+#      - ApiStage: !Ref RestApi.Stage #This is the hack to allow the API Gateway stage to be created before the association occurs.
+#    WebACLArn: !ImportValue '<WAFv2ACL STACK NAME>-Arn'

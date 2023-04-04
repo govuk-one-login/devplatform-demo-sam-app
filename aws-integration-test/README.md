@@ -14,9 +14,9 @@ The example application demonstrates use of this feature.
 ![Diagram showing the demo application](./demo.png "Demo Application")
 
 The [SAM template](app/template.yaml) for this application uses the
-`TestRoleArn` to grant permissions to get and invoke the test Lambda 
-and adds permissions to read the S3 bucket. It also provisions a test 
-Lambda to perform the `firehose:PutRecord` action as there are no 
+`TestRoleArn` to grant permissions to get and invoke the test Lambda
+and adds permissions to read the S3 bucket. It also provisions a test
+Lambda to perform the `firehose:PutRecord` action as there are no
 resource-based policies for working with Firehose.
 
 The [integration test](aws-integration) uses the permissions to run
@@ -29,7 +29,7 @@ Feature: demo
   When  I invoke with an audit message "Hello World"
   Then  The audit message "Hello World" is emitted to a CloudWatch Log
   And   The audit message is written to an S3 Bucket
-  
+
   Scenario: Put Records via Firehose
   Given I have a audit Firehose deployed
   When  I write the audit message "This is the Firehose" onto the Firehose
