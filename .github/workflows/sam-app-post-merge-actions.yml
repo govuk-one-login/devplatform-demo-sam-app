@@ -83,7 +83,7 @@ jobs:
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
 
       - name: Deploy SAM app
-        uses: alphagov/di-devplatform-upload-action@v2
+        uses: alphagov/di-devplatform-upload-action@v3-beta
         with:
             artifact-bucket-name: ${{ secrets.SAM_APP_ARTIFACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
