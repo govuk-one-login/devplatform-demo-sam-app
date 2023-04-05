@@ -9,6 +9,14 @@ Transform:
   - AWS::Serverless-2016-10-31
   - AWS::CodeDeployBlueGreen
 
+Metadata:
+  cfn-lint:
+    config:
+      regions:
+        - eu-west-2
+      ignore_checks:
+        - W2001 #Present currently because VpcId is deprecated in favour of using !ImportValue from the VpcStackName
+
 Hooks:
   CodeDeployBlueGreenHook:
     Properties:
@@ -303,7 +311,7 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId: 
+      VpcId:
         Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
@@ -329,7 +337,7 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId: 
+      VpcId:
         Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
@@ -421,7 +429,7 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId: 
+      VpcId:
         Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
@@ -436,7 +444,8 @@ Resources:
     Properties:
       # checkov:skip=CKV_AWS_260: PLAT-477 Raised to resolve
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp: Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
+      CidrIp:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
       Description: Allow traffic from anyone on port 80
       IpProtocol: tcp
       FromPort: 80
