@@ -9,6 +9,14 @@ Transform:
   - AWS::Serverless-2016-10-31
   - AWS::CodeDeployBlueGreen
 
+Metadata:
+  cfn-lint:
+    config:
+      regions:
+        - eu-west-2
+      ignore_checks:
+        - W2001 #Present currently because VpcId is deprecated in favour of using !ImportValue from the VpcStackName
+
 Hooks:
   CodeDeployBlueGreenHook:
     Properties:
@@ -38,6 +46,11 @@ Hooks:
     Type: 'AWS::CodeDeploy::BlueGreen'
 
 Parameters:
+  VpcStackName:
+    Description: "The name of the VPC to deploy to"
+    Type: "String"
+    Default: "none"
+
   PrivateSubnetA:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet A Id
@@ -48,7 +61,7 @@ Parameters:
     Description: Private Subnet B Id
     Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
 
-  VpcId:
+  VpcId: # Deprecated in favour of !ImportValue
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Id
     Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
@@ -134,7 +147,8 @@ Resources:
           IpProtocol: tcp
           FromPort: 5000
           ToPort: 5000
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerServiceSecurityGroup"
@@ -297,7 +311,8 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -322,7 +337,8 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -413,7 +429,8 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId: !Ref VpcId
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerSecurityGroup"
@@ -427,7 +444,8 @@ Resources:
     Properties:
       # checkov:skip=CKV_AWS_260: PLAT-477 Raised to resolve
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp: 0.0.0.0/0
+      CidrIp:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
       Description: Allow traffic from anyone on port 80
       IpProtocol: tcp
       FromPort: 80
