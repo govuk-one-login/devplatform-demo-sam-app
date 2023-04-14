@@ -61,6 +61,8 @@ Resources:
         - x86_64
       MemorySize: 512
       ReservedConcurrentExecutions: 5
+      Layers:
+        - !Ref DynatraceLayer
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -318,6 +320,19 @@ Resources:
       LogDestinationConfigs:
         - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HelloWafLogGroup}"
       ResourceArn: !GetAtt HelloWaf.Arn
+
+
+  ### This needs documenting for Java, nodejs .etc on a wiki
+  DynatraceLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      CompatibleArchitectures:
+        - x86_64
+      CompatibleRuntimes:
+        - java11
+      ContentUri:  s3://devtest-template/dynatrace-java.zip # We need a process for updating this path via a github action into a CT build account to host dynatrace zips on S3.
+      Description: This is the java dynatrace layer
+      RetentionPolicy: Retain
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
