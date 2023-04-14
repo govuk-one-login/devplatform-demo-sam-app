@@ -39,6 +39,15 @@ Globals:
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
+    Environment:
+      Variables:
+        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+        ### These secrets are centrally hosted in the Dynatrace Account, access is limited to Lambdas running in GDS/OneLogin organisations.
+        DT_TENANT: '{{resolve:secretsmanager:arn:aws:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:TENANT-Mwijbg:SecretString:DT_TENANT}}'
+        DT_CLUSTER_ID: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:CLUSTER_ID-QxYUXm:SecretString:DT_CLUSTER_ID}}'
+        DT_CONNECTION_BASE_URL: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:BASE_URL-t11vcr:SecretString:DT_CONNECTION_BASE_URL}}'
+        DT_CONNECTION_AUTH_TOKEN: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:AUTH_TOKEN-Ft7ksP:SecretString:DT_CONNECTION_AUTH_TOKEN}'
+        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: true
 
 Resources:
   HelloWorldFunction:
@@ -59,7 +68,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 2048
       ReservedConcurrentExecutions: 5
       Layers:
         - !Ref DynatraceLayer
