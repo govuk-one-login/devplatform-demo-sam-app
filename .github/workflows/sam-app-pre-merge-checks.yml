@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
+      checks: write
       id-token: write
       contents: read
     steps:
@@ -52,6 +53,20 @@ jobs:
       - name: Build lambda2
         run: ./gradlew clean build
         working-directory: ./sam-app/HelloWorldFunction2
+
+      - name: Test lambda1
+        run: ./gradlew clean test
+        working-directory: ./sam-app/HelloWorldFunction
+
+      - name: Test lambda2
+        run: ./gradlew clean test
+        working-directory: ./sam-app/HelloWorldFunction2
+        
+      - name: Publish test results
+        uses: mikepenz/action-junit-report@959aefb7f095e717eb407fe917238d61ca323ff3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
 
       - name: SAM validate
         run: sam validate
