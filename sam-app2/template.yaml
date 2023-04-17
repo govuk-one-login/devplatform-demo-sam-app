@@ -339,7 +339,7 @@ Resources:
         - x86_64
       CompatibleRuntimes:
         - java11
-      ContentUri:  s3://devtest-template/dynatrace-java.zip # We need a process for updating this path via a github action into a CT build account to host dynatrace zips on S3.
+      ContentUri:  s3://devtest-template/dynatrace-java.zip # We need a process for updating this path via a github action into a CT build account to host dynatrace zips on S3.  These zips will also need to be signed by the CT codesigner.  
       Description: This is the java dynatrace layer
       RetentionPolicy: Retain
 
