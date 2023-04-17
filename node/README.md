@@ -37,19 +37,8 @@ export TEMPLATE_FILE=template.yaml
 
 ### Gotchas
 
-A few gotchas when running [build-tag-push-ecr.sh][3] on a Macbook:
+When running [build-tag-push-ecr.sh][3] on MacOS, the `sed` command with -i option fails. There are two workarounds:
 
-If using a Macbook with M1+ chip, ensure the docker image is built for platform to `linux/amd64`. Several ways to achieve that:
-1. Manually edit the docker build line in [build-tag-push-ecr.sh][3] to:
-```
-    docker buildx build --platform linux/amd64 -t "$ECR_REGISTRY/$ECR_REPO_NAME:$GITHUB_SHA" .
-```
-2. Set environment variable `DOCKER_DEFAULT_PLATFORM` for docker commands that take the --platform flag
-```
-    export DOCKER_DEFAULT_PLATFORM=linux/amd64
-```
-
-Additionally `sed` command with -i option fails on MacOS version of `sed`. Several ways to overcome this:
 1. Install gnu-sed and replace
 ```
     brew install gnu-sed
