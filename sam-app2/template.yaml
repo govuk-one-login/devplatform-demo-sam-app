@@ -47,7 +47,7 @@ Globals:
         DT_CLUSTER_ID: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:CLUSTER_ID-QxYUXm:SecretString:DT_CLUSTER_ID}}'
         DT_CONNECTION_BASE_URL: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:BASE_URL-t11vcr:SecretString:DT_CONNECTION_BASE_URL}}'
         DT_CONNECTION_AUTH_TOKEN: '{{resolve:secretsmanager:arn:aws:secretsmanager:eu-west-2:074300971915:secret:AUTH_TOKEN-Ft7ksP:SecretString:DT_CONNECTION_AUTH_TOKEN}'
-        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: true
+        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
 
 Resources:
   HelloWorldFunction:
