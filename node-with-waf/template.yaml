@@ -246,11 +246,11 @@ Resources:
       RestApiId: !Ref RestApiGateway
       StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
       StageDescription:
-        CacheClusterEnabled: true
-        CacheClusterSize: 0.5
-        CacheDataEncrypted: true
-        CacheTtlInSeconds: 300
-        CachingEnabled: true
+        CacheClusterEnabled: false
+        # CacheClusterSize: 0.5
+        CacheDataEncrypted: false
+        # CacheTtlInSeconds: 300
+        CachingEnabled: false
 
 
 
@@ -281,6 +281,7 @@ Resources:
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
+    # checkov:skip=CKV_AWS_120: API caching is not the programme approved way
     Properties:
       DeploymentId: !Ref ApiGatewayDeployment
       StageName: !Sub
@@ -290,8 +291,8 @@ Resources:
       AccessLogSetting:
         DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
         Format: $context.requestId $context.apiId
-      CacheClusterEnabled: true
-      CacheClusterSize: 0.5
+      CacheClusterEnabled: false
+      # CacheClusterSize: 0.5
       TracingEnabled: true
       MethodSettings:
         - ResourcePath: /

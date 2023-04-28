@@ -93,13 +93,14 @@ Resources:
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
+    # checkov:skip=CKV_AWS_120: API caching is not the programme approved way
     Properties:
       StageName: Prod
       AccessLogSetting:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
-      CacheClusterEnabled: true
-      CacheClusterSize: "0.5"
+      CacheClusterEnabled: false
+      # CacheClusterSize: "0.5"
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
