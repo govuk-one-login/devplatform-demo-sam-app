@@ -268,7 +268,12 @@ Resources:
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
-    # checkov:skip=CKV_AWS_120: API caching is not the programme approved way
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the GDS approved way of caching in API Gateway"
     Properties:
       DeploymentId: !Ref ApiGatewayDeployment
       StageName: !Sub
@@ -379,9 +384,16 @@ Resources:
 
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
+    # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
+    # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_2"
+            comment: "Certificate generation must be resolved before the listener can use HTTPS"
+          - id: "CKV_AWS_103"
+            comment: "The load balancer cannot use TLS v1.2 until HTTPS is enabled"
     Properties:
-      # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
-      # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
         - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
           Type: forward
@@ -565,8 +577,13 @@ Resources:
 
   AccessLogsBucket:
     Type: AWS::S3::Bucket
+    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_18"
+            comment: "This is the access logs bucket. It should not log itself"
     Properties:
-      # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
       BucketName: !Join
         - "-"
         - - !Ref AWS::StackName
