@@ -246,11 +246,11 @@ Resources:
       RestApiId: !Ref RestApiGateway
       StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
       StageDescription:
-        CacheClusterEnabled: true
-        CacheClusterSize: 0.5
-        CacheDataEncrypted: true
-        CacheTtlInSeconds: 300
-        CachingEnabled: true
+        CacheClusterEnabled: false
+        # CacheClusterSize: 0.5
+        CacheDataEncrypted: false
+        # CacheTtlInSeconds: 300
+        CachingEnabled: false
 
 
 
@@ -281,6 +281,12 @@ Resources:
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the programme approved way"
     Properties:
       DeploymentId: !Ref ApiGatewayDeployment
       StageName: !Sub
@@ -290,8 +296,8 @@ Resources:
       AccessLogSetting:
         DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
         Format: $context.requestId $context.apiId
-      CacheClusterEnabled: true
-      CacheClusterSize: 0.5
+      CacheClusterEnabled: false
+      # CacheClusterSize: 0.5
       TracingEnabled: true
       MethodSettings:
         - ResourcePath: /
@@ -386,9 +392,16 @@ Resources:
 
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
+    # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
+    # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_2"
+            comment: "Certificate generation must be resolved before the listener can use HTTPS"
+          - id: "CKV_AWS_103"
+            comment: "The load balancer cannot use TLS v1.2 until HTTPS is enabled"
     Properties:
-      # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
-      # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
         - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
           Type: forward
@@ -569,8 +582,13 @@ Resources:
 
   AccessLogsBucket:
     Type: AWS::S3::Bucket
+    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_18"
+            comment: "This is the access logs bucket. It should not log itself."
     Properties:
-      # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
       BucketName: !Join
         - "-"
         - - !Ref AWS::StackName

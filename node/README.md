@@ -16,7 +16,9 @@ You can update the template to add AWS resources through the same deployment pro
 
 Example use of the script from the root directory of this repo:
 
-```
+```bash
+cd node
+
 eval $(gds aws <AWS Account Alias> -e)
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <AWS Account ID>.dkr.ecr.eu-west-2.amazonaws.com
 
@@ -27,10 +29,13 @@ export CONTAINER_SIGN_KMS_KEY_ARN=<Use the ContainerSignerKmsKeyArn output from 
 export ARTIFACT_BUCKET_NAME=<Use the GitHubArtifactSourceBucketName output from the pipeline stack>
 
 export GITHUB_REPOSITORY=di-devplatform-demo-sam-app
-export GITHUB_SHA=$(git rev-parse HEAD)
+export GITHUB_SHA="$(git rev-parse HEAD)$(date +%H%M%S)"
 
-export WORKING_DIRECTORY=node
+export WORKING_DIRECTORY=.
 export TEMPLATE_FILE=template.yaml
+
+export DOCKER_BUILD_PATH=.
+export DOCKERFILE=Dockerfile
 
 <Path to di-devplatform-upload-action-ecr repo>/scripts/build-tag-push-ecr.sh
 ```
