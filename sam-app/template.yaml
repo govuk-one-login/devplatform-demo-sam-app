@@ -93,13 +93,19 @@ Resources:
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the GDS approved way of caching in API Gateway"
     Properties:
       StageName: Prod
       AccessLogSetting:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
-      CacheClusterEnabled: true
-      CacheClusterSize: "0.5"
+      CacheClusterEnabled: false
+      # CacheClusterSize: "0.5"
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
@@ -155,6 +161,13 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ is not appropriate for a Lambda invoked by an API"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -230,6 +243,13 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ is not appropriate for a Lambda invoked by an API"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction2
       Handler: helloworld2.App2::handleRequest
@@ -263,6 +283,13 @@ Resources:
     Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
     # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ is not appropriate for a Lambda invoked by an API"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
     Properties:
       FunctionName: !Join
         - "_"
@@ -339,8 +366,13 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
-    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
     Type: "AWS::S3::Bucket"
+    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_18"
+            comment: "This is the access logs bucket. It should not log itself."
     Properties:
       AccessControl: LogDeliveryWrite
       BucketName: !Join

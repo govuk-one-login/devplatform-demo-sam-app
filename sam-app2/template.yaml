@@ -45,6 +45,13 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       # checkov:skip=CKV_AWS_116: DLQ not required
       # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ not required"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction
       AutoPublishAlias: LatestVersion
@@ -91,14 +98,20 @@ Resources:
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the programme approved way"
     Properties:
       OpenApiVersion: 3.0.3
       StageName: Prod
       AccessLogSetting:
         Format: "$context.requestId $context.httpMethod $context.path"
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
-      CacheClusterEnabled: true
-      CacheClusterSize: "0.5"
+      CacheClusterEnabled: false
+      # CacheClusterSize: "0.5"
       TracingEnabled: true
       Tags:
         Product: GOV.UK Sign In
