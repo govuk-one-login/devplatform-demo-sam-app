@@ -198,37 +198,86 @@ Resources:
     Type: AWS::WAFv2::WebACL
     Properties:
       DefaultAction:
-        Allow: { }
+        Block: {}
       Scope: "REGIONAL"
       VisibilityConfig:
         CloudWatchMetricsEnabled: true
         MetricName: "hello-waf-metric"
         SampledRequestsEnabled: true
       Rules:
+        # Optional rule set to restrict to GDS IP addresses.
+        # See WAFv2GDSIPSet resource further on.
+        - Name: GDSIPs
+          Action:
+            Allow: {}
+          Priority: 10
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt WAFv2GDSIPSet.Arn
+              IPSetForwardedIPConfig:
+                FallbackBehavior: MATCH
+                HeaderName: X-Forwarded-For
+                Position: FIRST
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWMManagedRuleCommonRuleSet
+          OverrideAction:
+            None: {}
+          Priority: 20
+          Statement:
+            ManagedRuleGroupStatement:
+              Name: AWSManagedRulesCommonRuleSet
+              VendorName: AWS
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
+            SampledRequestsEnabled: FALSE
         - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
-          Priority: 1
+          Priority: 30
+          OverrideAction:
+            None: {}
           Statement:
             ManagedRuleGroupStatement:
               VendorName: AWS
               Name: AWSManagedRulesKnownBadInputsRuleSet
-          OverrideAction:
-            None: { }
           VisibilityConfig:
-            CloudWatchMetricsEnabled: true
-            MetricName: "managed-rule-metric"
-            SampledRequestsEnabled: true
-        - Name: Custom-BlockIpCustomRule
-          Priority: 2
-          Statement:
-            RateBasedStatement:
-              Limit: 101
-              AggregateKeyType: IP
-          Action:
-            Block: { }
-          VisibilityConfig:
-            CloudWatchMetricsEnabled: true
-            MetricName: "custom-rule-metric"
-            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
+            SampledRequestsEnabled: FALSE
+
+# The IP address blocks below are referenced from here:
+# https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
+  WAFv2GDSIPSet:
+    Type: AWS::WAFv2::IPSet
+    Properties:
+      Addresses:
+        - "213.86.153.211/32"
+        - "213.86.153.212/32"
+        - "213.86.153.213/32"
+        - "213.86.153.214/32"
+        - "213.86.153.231/32"
+        - "213.86.153.235/32"
+        - "213.86.153.236/32"
+        - "213.86.153.237/32"
+        - "51.149.8.0/25"
+        - "51.149.8.128/29"
+      IPAddressVersion: IPV4
+      Scope: REGIONAL
+      Tags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
 
   HelloWafGatewayAssociation:
     Type: AWS::WAFv2::WebACLAssociation
