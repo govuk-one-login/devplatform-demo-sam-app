@@ -41,6 +41,8 @@ Conditions:
 
 Mappings:
   APIDomainNames:
+    dev:
+      DomainName: "dev.demoapp.platform.sandpit.account.gov.uk"
     build:
       DomainName: "build.demoapp.platform.sandpit.account.gov.uk"
     staging:
@@ -84,12 +86,12 @@ Resources:
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
   # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
-  CSLSFirehoseSubscriptionFilter:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
-      FilterPattern: ""
-      LogGroupName: !Ref APIGatewayAccessLogGroup
+  # CSLSFirehoseSubscriptionFilter:
+  #   Type: AWS::Logs::SubscriptionFilter
+  #   Properties:
+  #     DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+  #     FilterPattern: ""
+  #     LogGroupName: !Ref APIGatewayAccessLogGroup
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
@@ -202,13 +204,13 @@ Resources:
             Method: get
             RestApiId: !Ref HelloWorldRestApi
       AutoPublishAlias: HelloWorldFunction
-      DeploymentPreference:
-        Type: Canary10Percent5Minutes
-        Alarms:
-          - !Ref HelloWorldFunctionTooManyRequestsAlarm
-        Hooks:
-          PreTraffic: !Ref PreTrafficHook
-        Role: !GetAtt CodeDeployServiceRole.Arn
+      # DeploymentPreference:
+      #   Type: Canary10Percent5Minutes
+      #   Alarms:
+      #     - !Ref HelloWorldFunctionTooManyRequestsAlarm
+      #   Hooks:
+      #     PreTraffic: !Ref PreTrafficHook
+      #   Role: !GetAtt CodeDeployServiceRole.Arn
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -218,26 +220,26 @@ Resources:
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
-  CodeDeployServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Action:
-              - sts:AssumeRole
-            Effect: Allow
-            Principal:
-              Service:
-                - codedeploy.amazonaws.com
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
-      PermissionsBoundary:
-        !If [
-          UsePermissionsBoundary,
-          !Ref PermissionsBoundary,
-          !Ref AWS::NoValue,
-        ]
+  # CodeDeployServiceRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Action:
+  #             - sts:AssumeRole
+  #           Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - codedeploy.amazonaws.com
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
+  #     PermissionsBoundary:
+  #       !If [
+  #         UsePermissionsBoundary,
+  #         !Ref PermissionsBoundary,
+  #         !Ref AWS::NoValue,
+  #       ]
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -279,60 +281,60 @@ Resources:
         Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
-  PreTrafficHook:
-    Type: AWS::Serverless::Function
-    # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
-    # checkov:skip=CKV_AWS_117: Internet access not required
-    Metadata:
-      checkov:
-        skip:
-          - id: "CKV_AWS_116"
-            comment: "DLQ is not appropriate for a Lambda invoked by an API"
-          - id: "CKV_AWS_117"
-            comment: "Internet access not required"
-    Properties:
-      FunctionName: !Join
-        - "_"
-        - - "CodeDeployHook"
-          - !Ref AWS::StackName
-          - "PreTrafficHook"
-          - Fn::Select:
-              - 4
-              - Fn::Split:
-                  - "-"
-                  - Fn::Select:
-                      - 2
-                      - Fn::Split:
-                          - /
-                          - Ref: AWS::StackId
-      Handler: preTrafficHook.handler
-      Policies:
-        - Version: "2012-10-17"
-          Statement:
-            - Effect: "Allow"
-              Action:
-                - "codedeploy:PutLifecycleEventHookExecutionStatus"
-              Resource: !Sub "arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*"
-        - Version: "2012-10-17"
-          Statement:
-            - Effect: "Allow"
-              Action:
-                - "lambda:InvokeFunction"
-              Resource: !Ref HelloWorldFunction.Version
-      Runtime: nodejs18.x
-      KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
-      Environment:
-        Variables:
-          NewVersion: !Ref HelloWorldFunction.Version
-      ReservedConcurrentExecutions: 5
-      Tags:
-        Product: GOV.UK Sign In
-        System: Dev Platform
-        Environment: Demo
-        Service: backend
-        Name: PreTrafficHook
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
-        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+  # PreTrafficHook:
+  #   Type: AWS::Serverless::Function
+  #   # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+  #   # checkov:skip=CKV_AWS_117: Internet access not required
+  #   Metadata:
+  #     checkov:
+  #       skip:
+  #         - id: "CKV_AWS_116"
+  #           comment: "DLQ is not appropriate for a Lambda invoked by an API"
+  #         - id: "CKV_AWS_117"
+  #           comment: "Internet access not required"
+  #   Properties:
+  #     FunctionName: !Join
+  #       - "_"
+  #       - - "CodeDeployHook"
+  #         - !Ref AWS::StackName
+  #         - "PreTrafficHook"
+  #         - Fn::Select:
+  #             - 4
+  #             - Fn::Split:
+  #                 - "-"
+  #                 - Fn::Select:
+  #                     - 2
+  #                     - Fn::Split:
+  #                         - /
+  #                         - Ref: AWS::StackId
+  #     Handler: preTrafficHook.handler
+  #     Policies:
+  #       - Version: "2012-10-17"
+  #         Statement:
+  #           - Effect: "Allow"
+  #             Action:
+  #               - "codedeploy:PutLifecycleEventHookExecutionStatus"
+  #             Resource: !Sub "arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*"
+  #       - Version: "2012-10-17"
+  #         Statement:
+  #           - Effect: "Allow"
+  #             Action:
+  #               - "lambda:InvokeFunction"
+  #             Resource: !Ref HelloWorldFunction.Version
+  #     Runtime: nodejs18.x
+  #     KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+  #     Environment:
+  #       Variables:
+  #         NewVersion: !Ref HelloWorldFunction.Version
+  #     ReservedConcurrentExecutions: 5
+  #     Tags:
+  #       Product: GOV.UK Sign In
+  #       System: Dev Platform
+  #       Environment: Demo
+  #       Service: backend
+  #       Name: PreTrafficHook
+  #       Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+  #       CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
 
   HelloWorldTable:
@@ -365,60 +367,60 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
 
-  AccessLogsBucket:
-    Type: "AWS::S3::Bucket"
-    # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
-    Metadata:
-      checkov:
-        skip:
-          - id: "CKV_AWS_18"
-            comment: "This is the access logs bucket. It should not log itself."
-    Properties:
-      AccessControl: LogDeliveryWrite
-      BucketName: !Join
-        - "-"
-        - - !Ref AWS::StackName
-          - "accesslogsbucket"
-          - Fn::Select:
-              - 4
-              - Fn::Split:
-                  - "-"
-                  - Fn::Select:
-                      - 2
-                      - Fn::Split:
-                          - /
-                          - Ref: AWS::StackId
-      VersioningConfiguration:
-        Status: Enabled
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      # This cannot be implemented as this, as the target account needs permissions before the bucket name is know, but it permissions based on the bucketName.
-      # NotificationConfiguration:
-      #   QueueConfigurations:
-      #     - Event: "s3:ObjectCreated:*"
-      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
-      #     - Event: "s3:ObjectRestore:*"
-      #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
-      Tags:
-        - Key: Product
-          Value: GOV.UK Sign In
-        - Key: System
-          Value: Dev Platform
-        - Key: Environment
-          Value: Demo
-        - Key: Service
-          Value: backend
-        - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
-        - Key: CheckovRulesToSkip
-          Value: "CKV_AWS_18"
+  # AccessLogsBucket:
+  #   Type: "AWS::S3::Bucket"
+  #   # checkov:skip=CKV_AWS_18:This is the access logs bucket. It should not log itself.
+  #   Metadata:
+  #     checkov:
+  #       skip:
+  #         - id: "CKV_AWS_18"
+  #           comment: "This is the access logs bucket. It should not log itself."
+  #   Properties:
+  #     AccessControl: LogDeliveryWrite
+  #     BucketName: !Join
+  #       - "-"
+  #       - - !Ref AWS::StackName
+  #         - "accesslogsbucket"
+  #         - Fn::Select:
+  #             - 4
+  #             - Fn::Split:
+  #                 - "-"
+  #                 - Fn::Select:
+  #                     - 2
+  #                     - Fn::Split:
+  #                         - /
+  #                         - Ref: AWS::StackId
+  #     VersioningConfiguration:
+  #       Status: Enabled
+  #     BucketEncryption:
+  #       ServerSideEncryptionConfiguration:
+  #         - ServerSideEncryptionByDefault:
+  #             SSEAlgorithm: AES256
+  #     PublicAccessBlockConfiguration:
+  #       BlockPublicAcls: true
+  #       BlockPublicPolicy: true
+  #       IgnorePublicAcls: true
+  #       RestrictPublicBuckets: true
+  #     # This cannot be implemented as this, as the target account needs permissions before the bucket name is know, but it permissions based on the bucketName.
+  #     # NotificationConfiguration:
+  #     #   QueueConfigurations:
+  #     #     - Event: "s3:ObjectCreated:*"
+  #     #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
+  #     #     - Event: "s3:ObjectRestore:*"
+  #     #       Queue: "arn:aws:sqs:eu-west-2:885513274347:cyber-security-s3-to-splunk-prodpython"
+  #     Tags:
+  #       - Key: Product
+  #         Value: GOV.UK Sign In
+  #       - Key: System
+  #         Value: Dev Platform
+  #       - Key: Environment
+  #         Value: Demo
+  #       - Key: Service
+  #         Value: backend
+  #       - Key: Source
+  #         Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+  #       - Key: CheckovRulesToSkip
+  #         Value: "CKV_AWS_18"
 
   # AccessLogsBucketPolicy:
   #   Type: AWS::S3::BucketPolicy
@@ -439,6 +441,12 @@ Resources:
   #             - "s3:List*"
 
   HelloWorldBucket:
+    # checkov:skip=CKV_AWS_18:Testing, skip this checkov rule
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_18"
+            comment: "Testing, skip this checkov rule"
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Join
@@ -459,8 +467,8 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-      LoggingConfiguration:
-        DestinationBucketName: !Ref AccessLogsBucket
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref AccessLogsBucket
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
