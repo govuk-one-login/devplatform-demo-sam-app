@@ -26,7 +26,7 @@ jobs:
 
       - name: Run Checkov on WAFv2
         id: checkovWAF
-        uses: bridgecrewio/checkov-action@v12.2341.0
+        uses: bridgecrewio/checkov-action@v12.2347.0
         with:
           framework: cloudformation
           directory: node-with-waf/WAFv2
