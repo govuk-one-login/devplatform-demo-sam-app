@@ -18,6 +18,13 @@ Parameters:
   Environment:
     Description: "The name of the environment to deploy to"
     Type: "String"
+    Default: dev
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
 
 Conditions:
   UsePermissionsBoundary:
