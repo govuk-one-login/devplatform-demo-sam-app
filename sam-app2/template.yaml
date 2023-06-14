@@ -73,9 +73,9 @@ Mappings:
       ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
       TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
     production:
-      NodeLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentNodeJSLayer:1
-      PythonLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentPythonLayer:1
-      JavaLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentJavaLayer:2
+      NodeLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentNodeJSLayer:3
+      PythonLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentPythonLayer:3
+      JavaLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentJavaLayer:4
       AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:AUTH_TOKEN-BVGfK8 # pragma: allowlist secret
       BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:BASE_URL-6Q7MxC # pragma: allowlist secret
       ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:CLUSTER_ID-nKBZpt # pragma: allowlist secret
