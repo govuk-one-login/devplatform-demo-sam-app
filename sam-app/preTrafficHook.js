@@ -1,10 +1,10 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
 const codedeploy = new AWS.CodeDeploy({apiVersion: '2014-10-06'});
 var lambda = new AWS.Lambda();
 
-exports.handler = (event, context, callback) => {
+export const handler = (event, context, callback) => {
 
   console.log("Entering PreTraffic Hook!");
 
