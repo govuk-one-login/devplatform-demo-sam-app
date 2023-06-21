@@ -617,7 +617,7 @@ Resources:
           HostedZoneId:
             Fn::ImportValue: PlatformHostedZone
       ValidationMethod: DNS
-      CertificateTransparencyLoggingPreference: DISABLED
+      CertificateTransparencyLoggingPreference: ENABLED
       Tags:
         - Key: Name
           Value: ApiGatewayCertificate
@@ -645,7 +645,7 @@ Outputs:
   HelloWorldApiDomain:
     Description: "API Gateway domain"
     Value: !Sub
-      - "${AWS::StackName}.${DomainName}"
+      - "https://${AWS::StackName}.${DomainName}/hello/"
       - DomainName: !FindInMap
           - APIDomainNames
           - !Ref Environment
