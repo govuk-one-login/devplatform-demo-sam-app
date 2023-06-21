@@ -375,6 +375,9 @@ Resources:
             comment: "This is the access logs bucket. It should not log itself."
     Properties:
       AccessControl: LogDeliveryWrite
+      OwnershipControls:
+           Rules:
+                - ObjectOwnership: BucketOwnerPreferred
       BucketName: !Join
         - "-"
         - - !Ref AWS::StackName
