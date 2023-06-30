@@ -19,7 +19,7 @@ jobs:
       contents: read
     steps:
       - name: Upload to ECR and tag
-        uses: alphagov/di-devplatform-upload-action-ecr@ad77385a05c6f8541e6afbe876d3dec3f35e85ed
+        uses: alphagov/di-devplatform-upload-action-ecr@a59f30b6d25c7d2ef5c3f2c93f825f548c68955c
         with:
           role-to-assume-arn: ${{ secrets.NODE_ROLE_TO_ASSUME }}
           working-directory: node
