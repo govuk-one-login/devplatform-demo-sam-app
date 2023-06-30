@@ -1,0 +1,407 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Sample SAM Template for sam-app3.
+  Managed by dev-platform
+
+Parameters:
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+    Default: "none"
+
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: String
+    Default: "none"
+
+  Environment:
+    Description: "The name of the environment to deploy to"
+    Type: "String"
+    Default: dev
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
+
+Conditions:
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
+Mappings:
+  DynatraceAgent:
+    dev:
+      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
+      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
+      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
+      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
+      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
+      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
+      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+    build:
+      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
+      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
+      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
+      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
+      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
+      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
+      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+    staging:
+      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
+      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
+      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
+      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
+      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
+      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
+      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+    integration:
+      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
+      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
+      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
+      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
+      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
+      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
+      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+    production:
+      NodeLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentNodeJSLayer:3
+      PythonLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentPythonLayer:3
+      JavaLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentJavaLayer:4
+      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:AUTH_TOKEN-BVGfK8 # pragma: allowlist secret
+      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:BASE_URL-6Q7MxC # pragma: allowlist secret
+      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:CLUSTER_ID-nKBZpt # pragma: allowlist secret
+      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:TENANT-iS9w22 # pragma: allowlist secret
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+    Timeout: 20
+    Environment:
+      Variables:
+        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+        ### These secrets are centrally hosted in the Dynatrace Account, access is limited to Lambdas running in GDS/OneLogin organisations.
+        DT_CONNECTION_AUTH_TOKEN: !Sub
+          - '{{resolve:secretsmanager:${AuthTokenSecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'
+          - AuthTokenSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, AuthTokenSecretArn ]
+        DT_CONNECTION_BASE_URL: !Sub
+          - '{{resolve:secretsmanager:${BaseUrlSecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
+          - BaseUrlSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, BaseUrlSecretArn ]
+        DT_CLUSTER_ID: !Sub
+          - '{{resolve:secretsmanager:${ClusterIdSecretArn}:SecretString:DT_CLUSTER_ID}}'
+          - ClusterIdSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, ClusterIdSecretArn ]
+        DT_TENANT: !Sub
+          - '{{resolve:secretsmanager:${TenantSecretArn}:SecretString:DT_TENANT}}'
+          - TenantSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, TenantSecretArn ]
+        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+    Layers:
+      - !FindInMap [ DynatraceAgent, !Ref Environment, PythonLayer ]
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      # checkov:skip=CKV_AWS_116: DLQ not required
+      # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ not required"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
+    Properties:
+      CodeUri: image
+      AutoPublishAlias: LatestVersion
+      Handler: app.handleRequest
+      Runtime: Python3.8
+      Architectures:
+        - x86_64
+      MemorySize: 2048
+      ReservedConcurrentExecutions: 5
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello
+            Method: get
+            RestApiId: !Ref HelloWorldRestApi
+      Tags:
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+
+  APIGatewayAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
+      Tags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: APIGatewayAccessLogGroup
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HelloWorldRestApi:
+    Type: AWS::Serverless::Api
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the programme approved way"
+    Properties:
+      OpenApiVersion: 3.0.3
+      StageName: dev
+      AccessLogSetting:
+        Format: "$context.requestId $context.httpMethod $context.path"
+        DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
+      CacheClusterEnabled: false
+      # CacheClusterSize: "0.5"
+      TracingEnabled: true
+      Tags:
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
+        Service: backend
+        Name: HelloWorldRestApi
+        Source: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  AutoScalingHelloWorldScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
+    DependsOn: HelloWorldFunctionAliasLatestVersion
+    Properties:
+      MaxCapacity: 3
+      MinCapacity: 1
+      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency"
+      ServiceNamespace: lambda
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'LatestVersion'
+
+  HelloWorldLambdaAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    DependsOn: AutoScalingHelloWorldScalableTarget
+    Properties:
+      PolicyName: "hello-world-lambda-autoscaling-policy"
+      PolicyType: TargetTrackingScaling
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'LatestVersion'
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ServiceNamespace: lambda
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+        TargetValue: 0.7
+
+  HelloWorldKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource: "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+      Tags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWorldKmsKey
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HelloWaf:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      DefaultAction:
+        Block: {}
+      Scope: "REGIONAL"
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: "hello-waf-metric"
+        SampledRequestsEnabled: true
+      Rules:
+        # Optional rule set to restrict to GDS IP addresses.
+        # See WAFv2GDSIPSet resource further on.
+        - Name: GDSIPs
+          Action:
+            Allow: {}
+          Priority: 10
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt WAFv2GDSIPSet.Arn
+              IPSetForwardedIPConfig:
+                FallbackBehavior: MATCH
+                HeaderName: X-Forwarded-For
+                Position: FIRST
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWMManagedRuleCommonRuleSet
+          OverrideAction:
+            None: {}
+          Priority: 20
+          Statement:
+            ManagedRuleGroupStatement:
+              Name: AWSManagedRulesCommonRuleSet
+              VendorName: AWS
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
+            SampledRequestsEnabled: FALSE
+        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
+          Priority: 30
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
+            SampledRequestsEnabled: FALSE
+
+# The IP address blocks below are referenced from here:
+# https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
+  WAFv2GDSIPSet:
+    Type: AWS::WAFv2::IPSet
+    Properties:
+      Addresses:
+        - "213.86.153.211/32"
+        - "213.86.153.212/32"
+        - "213.86.153.213/32"
+        - "213.86.153.214/32"
+        - "213.86.153.231/32"
+        - "213.86.153.235/32"
+        - "213.86.153.236/32"
+        - "213.86.153.237/32"
+        - "51.149.8.0/25"
+        - "51.149.8.128/29"
+      IPAddressVersion: IPV4
+      Scope: REGIONAL
+      Tags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HelloWafGatewayAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${HelloWorldRestApi}/stages/${HelloWorldRestApi.Stage}"
+      WebACLArn: !GetAtt HelloWaf.Arn
+
+  HelloWafLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Join:
+          - '-'
+          - - aws-waf-logs-
+            - Ref: AWS::StackName
+            - Fn::Select:
+                - 4
+                - Fn::Split:
+                    - '-'
+                    - Fn::Select:
+                        - 2
+                        - Fn::Split:
+                            - /
+                            - Ref: AWS::StackId
+      RetentionInDays: 1
+      KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
+      Tags:
+        - Key: Service
+          Value: backend
+        - Key: Name
+          Value: HelloWafLogGroup
+        - Key: Source
+          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HelloWafLogs:
+    Type: AWS::WAFv2::LoggingConfiguration
+    Properties:
+      LogDestinationConfigs:
+        - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HelloWafLogGroup}"
+      ResourceArn: !GetAtt HelloWaf.Arn
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloWorldApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${HelloWorldRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  HelloWorldFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
