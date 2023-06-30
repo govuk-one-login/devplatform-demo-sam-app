@@ -19,10 +19,10 @@ jobs:
       contents: read
     steps:
       - name: Upload to ECR and tag
-        uses: alphagov/di-devplatform-upload-action-ecr@54965c1c0d6e22c7125f1c3bc7f924a674309870
+        uses: alphagov/di-devplatform-upload-action-ecr@dd71b176a2c089c089ea3efbe193caf14ecf33e3
         with:
           role-to-assume-arn: ${{ secrets.NODE_ROLE_TO_ASSUME }}
-          
           working-directory: node
           ecr-repo-name: ${{ secrets.ECR_REPOSITORY }}
           artifact-bucket-name: ${{ secrets.NODE_ARTIFACT_BUCKET }}
+          docker-build-path: docker
