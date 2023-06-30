@@ -25,4 +25,4 @@ jobs:
           working-directory: node
           ecr-repo-name: ${{ secrets.ECR_REPOSITORY }}
           artifact-bucket-name: ${{ secrets.NODE_ARTIFACT_BUCKET }}
-          docker-build-path: docker
+          docker-build-path: node
