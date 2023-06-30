@@ -19,7 +19,7 @@ jobs:
       contents: read
     steps:
       - name: Upload to ECR and tag
-        uses: alphagov/di-devplatform-upload-action-ecr@dad5914dd2978b6983df2e51967f9fed68980bf8
+        uses: alphagov/di-devplatform-upload-action-ecr@b8d69cfc745213a675ec9589b493f34c3b76dc34
         with:
           role-to-assume-arn: ${{ secrets.NODE_ROLE_TO_ASSUME }}
           # container-sign-kms-key-arn: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
