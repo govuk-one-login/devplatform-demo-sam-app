@@ -589,7 +589,7 @@ Resources:
             - DomainName
       Type: A
       HostedZoneId:
-        Fn::ImportValue: PlatformHostedZone
+        Fn::ImportValue: PlatformSandpitHostedZone
       AliasTarget:
         DNSName: !GetAtt HelloWorldRestAPIDomainName.RegionalDomainName
         HostedZoneId: !GetAtt HelloWorldRestAPIDomainName.RegionalHostedZoneId
@@ -615,7 +615,7 @@ Resources:
                 - !Ref Environment
                 - DomainName
           HostedZoneId:
-            Fn::ImportValue: PlatformHostedZone
+            Fn::ImportValue: PlatformSandpitHostedZone
       ValidationMethod: DNS
       CertificateTransparencyLoggingPreference: ENABLED
       Tags:
