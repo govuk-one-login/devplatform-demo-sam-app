@@ -42,13 +42,13 @@ Conditions:
 Mappings:
   APIDomainNames:
     build:
-      DomainName: "build.demoapp.platform.sandpit.account.gov.uk"
+      DomainName: "demoapp.build.platform.sandpit.account.gov.uk"
     staging:
-      DomainName: "staging.demoapp.platform.sandpit.account.gov.uk"
+      DomainName: "demoapp.staging.platform.sandpit.account.gov.uk"
     integration:
-      DomainName: "integration.demoapp.platform.sandpit.account.gov.uk"
+      DomainName: "demoapp.integration.platform.sandpit.account.gov.uk"
     production:
-      DomainName: "prod.demoapp.platform.sandpit.account.gov.uk"
+      DomainName: "demoapp.platform.sandpit.account.gov.uk"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
