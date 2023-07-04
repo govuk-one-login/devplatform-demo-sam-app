@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Route53 Hosted Zones template for Dev Platform Demo environments.
+  Managed by dev-platform
+
+Parameters:
+  Environment:
+    Description: "The name of the environment to deploy to"
+    Type: "String"
+    AllowedValues:
+      - build
+      - staging
+      - production
+
+Conditions:
+  ProductionEnvironment:
+    Fn::Equals:
+      - !Ref Environment
+      - "production"
+
+Mappings:
+  EnvironmentSettings:
+    build:
+      DomainName: build.platform.sandpit.account.gov.uk
+    staging:
+      DomainName: staging.platform.sandpit.account.gov.uk
+    production:
+      DomainName: platform.sandpit.account.gov.uk
+
+Resources:
+  PlatformHostedZone:
+    Type: AWS::Route53::HostedZone
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Name: !FindInMap ["EnvironmentSettings", !Ref Environment, "DomainName"]
+      HostedZoneConfig:
+        Comment: Delegated via alphagov/di-domains repo
+      HostedZoneTags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Owner
+          Value: platform-and-sre-pod@digital.cabinet-office.gov.uk
+
+  PlatformStagingDelegation:
+    Type: AWS::Route53::RecordSet
+    Condition: ProductionEnvironment
+    Properties:
+      Name: staging.platform.sandpit.account.gov.uk
+      Type: NS
+      HostedZoneId: !Ref PlatformHostedZone
+      ResourceRecords:
+        - ns-830.awsdns-39.net.
+        - ns-1952.awsdns-52.co.uk.
+        - ns-1212.awsdns-23.org.
+        - ns-463.awsdns-57.com.
+      TTL: 3600
+
+  PlatformBuildDelegation:
+    Type: AWS::Route53::RecordSet
+    Condition: ProductionEnvironment
+    Properties:
+      Name: build.platform.sandpit.account.gov.uk
+      Type: NS
+      HostedZoneId: !Ref PlatformHostedZone
+      ResourceRecords:
+        - ns-1769.awsdns-29.co.uk.
+        - ns-362.awsdns-45.com.
+        - ns-1274.awsdns-31.org.
+        - ns-688.awsdns-22.net.
+      TTL: 3600
+
+  ZoneRootCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !FindInMap ["EnvironmentSettings", !Ref Environment, "DomainName"]
+      ValidationMethod: "DNS"
+      DomainValidationOptions:
+        - DomainName: !FindInMap ["EnvironmentSettings", !Ref Environment, "DomainName"]
+          HostedZoneId: !Ref PlatformHostedZone
+      Tags:
+        - Key: Product
+          Value: GOV.UK Sign In
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Owner
+          Value: platform-and-sre-pod@digital.cabinet-office.gov.uk
+
+Outputs:
+  PlatformHostedZoneId:
+    Value: !Ref PlatformHostedZone
+    Export:
+      Name: PlatformSandpitHostedZone
