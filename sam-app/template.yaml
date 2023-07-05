@@ -32,13 +32,6 @@ Conditions:
           - !Ref PermissionsBoundary
           - "none"
 
-  # We are using this condition since we don't have a domain for each environment.
-  # Normally this condition won't be required.
-  UseCertificate:
-    Fn::Equals:
-      - !Ref Environment
-      - "build"
-
 Mappings:
   APIDomainNames:
     build:
@@ -122,7 +115,6 @@ Resources:
 
   HelloWorldRestAPIDomainName:
     Type: AWS::ApiGateway::DomainName
-    Condition: UseCertificate
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -145,7 +137,6 @@ Resources:
 
   HelloWorldRestAPIBasePath:
     Type: AWS::ApiGateway::BasePathMapping
-    Condition: UseCertificate
     DependsOn: HelloWorldRestAPIDomainName
     Properties:
       DomainName: !Sub
@@ -579,7 +570,6 @@ Resources:
 
   HelloWorldCertificateRecord:
     Type: AWS::Route53::RecordSet
-    Condition: UseCertificate
     Properties:
       Name: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -599,7 +589,6 @@ Resources:
   #
   ApiGatewayCertificate:
     Type: AWS::CertificateManager::Certificate
-    Condition: UseCertificate
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
