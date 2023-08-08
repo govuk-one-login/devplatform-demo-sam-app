@@ -1,0 +1,19 @@
+error:
+  title: "Mae rhywbeth wedi mynd o'i le!"
+  content:
+    - "{{ error.message }}"
+    - "{{ error | dump }}"
+    - "{% if showStack %}<pre>{{error.stack | safe}}</pre>{% endif %}"
+pageNotFound:
+  title: Tudalen heb ei darganfod
+  content:
+    - Ni allwn ddod o hyd i'r dudalen rydych chi'n chwilio amdani.
+    - <h2>Beth allwch chi ei wneud</h2>
+    - Os ydych wedi teipio'r cyfeiriad gwe, edrychwch i weld ei fod yn gywir.
+    - Os ydych wedi gludo'r cyfeiriad gwe, edrychwch i weld eich bod wedi copïo'r cyfeiriad cyfan.
+    - Gallwch hefyd fynd yn ôl i'r gwasanaeth roeddech yn ceisio ei ddefnyddio a dechrau eto. Gallwch chwilio am y gwasanaeth gan ddefnyddio'ch peiriant chwilio neu dewch o hyd iddo o hafan GOV.UK.
+    - <a href="https://www.gov.uk/" class="govuk-button" data-module="govuk-button">Ewch i hafan GOV.UK</a>
+    - <a href="https://signin.account.gov.uk/contact-us" class="govuk-link">Cysylltwch â'r tîm GOV.UK One Login (agor mewn tab newydd)</a>
+
+sessionEnded:
+  title: "Sesiwn wedi dod i ben"

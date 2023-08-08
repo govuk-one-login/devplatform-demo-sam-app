@@ -1,0 +1,9 @@
+{% extends "base-form.njk" %}
+
+{% set hmpoPageKey = "intro" %}
+{% set hmpoPageContent = "intro" %}
+{% set gtmJourney = "toy - start" %}
+
+{% block submitButton %}
+  {{ hmpoSubmit(ctx, {id: "continue", text: translate("buttons.next")}) }}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base-form.njk" %}
+
+{% set gtmJourney = "toy - middle" %}
+
+{% block submitButton %}
+  {{ hmpoSubmit(ctx, {id: "continue", text: translate("buttons.next")}) }}
+{% endblock %}

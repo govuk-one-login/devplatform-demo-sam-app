@@ -1,12 +1,32 @@
-FROM --platform=linux/amd64 node@sha256:0d2712ac2b2c1149391173de670406f6e3dbdb1b2ba44e8530647e623e0e1b17
-ENV NODE_ENV=production
+FROM node:18.12.1-alpine3.16@sha256:67373bd5d90ea600cb5f0fa58d7a5a4e6ebf50b6e05c50c1d1cc22df5134db43 AS builder
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package.json package-lock.json ./
+COPY /src ./src
 
-RUN npm install --production
+RUN npm install
+RUN npm run build
 
-COPY . .
+RUN npm prune
 
-CMD [ "node", "server.js" ]
+FROM node:18.12.1-alpine3.16@sha256:67373bd5d90ea600cb5f0fa58d7a5a4e6ebf50b6e05c50c1d1cc22df5134db43 AS final
+
+RUN ["apk", "--no-cache", "upgrade"]
+RUN ["apk", "add", "--no-cache", "tini"]
+
+WORKDIR /app
+
+# Copy in compile assets and deps from build container
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/src ./src
+
+ENV PORT 8000
+EXPOSE $PORT
+
+ENTRYPOINT ["tini", "--"]
+
+CMD ["npm", "start"]
