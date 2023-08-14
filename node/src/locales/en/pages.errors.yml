@@ -7,9 +7,9 @@ error:
 
 pageNotFound:
   title: Hello World
-  h1: Hello World
+  h1: Hello Tom
   content:
-    - This is a demo frontend
+    - Welcome to the Platform SRE Show and tell
     - <h2>What you can do</h2>
     - <a href="https://www.gov.uk/" class="govuk-button" data-module="govuk-button">Go to the GOV.UK homepage</a>
 
