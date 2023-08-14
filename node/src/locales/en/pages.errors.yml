@@ -1,0 +1,17 @@
+error:
+  title: Sorry, there is a problem with the service
+  content:
+    - "{{ error.message }}"
+    - "{{ error | dump }}"
+    - "{% if showStack %}<pre>{{error.stack | safe}}</pre>{% endif %}"
+
+pageNotFound:
+  title: Hello World
+  h1: Hello World
+  content:
+    - This is a demo frontend
+    - <h2>What you can do</h2>
+    - <a href="https://www.gov.uk/" class="govuk-button" data-module="govuk-button">Go to the GOV.UK homepage</a>
+
+sessionEnded:
+  title: Session expired
