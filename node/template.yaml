@@ -295,12 +295,12 @@ Resources:
     Properties:
       HealthCheckPort: 8000
       HealthCheckProtocol: HTTP
-      HealthCheckPath: /test
+      HealthCheckPath: /healthcheck
       Port: 8000
       Protocol: HTTP
       ProtocolVersion: HTTP1
       Matcher:
-        HttpCode: "200-499"
+        HttpCode: "200"
       TargetType: ip
       VpcId:
         Fn::ImportValue:
