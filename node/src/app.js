@@ -12,7 +12,7 @@ const setHeaders = commonExpress.lib.headers;
 const setScenarioHeaders = commonExpress.lib.scenarioHeaders;
 const setAxiosDefaults = commonExpress.lib.axios;
 
-const { setAPIConfig, setOAuthPaths } = require("./lib/settings");
+const { setAPIConfig, setOAuthPaths } = require("/app/src/lib/settings");
 const { setGTM } = require("di-ipv-cri-common-express/src/lib/settings");
 const { getGTM } = require("di-ipv-cri-common-express/src/lib/locals");
 const { setI18n } = require("di-ipv-cri-common-express/src/lib/i18next");
@@ -24,7 +24,7 @@ const {
   SESSION_SECRET,
   SESSION_TABLE_NAME,
   SESSION_TTL,
-} = require("./lib/config");
+} = require("/app/src/lib/config");
 
 const { setup } = require("hmpo-app");
 
