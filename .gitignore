@@ -433,3 +433,4 @@ gradle-app.setting
 cf-template.yaml
 
 node_modules
+!node/src/lib/
