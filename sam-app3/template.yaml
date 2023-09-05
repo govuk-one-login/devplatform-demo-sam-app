@@ -20,11 +20,15 @@ Metadata:
 Hooks:
   CodeDeployBlueGreenHook:
     Properties:
+      LifecycleEventHooks:
+        # Dynamic values not supported in Hooks
+        BeforeAllowTraffic: "BeforeAllowTrafficLambda-demo-app3"
+      ServiceRole: "HooksServiceRole-demo-app3"
       TrafficRoutingConfig:
-        Type: TimeBasedCanary
-        TimeBasedCanary:
-          StepPercentage: 15
-          BakeTimeMins: 5
+        Type: TimeBasedLinear
+        TimeBasedLinear:
+          StepPercentage: 50
+          BakeTimeMins: 1
       Applications:
         - Target:
             Type: 'AWS::ECS::Service'
@@ -54,22 +58,27 @@ Parameters:
   PrivateSubnetA:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet A Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
+    Default: "/demo-app-sam3-vpc/PrivateSubnetA"     # pragma: allowlist secret
 
   PrivateSubnetB:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet B Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
+    Default: "/demo-app-sam3-vpc/PrivateSubnetB"     # pragma: allowlist secret
 
   VpcId: # Deprecated in favour of !ImportValue
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
+    Default: "/demo-app-sam3-vpc/VpcId"
 
   VpcLinkId:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Link Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
+    Default: "/demo-app-sam3-vpc/VpcLinkId"
+
+  VpcCidr:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Cidr
+    Default: "/demo-app-sam3-vpc/VpcCidr"
 
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
@@ -147,8 +156,9 @@ Resources:
           IpProtocol: tcp
           FromPort: 5000
           ToPort: 5000
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+#      VpcId:
+#        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerServiceSecurityGroup"
@@ -166,7 +176,7 @@ Resources:
     Properties:
       ContainerDefinitions:
         - Name: server
-          Image: "CONTAINER-IMAGE-PLACEHOLDER"
+          Image: "372033887444.dkr.ecr.eu-west-2.amazonaws.com/demo-sam-app3:richa1"
           PortMappings:
             - ContainerPort: 5000
               Protocol: tcp
@@ -311,8 +321,9 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+#      VpcId:
+#        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -337,8 +348,9 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+#      VpcId:
+#        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -429,8 +441,9 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+#      VpcId:
+#        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerSecurityGroup"
@@ -444,8 +457,9 @@ Resources:
     Properties:
       # checkov:skip=CKV_AWS_260: PLAT-477 Raised to resolve
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
+#      CidrIp:
+#        Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
+      CidrIp: !Ref VpcCidr
       Description: Allow traffic from anyone on port 80
       IpProtocol: tcp
       FromPort: 80
@@ -596,6 +610,98 @@ Resources:
           Value: !Sub "${AWS::StackName}-LoggingKmsKey"
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HooksServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: !Sub "HooksServiceRole-demo-app3"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: codedeploy.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: lambdaAccessPolicy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: 'lambda:*'
+                  Resource: '*'
+        PermissionsBoundary: !If
+          - UsePermissionsBoundary
+          - !Ref PermissionsBoundary
+          - !Ref AWS::NoValue
+        Tags:
+          - Key: Name
+            Value: !Sub "${AWS::StackName}-ServiceRole"
+          - Key: Service
+            Value: ci/cd
+          - Key: Source
+            Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+
+  BeforeAllowTrafficLambda:
+        Type: AWS::Serverless::Function
+        Properties:
+          FunctionName: "BeforeAllowTrafficLambda-demo-app3"
+          Runtime: nodejs14.x
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - Statement:
+                - Sid: CodeDeployPolicy
+                  Effect: Allow
+                  Action:
+                    - codedeploy:*
+                  Resource:
+                    "*"
+          Handler: index.handler
+          InlineCode: |
+            'use strict';
+             const aws = require('aws-sdk');
+             const codedeploy = new aws.CodeDeploy({apiVersion: '2014-10-06'});
+            
+            exports.handler = (event, context, callback) => {
+                  console.log("CAME HERE")
+                  //Read the DeploymentId from the event payload.
+                  var deploymentId = event.DeploymentId;
+            
+                  //Read the LifecycleEventHookExecutionId from the event payload
+                  var lifecycleEventHookExecutionId = event.LifecycleEventHookExecutionId;
+            
+                  /*
+                  Enter validation tests here.
+                  */
+            
+                  // Prepare the validation test results with the deploymentId and
+                  // the lifecycleEventHookExecutionId for CodeDeploy.
+                  var params = {
+                          deploymentId: deploymentId,
+                          lifecycleEventHookExecutionId: lifecycleEventHookExecutionId,
+                          status: 'Succeeded' // status can be 'Succeeded' or 'Failed'
+                    };
+            
+                  console.log("PARAMS "+ JSON.stringify(params))
+            
+                  // Pass CodeDeploy the prepared validation test results.
+                  codedeploy.putLifecycleEventHookExecutionStatus(params, function(err, data) {
+                      if (err) {
+                          console.log(JSON.stringify(err))
+                          // Validation failed.
+                          callback('Validation test failed');
+                      } else {
+                        // Validation succeeded.
+                        callback(null, 'Validation test succeeded');
+                      }
+                  });
+            };
+
+
+
+
 
 Outputs:
   ApiGatewayEndpoint:
