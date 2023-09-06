@@ -1,8 +1,8 @@
 # sam-app3
 
-This project contains an example container application with a ECS blue/green style deployment template.
+This project contains an example container application with a ECS canary deployment template.
 It uses `TimeBasedLinear` configuration to shift traffic from one version of the deployment to the other.
-It also creates two demo lambdas for `BeforeAllowTraffic` hooks which can be modified to add any smoke tests that run before traffic is shifted to the replacement task set 
+It also creates demo lambda for `BeforeAllowTraffic` hooks which can be modified to add any smoke tests that run before traffic is shifted to the replacement task set 
 
 - image/ - Contains simple hello world application with Dockerfile
 - template.yaml - A template that defines the application's AWS resources and deploys updates in a blue/green manner.
@@ -33,7 +33,7 @@ aws ecr get-login-password --region eu-west-2 | docker login --username AWS --pa
 docker build -t <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest image/
 docker push <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest
 ```
-- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER` and `PLACEHOLDER_VPC_STACK_NAME` in `template.yaml` with the correct values from on your AWS account.
+- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER`, `PLACEHOLDER_VPC_STACK_NAME` and `PLACEHOLDER_STACK_NAME` in `template.yaml` with the correct values from on your AWS account.
 ```bash
 sam build
 sam deploy --guided
@@ -48,7 +48,7 @@ This will package and deploy your application to AWS, with a series of prompts:
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
-- To see green deployment in action on CodeDeploy, add the following e.g. `/test` endpoint to the demo app, follow above steps to build/push docker image and deploy the modified ECS TaskDefinition.
+- To see canary deployment in action on CodeDeploy, add the following e.g. `/test` endpoint to the demo app, follow above steps to build/push docker image and deploy the modified ECS TaskDefinition.
   As some traffic shifts to the new instance, successful response can be seen for `/test`
 
 ```bash
