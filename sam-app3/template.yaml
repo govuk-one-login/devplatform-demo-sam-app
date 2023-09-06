@@ -23,7 +23,7 @@ Hooks:
       LifecycleEventHooks:
         # Dynamic values not supported in Hooks
         BeforeAllowTraffic: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
-      ServiceRole: "HooksServiceRole-demo-app3"
+      ServiceRole: "HooksServiceRole-PLACEHOLDER_STACK_NAME"
       TrafficRoutingConfig:
         Type: TimeBasedLinear
         TimeBasedLinear:
