@@ -1,6 +1,8 @@
 # sam-app3
 
 This project contains an example container application with a ECS blue/green style deployment template.
+It uses `TimeBasedLinear` configuration to shift traffic from one version of the deployment to the other.
+It also creates two demo lambdas for `BeforeAllowTraffic` hooks which can be modified to add any smoke tests that run before traffic is shifted to the replacement task set 
 
 - image/ - Contains simple hello world application with Dockerfile
 - template.yaml - A template that defines the application's AWS resources and deploys updates in a blue/green manner.
@@ -15,18 +17,28 @@ To use the SAM CLI, you need the following tools.
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-To build and deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER` and `PLACEHOLDER_VPC_STACK_NAME` in `template.yaml` with the correct values from on your AWS account.
-Authenticate your shell with your AWS account and then run the below in your shell. Note, replace `<AWS_ACCOUNT_ID>` with your account ID, and replace`<ECR_REPOSITORY>` with your ECR repository name.
-
+- Create a new VPC and related resources as per [here]( https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3248357398/How+to+prepare+AWS+accounts+to+verify+container+signatures) or use an existing such VPC stack.
+- As [importing values from other stacks isn't supported at the moment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html#blue-green-iam), add the following SSM params based on the output of the above VPC stack:
+    * `/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA`
+    * `/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB`
+    * `/PLACEHOLDER_VPC_STACK_NAME/VpcId`
+    * `/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId`
+    * `/PLACEHOLDER_VPC_STACK_NAME/VpcCidr`
+   where `PLACEHOLDER_VPC_STACK_NAME` is your VPC stack name
+- Create ECR repository or use an existing one
+- To build the application, generate docker image as below and push to the repo
+  Authenticate your shell with your AWS account and then run the below in your shell. Note, replace `<AWS_ACCOUNT_ID>` with your account ID, and replace`<ECR_REPOSITORY>` with your ECR repository name.
 ```bash
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com
 docker build -t <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest image/
 docker push <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest
+```
+- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER` and `PLACEHOLDER_VPC_STACK_NAME` in `template.yaml` with the correct values from on your AWS account.
+```bash
 sam build
 sam deploy --guided
 ```
-
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+This will package and deploy your application to AWS, with a series of prompts:
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS Region**: The AWS region you want to deploy your app to.
@@ -36,6 +48,15 @@ The first command will build the source of your application. The second command 
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
+- To see green deployment in action on CodeDeploy, add the following e.g. `/test` endpoint to the demo app, follow above steps to build/push docker image and deploy the modified ECS TaskDefinition.
+  As some traffic shifts to the new instance, successful response can be seen for `/test`
+
+```bash
+@app.route("/test")
+def test():
+print("This is a test call")
+return "Test successful!"
+```
 
 ## Cleanup
 
