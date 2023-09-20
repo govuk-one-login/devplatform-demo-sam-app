@@ -27,8 +27,8 @@ Hooks:
       TrafficRoutingConfig:
         Type: TimeBasedLinear
         TimeBasedLinear:
-          StepPercentage: 50
-          BakeTimeMins: 1
+          StepPercentage: 15
+          BakeTimeMins: 5
       Applications:
         - Target:
             Type: 'AWS::ECS::Service'
