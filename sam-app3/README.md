@@ -18,13 +18,6 @@ To use the SAM CLI, you need the following tools.
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
 - Create a new VPC and related resources as per [here]( https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3248357398/How+to+prepare+AWS+accounts+to+verify+container+signatures) or use an existing such VPC stack.
-- As [importing values from other stacks isn't supported at the moment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/blue-green.html#blue-green-iam), add the following SSM params based on the output of the above VPC stack:
-    * `/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA`
-    * `/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB`
-    * `/PLACEHOLDER_VPC_STACK_NAME/VpcId`
-    * `/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId`
-    * `/PLACEHOLDER_VPC_STACK_NAME/VpcCidr`
-   where `PLACEHOLDER_VPC_STACK_NAME` is your VPC stack name
 - Create ECR repository or use an existing one
 - To build the application, generate docker image as below and push to the repo
   Authenticate your shell with your AWS account and then run the below in your shell. Note, replace `<AWS_ACCOUNT_ID>` with your account ID, and replace`<ECR_REPOSITORY>` with your ECR repository name.
@@ -33,7 +26,7 @@ aws ecr get-login-password --region eu-west-2 | docker login --username AWS --pa
 docker build -t <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest image/
 docker push <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest
 ```
-- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER`, `PLACEHOLDER_VPC_STACK_NAME` and `PLACEHOLDER_STACK_NAME` in `template.yaml` with the correct values from on your AWS account.
+- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER`, `PLACEHOLDER_VPC_STACK_NAME` and `PLACEHOLDER_STACK_NAME` in `template.yaml` with the correct values from your AWS account.
 ```bash
 sam build
 sam deploy --guided
