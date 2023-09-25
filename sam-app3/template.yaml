@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
   ECS fargate example deployment template using blue green.
   Replace PLACEHOLDER_VPC_STACK_NAME with the VPC stack name.
+  Replace PLACEHOLDER_STACK_NAME with the stack name for this stack.
   Replace CONTAINER-IMAGE-PLACEHOLDER with the ECR image arn.
   Managed by dev-platform
 
@@ -20,9 +21,13 @@ Metadata:
 Hooks:
   CodeDeployBlueGreenHook:
     Properties:
+      LifecycleEventHooks:
+        # Dynamic values not supported in Hooks
+        BeforeAllowTraffic: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
+      ServiceRole: "HooksServiceRole-PLACEHOLDER_STACK_NAME"
       TrafficRoutingConfig:
-        Type: TimeBasedCanary
-        TimeBasedCanary:
+        Type: TimeBasedLinear
+        TimeBasedLinear:
           StepPercentage: 15
           BakeTimeMins: 5
       Applications:
@@ -71,6 +76,11 @@ Parameters:
     Description: Vpc Link Id
     Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
 
+  VpcCidr:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Cidr
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcCidr"
+
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
@@ -93,7 +103,6 @@ Resources:
   #
   # Fargate cluster
   #
-
   FargateCluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -147,8 +156,7 @@ Resources:
           IpProtocol: tcp
           FromPort: 5000
           ToPort: 5000
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerServiceSecurityGroup"
@@ -311,8 +319,7 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -337,8 +344,7 @@ Resources:
         HttpCode: "200-499"
       TargetType: ip
       UnhealthyThresholdCount: 2
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: "deregistration_delay.timeout_seconds"
           Value: "5"
@@ -429,8 +435,8 @@ Resources:
                       - Fn::Split:
                           - "/"
                           - Ref: AWS::StackId
-      VpcId:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+
+      VpcId: !Ref VpcId
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerSecurityGroup"
@@ -444,8 +450,7 @@ Resources:
     Properties:
       # checkov:skip=CKV_AWS_260: PLAT-477 Raised to resolve
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
-      CidrIp:
-        Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
+      CidrIp: !Ref VpcCidr
       Description: Allow traffic from anyone on port 80
       IpProtocol: tcp
       FromPort: 80
@@ -596,6 +601,104 @@ Resources:
           Value: !Sub "${AWS::StackName}-LoggingKmsKey"
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+  HooksServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: !Sub "HooksServiceRole-PLACEHOLDER_STACK_NAME"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: codedeploy.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: lambdaAccessPolicy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: 'lambda:*'
+                  Resource: !GetAtt  BeforeAllowTrafficLambda.Arn
+        PermissionsBoundary: !If
+          - UsePermissionsBoundary
+          - !Ref PermissionsBoundary
+          - !Ref AWS::NoValue
+        Tags:
+          - Key: Name
+            Value: !Sub "${AWS::StackName}-ServiceRole"
+          - Key: Service
+            Value: ci/cd
+          - Key: Source
+            Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+
+
+  BeforeAllowTrafficLambda:
+        Type: AWS::Serverless::Function
+        # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+        # checkov:skip=CKV_AWS_117: Internet access not required
+        Metadata:
+          checkov:
+            skip:
+             - id: "CKV_AWS_116"
+               comment: "DLQ is not appropriate for a Lambda invoked by an API"
+             - id: "CKV_AWS_117"
+               comment: "Internet access not required"
+        Properties:
+          FunctionName: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
+          Runtime: nodejs14.x
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - Statement:
+                - Sid: CodeDeployPolicy
+                  Effect: Allow
+                  Action:
+                    - codedeploy:*
+                  Resource:
+                    "*"
+          Handler: index.handler
+          ReservedConcurrentExecutions: 5
+          InlineCode: |
+            'use strict';
+             const aws = require('aws-sdk');
+             const codedeploy = new aws.CodeDeploy({apiVersion: '2014-10-06'});
+            
+            exports.handler = (event, context, callback) => {
+                  console.log("Entering BeforeAllowTraffic Hook!")
+                  //Read the DeploymentId from the event payload.
+                  var deploymentId = event.DeploymentId;
+            
+                  //Read the LifecycleEventHookExecutionId from the event payload
+                  var lifecycleEventHookExecutionId = event.LifecycleEventHookExecutionId;
+            
+                  /*
+                  Enter validation tests here.
+                  */
+            
+                  // Prepare the validation test results with the deploymentId and
+                  // the lifecycleEventHookExecutionId for CodeDeploy.
+                  var params = {
+                          deploymentId: deploymentId,
+                          lifecycleEventHookExecutionId: lifecycleEventHookExecutionId,
+                          status: 'Succeeded' // status can be 'Succeeded' or 'Failed'
+                    };
+            
+                  console.log("PARAMS "+ JSON.stringify(params))
+            
+                  // Pass CodeDeploy the prepared validation test results.
+                  codedeploy.putLifecycleEventHookExecutionStatus(params, function(err, data) {
+                      if (err) {
+                          console.log(JSON.stringify(err))
+                          // Validation failed.
+                          callback('Validation test failed');
+                      } else {
+                        // Validation succeeded.
+                        callback(null, 'Validation test succeeded');
+                      }
+                  });
+            };
 
 Outputs:
   ApiGatewayEndpoint:
