@@ -26,7 +26,7 @@ aws ecr get-login-password --region eu-west-2 | docker login --username AWS --pa
 docker build -t <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest image/
 docker push <AWS_ACCOUNT_ID>.dkr.ecr.eu-west-2.amazonaws.com/<ECR_REPOSITORY>:latest
 ```
-- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER`, `PLACEHOLDER_VPC_STACK_NAME` and `PLACEHOLDER_STACK_NAME` in `template.yaml` with the correct values from your AWS account.
+- To deploy your application for the first time, replace `CONTAINER-IMAGE-PLACEHOLDER`, `PLACEHOLDER_VPC_SAM3_STACK_NAME` and `PLACEHOLDER_SAM3_STACK_NAME` in `template.yaml` with the correct values from your AWS account.
 ```bash
 sam build
 sam deploy --guided

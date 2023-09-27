@@ -1,0 +1,68 @@
+name: SAM app 3 build and deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      #- main
+      - "PLAT-2459-1"
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./sam-app3
+
+jobs:
+  dockerBuildAndDeploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up AWS creds
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ secrets.SAM_APP3_GH_ACTIONS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.SAM_APP3_ECR_REPOSITORY }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA image
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA
+      
+      - name: SAM validate
+        run: sam validate
+
+      - name: Update SAM template with ECR image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.SAM_APP3_ECR_REPOSITORY }}
+          PLACEHOLDER_SAM3_STACK_NAME: ${{ secrets.PLACEHOLDER_SAM3_STACK_NAME }}
+          PLACEHOLDER_VPC_SAM3_STACK_NAME: ${{ secrets.PLACEHOLDER_VPC_SAM3_STACK_NAME }}
+        run: |
+          sed -i "s|CONTAINER-IMAGE-PLACEHOLDER|$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA|" template.yaml
+          sed -i "s|PLACEHOLDER_VPC_SAM3_STACK_NAME|$PLACEHOLDER_VPC_SAM3_STACK_NAME|" template.yaml
+          sed -i "s|PLACEHOLDER_SAM3_STACK_NAME|$PLACEHOLDER_SAM3_STACK_NAME|" template.yaml
+
+      - name: Create template.yaml and sha zip file
+        run: sam build
+
+      - name: Deploy SAM app
+        uses: alphagov/di-devplatform-upload-action@v3.2
+        with:
+          artifact-bucket-name: ${{ secrets.SAM_APP3_ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: ./sam-app3/.aws-sam/build

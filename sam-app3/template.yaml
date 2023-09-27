@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
   ECS fargate example deployment template using blue green.
-  Replace PLACEHOLDER_VPC_STACK_NAME with the VPC stack name.
-  Replace PLACEHOLDER_STACK_NAME with the stack name for this stack.
+  Replace PLACEHOLDER_VPC_SAM3_STACK_NAME with the VPC stack name.
+  Replace PLACEHOLDER_SAM3_STACK_NAME with the stack name for this stack.
   Replace CONTAINER-IMAGE-PLACEHOLDER with the ECR image arn.
   Managed by dev-platform
 
@@ -21,15 +21,15 @@ Metadata:
 Hooks:
   CodeDeployBlueGreenHook:
     Properties:
-      LifecycleEventHooks:
-        # Dynamic values not supported in Hooks
-        BeforeAllowTraffic: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
-      ServiceRole: "HooksServiceRole-PLACEHOLDER_STACK_NAME"
+      # LifecycleEventHooks:
+      #   # Dynamic values not supported in Hooks
+      #   BeforeAllowTraffic: "PLACEHOLDER_SAM3_STACK_NAME-BeforeAllowTrafficLambda"
+      # ServiceRole: "PLACEHOLDER_SAM3_STACK_NAME-HooksServiceRole"
       TrafficRoutingConfig:
         Type: TimeBasedLinear
         TimeBasedLinear:
-          StepPercentage: 15
-          BakeTimeMins: 5
+          StepPercentage: 50
+          BakeTimeMins: 1
       Applications:
         - Target:
             Type: 'AWS::ECS::Service'
@@ -59,31 +59,35 @@ Parameters:
   PrivateSubnetA:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet A Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
+    Default: "/PLACEHOLDER_VPC_SAM3_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
 
   PrivateSubnetB:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Private Subnet B Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
+    Default: "/PLACEHOLDER_VPC_SAM3_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
 
   VpcId: # Deprecated in favour of !ImportValue
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
+    Default: "/PLACEHOLDER_VPC_SAM3_STACK_NAME/VpcId"
 
   VpcLinkId:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Link Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
+    Default: "/PLACEHOLDER_VPC_SAM3_STACK_NAME/VpcLinkId"
 
   VpcCidr:
     Type: AWS::SSM::Parameter::Value<String>
     Description: Vpc Cidr
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcCidr"
+    Default: "/PLACEHOLDER_VPC_SAM3_STACK_NAME/VpcCidr"
 
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
+    Default: "none"
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
     Default: "none"
 
 Conditions:
@@ -92,12 +96,29 @@ Conditions:
       - Fn::Equals:
           - !Ref PermissionsBoundary
           - "none"
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
 
 Mappings:
   # see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
   ElasticLoadBalancerAccountIds:
     eu-west-2:
       AccountId: 652711504416
+
+Globals:
+  Function:
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+    Timeout: 20
 
 Resources:
   #
@@ -602,103 +623,67 @@ Resources:
         - Key: Source
           Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
-  HooksServiceRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: !Sub "HooksServiceRole-PLACEHOLDER_STACK_NAME"
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: codedeploy.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Policies:
-          - PolicyName: lambdaAccessPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action: 'lambda:*'
-                  Resource: !GetAtt  BeforeAllowTrafficLambda.Arn
-        PermissionsBoundary: !If
-          - UsePermissionsBoundary
-          - !Ref PermissionsBoundary
-          - !Ref AWS::NoValue
-        Tags:
-          - Key: Name
-            Value: !Sub "${AWS::StackName}-ServiceRole"
-          - Key: Service
-            Value: ci/cd
-          - Key: Source
-            Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+  # HooksServiceRole:
+  #     Type: AWS::IAM::Role
+  #     Properties:
+  #       RoleName: !Sub "PLACEHOLDER_SAM3_STACK_NAME-HooksServiceRole"
+  #       AssumeRolePolicyDocument:
+  #         Version: "2012-10-17"
+  #         Statement:
+  #           - Effect: Allow
+  #             Principal:
+  #               Service: codedeploy.amazonaws.com
+  #             Action:
+  #               - sts:AssumeRole
+  #       Policies:
+  #         - PolicyName: lambdaAccessPolicy
+  #           PolicyDocument:
+  #             Version: "2012-10-17"
+  #             Statement:
+  #               - Effect: Allow
+  #                 Action: 'lambda:*'
+  #                 Resource: !GetAtt  BeforeAllowTrafficLambda.Arn
+  #       PermissionsBoundary: !If
+  #         - UsePermissionsBoundary
+  #         - !Ref PermissionsBoundary
+  #         - !Ref AWS::NoValue
+  #       Tags:
+  #         - Key: Name
+  #           Value: !Sub "${AWS::StackName}-ServiceRole"
+  #         - Key: Service
+  #           Value: ci/cd
+  #         - Key: Source
+  #           Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
 
 
-  BeforeAllowTrafficLambda:
-        Type: AWS::Serverless::Function
-        # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
-        # checkov:skip=CKV_AWS_117: Internet access not required
-        Metadata:
-          checkov:
-            skip:
-             - id: "CKV_AWS_116"
-               comment: "DLQ is not appropriate for a Lambda invoked by an API"
-             - id: "CKV_AWS_117"
-               comment: "Internet access not required"
-        Properties:
-          FunctionName: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
-          Runtime: nodejs14.x
-          Policies:
-            - AWSLambdaBasicExecutionRole
-            - Statement:
-                - Sid: CodeDeployPolicy
-                  Effect: Allow
-                  Action:
-                    - codedeploy:*
-                  Resource:
-                    "*"
-          Handler: index.handler
-          ReservedConcurrentExecutions: 5
-          InlineCode: |
-            'use strict';
-             const aws = require('aws-sdk');
-             const codedeploy = new aws.CodeDeploy({apiVersion: '2014-10-06'});
-            
-            exports.handler = (event, context, callback) => {
-                  console.log("Entering BeforeAllowTraffic Hook!")
-                  //Read the DeploymentId from the event payload.
-                  var deploymentId = event.DeploymentId;
-            
-                  //Read the LifecycleEventHookExecutionId from the event payload
-                  var lifecycleEventHookExecutionId = event.LifecycleEventHookExecutionId;
-            
-                  /*
-                  Enter validation tests here.
-                  */
-            
-                  // Prepare the validation test results with the deploymentId and
-                  // the lifecycleEventHookExecutionId for CodeDeploy.
-                  var params = {
-                          deploymentId: deploymentId,
-                          lifecycleEventHookExecutionId: lifecycleEventHookExecutionId,
-                          status: 'Succeeded' // status can be 'Succeeded' or 'Failed'
-                    };
-            
-                  console.log("PARAMS "+ JSON.stringify(params))
-            
-                  // Pass CodeDeploy the prepared validation test results.
-                  codedeploy.putLifecycleEventHookExecutionStatus(params, function(err, data) {
-                      if (err) {
-                          console.log(JSON.stringify(err))
-                          // Validation failed.
-                          callback('Validation test failed');
-                      } else {
-                        // Validation succeeded.
-                        callback(null, 'Validation test succeeded');
-                      }
-                  });
-            };
+    # Enabling below while code signing is enforced via pipeline, returns this error during BlueGreen deploy:
+    #'CodeDeployBlueGreenHook' of type AWS::CodeDeploy::BlueGreen failed with message: Additional resource diff other than ECS application related resource update is detected,CodeDeploy can't perform BlueGreen style update properly. Diff resource logical Ids: [BeforeAllowTrafficLambda]
+
+  # BeforeAllowTrafficLambda:
+  #       Type: AWS::Serverless::Function
+  #       # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
+  #       # checkov:skip=CKV_AWS_117: Internet access not required
+  #       Metadata:
+  #         checkov:
+  #           skip:
+  #            - id: "CKV_AWS_116"
+  #              comment: "DLQ is not appropriate for a Lambda invoked by an API"
+  #            - id: "CKV_AWS_117"
+  #              comment: "Internet access not required"
+  #       Properties:
+  #         FunctionName: "PLACEHOLDER_SAM3_STACK_NAME-BeforeAllowTrafficLambda"
+  #         Runtime: nodejs14.x
+  #         Policies:
+  #           - AWSLambdaBasicExecutionRole
+  #           - Statement:
+  #               - Sid: CodeDeployPolicy
+  #                 Effect: Allow
+  #                 Action:
+  #                   - codedeploy:*
+  #                 Resource:
+  #                   "*"
+  #         Handler: preTrafficHook.handler
+  #         ReservedConcurrentExecutions: 5
 
 Outputs:
   ApiGatewayEndpoint:
