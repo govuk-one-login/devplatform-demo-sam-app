@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      #- main
-      - "PLAT-2459-1"
+      - main
 
 defaults:
   run:
