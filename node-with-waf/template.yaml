@@ -263,21 +263,34 @@ Resources:
             comment: "API should have AuthorizationType if appropriate - this is intentionally public"
     Properties:
       HttpMethod: GET
-      ResourceId: !GetAtt RestApiGateway.RootResourceId
+      ResourceId: !Ref RestProxyResource
       RestApiId: !Ref RestApiGateway
       AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: false
+        method.request.header.x-forwarded-for: false
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
         ConnectionId:
           Fn::ImportValue:
             !Sub "${VpcStackName}-ApiGatewayVpcLinkId"
+        RequestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
+          integration.request.header.x-forwarded-for: "method.request.header.x-forwarded-for"
         IntegrationHttpMethod: GET
         Uri: !Sub
-          - "http://${LBDNS}"
+          - "http://${LBDNS}/{proxy}"
           - LBDNS:
               Fn::ImportValue:
                 !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLBDNS"
+
+  RestProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ParentId: !GetAtt RestApiGateway.RootResourceId
+      PathPart: '{proxy+}'
 
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage

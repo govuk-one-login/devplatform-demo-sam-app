@@ -5,6 +5,37 @@ Description: >
   WAFv2 template.
   Managed by dev-platform
 
+Parameters:
+  Environment:
+    Description: "The environment we're deploying into."
+    Type: "String"
+    Default: dev
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
+
+Conditions:
+  IsProdLikeEnvironment: !Or
+    - !Equals [!Ref Environment, staging]
+    - !Equals [!Ref Environment, integration]
+    - !Equals [!Ref Environment, production]
+
+Mappings:
+  PlatformConfiguration:
+    dev:
+      CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+    build:
+      CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+    staging:
+      CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+    integration:
+      CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+    production:
+      CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+
 Resources:
   WAFv2ACL:
     Type: AWS::WAFv2::WebACL
@@ -26,30 +57,144 @@ Resources:
             CloudWatchMetricsEnabled: TRUE
             MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
             SampledRequestsEnabled: FALSE
-        - Name: AWS-AWMManagedRuleCommonRuleSet
-          OverrideAction:
-            None: {}
-          Priority: 20
-          Statement:
-            ManagedRuleGroupStatement:
-              Name: AWSManagedRulesCommonRuleSet
-              VendorName: AWS
-          VisibilityConfig:
-            CloudWatchMetricsEnabled: TRUE
-            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
-            SampledRequestsEnabled: FALSE
-        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
-          Priority: 30
-          OverrideAction:
-            None: {}
+        - Name: AWS-CRS
+          Priority: 0
           Statement:
             ManagedRuleGroupStatement:
               VendorName: AWS
-              Name: AWSManagedRulesKnownBadInputsRuleSet
+              Name: AWSManagedRulesCommonRuleSet # WCU = 700
+              ExcludedRules:
+              #  - Name: CrossSiteScripting_BODY
+              #  - Name: CrossSiteScripting_COOKIE
+              #  - Name: CrossSiteScripting_QUERYARGUMENTS
+              #  - Name: CrossSiteScripting_URIPATH
+              #  - Name: EC2MetaDataSSRF_BODY
+              #  - Name: EC2MetaDataSSRF_COOKIE
+              #  - Name: EC2MetaDataSSRF_QUERYARGUMENTS
+              #  - Name: EC2MetaDataSSRF_URIPATH
+              #  - Name: GenericLFI_BODY
+              #  - Name: GenericLFI_QUERYARGUMENTS
+              #  - Name: GenericLFI_URIPATH
+              #  - Name: GenericRFI_BODY
+              #  - Name: GenericRFI_QUERYARGUMENTS
+              #  - Name: GenericRFI_URIPATH
+                - Name: NoUserAgent_HEADER
+              #  - Name: RestrictedExtensions_QUERYARGUMENTS
+              #  - Name: RestrictedExtensions_URIPATH
+              #  - Name: SizeRestrictions_BODY
+              #  - Name: SizeRestrictions_Cookie_HEADER
+              #  - Name: SizeRestrictions_QUERYSTRING
+              #  - Name: SizeRestrictions_URIPATH
+              #  - Name: UserAgent_BadBots_HEADER
+          OverrideAction:
+            None: { }
           VisibilityConfig:
-            CloudWatchMetricsEnabled: TRUE
-            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
-            SampledRequestsEnabled: FALSE
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-aws-crs-metric'
+
+        - Name: Bad-Inputs
+          Priority: 1
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet # WCU = 200
+              #ExcludedRules:
+              #  - Name: ExploitablePaths_URIPATH
+              #  - Name: Host_localhost_HEADER
+              #  - Name: JavaDeserializationRCE_BODY
+              #  - Name: JavaDeserializationRCE_HEADER
+              #  - Name: JavaDeserializationRCE_QUERYSTRING
+              #  - Name: JavaDeserializationRCE_URIPATH
+                # - Name: Log4JRCE
+              #  - Name: PROPFIND_METHOD
+          OverrideAction:
+            None: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-bad-inputs-metric'
+
+        - Name: Anonymous-IpList
+          Priority: 2
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesAnonymousIpList # WCU = 50
+              #ExcludedRules:
+              #  - Name: AnonymousIPList
+              #  - Name: HostingProviderIPList
+          OverrideAction:
+            None: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-anonymous-iplist-metric'
+
+        - Name: Linux-RuleSet
+          Priority: 3
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesLinuxRuleSet # WCU = 200
+             #ExcludedRules:
+             #  - Name: LFI_URIPATH
+             #  - Name: LFI_QUERYSTRING
+             #  - Name: LFI_HEADER
+          OverrideAction:
+            None: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-Linux-ruleset-metric'
+
+        - Name: Unix-RuleSet
+          Priority: 4
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesUnixRuleSet # WCU = 100
+              #ExcludedRules:
+              #  - Name: UNIXShellCommandsVariables_QUERYARGUMENTS
+              #  - Name: UNIXShellCommandsVariables_BODY
+          OverrideAction:
+            None: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-Unix-ruleset-metric'
+
+        - Name: SQLInject-RuleSet
+          Priority: 5
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesSQLiRuleSet # WCU = 200
+              #ExcludedRules:
+              #  - Name: SQLiExtendedPatterns_QUERYARGUMENTS
+              #  - Name: SQLi_BODY
+              #  - Name: SQLi_COOKIE
+              #  - Name: SQLi_QUERYARGUMENTS
+              #  - Name: SQLi_URIPATH
+          OverrideAction:
+            None: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub '${AWS::StackName}-${Environment}-SQLinjection-ruleset-metric'
+
+        - Name: RateBased-CountIpRule # WCU = 30 (estimated)
+          Priority: 6
+          Statement:
+            RateBasedStatement:
+              Limit: 100
+              AggregateKeyType: IP
+          Action:
+            Count: { }
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${AWS::StackName}-${Environment}-RateBased-CountIp-ruleset-metric"
+            SampledRequestsEnabled: true
       VisibilityConfig:
         CloudWatchMetricsEnabled: TRUE
         MetricName: !Sub "${AWS::StackName}-WAFv2-hits"
@@ -60,7 +205,75 @@ Resources:
         - Key: Service
           Value: "ci/cd"
         - Key: Source
-          Value: "alphagov/di-devplatform-deploy/WAFv2/template.yaml"
+          Value: "alphagov/di-devplatform-demo-sam-app/node-with-waf/WAFv2/template.yaml"
+
+  cloudwatchLogsGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: !Sub 'aws-waf-logs-${AWS::StackName}-${Environment}-cloudWatchLog'
+      RetentionInDays: 180
+      KmsKeyId: !If
+        - IsProdLikeEnvironment
+        - !GetAtt WAFLoggingKmsKey.Arn
+        - !Ref AWS::NoValue
+
+  CSLScloudwatchLogsGroup:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: IsProdLikeEnvironment
+    Properties:
+      DestinationArn: !FindInMap [ PlatformConfiguration, !Ref Environment, CSLSEGRESS ]
+      FilterPattern: ""
+      LogGroupName: !Ref cloudwatchLogsGroup
+
+  WAFv2ACLlogging:
+    Type: 'AWS::WAFv2::LoggingConfiguration'
+    Properties:
+      ResourceArn: !GetAtt
+        - WAFv2ACL
+        - Arn
+      LogDestinationConfigs:
+        - !GetAtt cloudwatchLogsGroup.Arn
+      LoggingFilter:
+        DefaultBehavior: KEEP
+        Filters:
+          - Behavior: KEEP
+            Conditions:
+              - ActionCondition:
+                  Action: BLOCK
+              - ActionCondition:
+                  Action: COUNT
+            Requirement: MEETS_ANY
+      RedactedFields:
+        - SingleHeader:
+            Name: password
+
+  WAFLoggingKmsKey:
+    Type: AWS::KMS::Key
+    Condition: IsProdLikeEnvironment
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - kms:*
+            Resource: "*"
+          - Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource: "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
 
 # The IP address blocks below are referenced from here:
 # https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
@@ -68,17 +281,21 @@ Resources:
     Type: AWS::WAFv2::IPSet
     Properties:
       Addresses:
-        - "213.86.153.211/32"
-        - "213.86.153.212/32"
-        - "213.86.153.213/32"
-        - "213.86.153.214/32"
-        - "213.86.153.231/32"
-        - "213.86.153.235/32"
-        - "213.86.153.236/32"
-        - "213.86.153.237/32"
-        - "85.133.67.244/32"
-        - "51.149.8.0/25"
-        - "51.149.8.128/29"
+        - "213.86.153.211/32" #until 01/10/23
+        - "213.86.153.212/32" #until 01/10/23
+        - "213.86.153.213/32" #until 01/10/23
+        - "213.86.153.214/32" #until 01/10/23
+        - "213.86.153.231/32" #until 01/10/23
+        - "213.86.153.235/32" #until 01/10/23
+        - "213.86.153.236/32" #until 01/10/23
+        - "213.86.153.237/32" #until 01/10/23
+        - "85.133.67.244/32" #until 01/10/23
+        - "51.149.8.0/25" #until 01/10/23
+        - "51.149.8.128/29" #until 01/10/23
+        - "217.196.229.77"
+        - "217.196.229.79"
+        - "217.196.229.80" #(BYOD VPN Only)
+        - "217.196.229.81"
       IPAddressVersion: IPV4
       Scope: REGIONAL
       Tags:
