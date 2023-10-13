@@ -201,7 +201,7 @@ function apply_pipeline() {
   fi
 
   if [[ "$artifact_source_bucket_arn" == "false" ]]; then
-    pipeline_source_param="ParameterKey=GitHubRepositoryName,ParameterValue=di-devplatform-demo-sam-app"
+    pipeline_source_param="ParameterKey=GitHubRepositoryName,ParameterValue=devplatform-demo-sam-app"
   else
     pipeline_source_param="ParameterKey=ArtifactSourceBucketArn,ParameterValue=$artifact_source_bucket_arn"
   fi
