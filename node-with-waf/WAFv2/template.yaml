@@ -205,7 +205,7 @@ Resources:
         - Key: Service
           Value: "ci/cd"
         - Key: Source
-          Value: "alphagov/di-devplatform-demo-sam-app/node-with-waf/WAFv2/template.yaml"
+          Value: "govuk-one-login/devplatform-demo-sam-app/node-with-waf/WAFv2/template.yaml"
 
   cloudwatchLogsGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -304,7 +304,7 @@ Resources:
         - Key: Service
           Value: "identity-broker"
         - Key: Source
-          Value: "alphagov/di-devplatform-deploy/WAFv2/template.yaml"
+          Value: "govuk-one-login/devplatform-demo-sam-app/WAFv2/template.yaml"
 
 Outputs:
   WAFv2ACLArn:

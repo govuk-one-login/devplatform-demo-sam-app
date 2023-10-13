@@ -74,7 +74,7 @@ Resources:
         - Key: Name
           Value: APIGatewayAccessLogGroup
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
   CSLSFirehoseSubscriptionFilter:
@@ -111,7 +111,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldRestApi
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldRestAPIDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -133,7 +133,7 @@ Resources:
         - Key: Service
           Value: backend
         - Key: Source
-          Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
+          Value: "govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml"
 
   HelloWorldRestAPIBasePath:
     Type: AWS::ApiGateway::BasePathMapping
@@ -211,7 +211,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   CodeDeployServiceRole:
@@ -272,7 +272,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   PreTrafficHook:
@@ -327,7 +327,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: PreTrafficHook
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   PostTrafficHook:
@@ -382,7 +382,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: PostTrafficHook
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
 
@@ -414,7 +414,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTable
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
     Type: "AWS::S3::Bucket"
@@ -470,7 +470,7 @@ Resources:
         - Key: Service
           Value: backend
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         - Key: CheckovRulesToSkip
           Value: "CKV_AWS_18"
 
@@ -533,7 +533,7 @@ Resources:
         - Key: Name
           Value: HelloWorldBucket
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
@@ -572,7 +572,7 @@ Resources:
         - Key: Name
           Value: HelloWorldKmsKey
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldTopic:
     Type: AWS::SNS::Topic
@@ -590,7 +590,7 @@ Resources:
         - Key: Name
           Value: HelloWorldTopic
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldQueue:
     Type: AWS::SQS::Queue
@@ -608,7 +608,7 @@ Resources:
         - Key: Name
           Value: HelloWorldQueue
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   HelloWorldFunctionTooManyRequestsAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -731,7 +731,7 @@ Resources:
         - Key: Service
           Value: backend
         - Key: Source
-          Value: "alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml"
+          Value: "govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml"
 
 Outputs:
   HelloWorldApi:

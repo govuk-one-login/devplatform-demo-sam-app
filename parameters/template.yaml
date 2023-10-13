@@ -76,7 +76,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: BasicParameter
-        Source: alphagov/di-devplatform-demo-sam-app/parameters/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/parameters/template.yaml
 
 
   AnotherBasicParameter:
@@ -91,5 +91,5 @@ Resources:
         Environment: Demo
         Service: backend
         Name: AnotherBasicParameter
-        Source: alphagov/di-devplatform-demo-sam-app/parameters/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/parameters/template.yaml
 

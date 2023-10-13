@@ -45,7 +45,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ContainerService:
     Type: AWS::ECS::Service
@@ -73,7 +73,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
     DependsOn: ApplicationLoadBalancerListener
 
   ContainerAutoScalingTarget:
@@ -140,7 +140,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   #
   # Fargate tasks
@@ -176,7 +176,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -210,7 +210,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   #
   # API Gateway
@@ -224,7 +224,7 @@ Resources:
       Tags:
         Name: !Sub "${AWS::StackName}-ApiGateway"
         Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApiGatewayIntegration:
     Type: AWS::ApiGatewayV2::Integration
@@ -258,7 +258,7 @@ Resources:
       Tags:
         Name: !Sub "${AWS::StackName}-ApiDefaultStage"
         Service: ci/cd
-        Source: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   #
   # Load balancing
@@ -288,7 +288,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationLoadBalancerTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -311,7 +311,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -351,7 +351,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationLoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
@@ -393,7 +393,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationParameterGroup:
     Type: AWS::ElastiCache::ParameterGroup
@@ -408,7 +408,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationElastiCacheLogGroup:
     Type: AWS::Logs::LogGroup
@@ -422,7 +422,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationAuthPass:
     Type: AWS::SecretsManager::Secret
@@ -443,7 +443,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
   ApplicationReplicationGroup:
     Type: AWS::ElastiCache::ReplicationGroup
@@ -476,7 +476,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
 
   #
@@ -495,7 +495,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
     Type: AWS::S3::Bucket
@@ -531,7 +531,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_18
 
@@ -615,7 +615,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-KmsKey"
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/node/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
 Outputs:
   ApiGatewayEndpoint:
