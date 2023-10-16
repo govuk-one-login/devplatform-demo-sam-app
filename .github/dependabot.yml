@@ -15,7 +15,7 @@ updates:
     target-branch: main
     versioning-strategy: lockfile-only
     reviewers:
-      - "alphagov/di-dev-platform"
+      - "alphagov/dev-platform"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -27,7 +27,7 @@ updates:
     assignees:
       - "andyloughran"
     reviewers:
-      - "alphagov/di-dev-platform"
+      - "alphagov/dev-platform"
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
     # default location of `.github/workflows`
@@ -38,4 +38,4 @@ updates:
     assignees:
       - "andyloughran"
     reviewers:
-      - "alphagov/di-dev-platform"
+      - "alphagov/dev-platform"
