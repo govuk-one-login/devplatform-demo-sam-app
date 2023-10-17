@@ -244,7 +244,7 @@ Resources:
       Tags:
         Name: !Sub "${AWS::StackName}-ApiGateway"
         Service: ci/cd
-        Source: alphagov/di-devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
+        Source: govuk-one-login/devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
 
   ApiGatewayIntegration:
     Type: AWS::ApiGatewayV2::Integration
@@ -276,7 +276,7 @@ Resources:
       Tags:
         Name: !Sub "${AWS::StackName}-ApiDefaultStage"
         Service: ci/cd
-        Source: alphagov/di-devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
+        Source: govuk-one-login/devplatform-deploy/sam-deploy-pipeline/tests/fargate-app/template.yaml
 
   #
   # Load balancing
