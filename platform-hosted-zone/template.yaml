@@ -35,7 +35,7 @@ Resources:
     Properties:
       Name: !FindInMap ["EnvironmentSettings", !Ref Environment, "DomainName"]
       HostedZoneConfig:
-        Comment: Delegated via alphagov/di-domains repo
+        Comment: Delegated via govuk-one-login/domains repo
       HostedZoneTags:
         - Key: Product
           Value: GOV.UK Sign In
