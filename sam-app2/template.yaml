@@ -147,7 +147,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
 
   APIGatewayAccessLogGroup:
@@ -167,7 +167,7 @@ Resources:
         - Key: Name
           Value: APIGatewayAccessLogGroup
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
@@ -192,7 +192,7 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldRestApi
-        Source: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
@@ -265,7 +265,7 @@ Resources:
         - Key: Name
           Value: HelloWorldKmsKey
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   HelloWaf:
     Type: AWS::WAFv2::WebACL
@@ -350,7 +350,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   HelloWafGatewayAssociation:
     Type: AWS::WAFv2::WebACLAssociation
@@ -383,7 +383,7 @@ Resources:
         - Key: Name
           Value: HelloWafLogGroup
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app2/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   HelloWafLogs:
     Type: AWS::WAFv2::LoggingConfiguration

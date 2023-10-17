@@ -115,7 +115,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   ContainerService:
     Type: AWS::ECS::Service
@@ -130,7 +130,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
     DependsOn: ApplicationLoadBalancerListener
 
   ContainerServiceSecurityGroup:
@@ -163,7 +163,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   #
   # Fargate tasks
@@ -198,7 +198,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   TaskLogGroup:
     Type: AWS::Logs::LogGroup
@@ -230,7 +230,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   #
   # API Gateway
@@ -304,7 +304,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerTargetGroupBlue:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -329,7 +329,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerTargetGroupGreen:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -354,7 +354,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -443,7 +443,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   ApplicationLoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
@@ -483,7 +483,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
   AccessLogsBucket:
     Type: AWS::S3::Bucket
@@ -519,7 +519,7 @@ Resources:
         - Key: Service
           Value: ci/cd
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
         - Key: CheckovRulesToSkip
           Value: CKV_AWS_18
 
@@ -600,7 +600,7 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName}-LoggingKmsKey"
         - Key: Source
-          Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+          Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
   HooksServiceRole:
       Type: AWS::IAM::Role
@@ -632,7 +632,7 @@ Resources:
           - Key: Service
             Value: ci/cd
           - Key: Source
-            Value: alphagov/di-devplatform-demo-sam-app/sam-app3/template.yaml
+            Value: govuk-one-login/devplatform-demo-sam-app/sam-app3/template.yaml
 
 
   BeforeAllowTrafficLambda:

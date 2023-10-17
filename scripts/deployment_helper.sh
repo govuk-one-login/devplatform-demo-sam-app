@@ -2,7 +2,7 @@
 
 set -e -ou pipefail
 
-METADATA="repository=di-devplatform-demo-sam-app,commitsha=local-deployment"
+METADATA="repository=devplatform-demo-sam-app,commitsha=local-deployment"
 
 function login() {
   local account="$1"

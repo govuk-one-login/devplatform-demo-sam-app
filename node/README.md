@@ -28,7 +28,7 @@ export ECR_REPO_NAME=<Use the ContainerRepositoryUri output from the ECR stack>
 export CONTAINER_SIGN_KMS_KEY_ARN=<Use the ContainerSignerKmsKeyArn output from the container-signer stack>
 export ARTIFACT_BUCKET_NAME=<Use the GitHubArtifactSourceBucketName output from the pipeline stack>
 
-export GITHUB_REPOSITORY=di-devplatform-demo-sam-app
+export GITHUB_REPOSITORY=devplatform-demo-sam-app
 export GITHUB_SHA="$(git rev-parse HEAD)$(date +%H%M%S)"
 
 export WORKING_DIRECTORY=.
