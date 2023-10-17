@@ -8,7 +8,7 @@ function apply_aws_integration_test() {
   local test_role_arn="$2"
   echo "Applying aws-int-test template to stack: $stack_name ..."
 
-  if [[ "$(basename "$(pwd)")" == "di-devplatform-demo-sam-app" ]]; then
+  if [[ "$(basename "$(pwd)")" == "devplatform-demo-sam-app" ]]; then
     cd aws-integration-test/app
   elif [[ "$(basename "$(pwd)")" == "aws-int-test" ]]; then
     cd app
