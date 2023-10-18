@@ -12,7 +12,7 @@ This stack supports sam-app by creating the below zones:
 
 - `platform.sandpit.account.gov.uk`
     - Deployed in di-devplatform-prod-demo.
-    - Delegation is managed in [di-domains repo](1)
+    - Delegation is managed in [di-domains repo][1]
 
 ### Parameters
 The list of parameters for this template:
