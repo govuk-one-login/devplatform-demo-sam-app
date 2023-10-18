@@ -33,6 +33,6 @@ The list of resources this template creates:
 The list of outputs this template exposes:
 | Output           | Description   |
 |------------------|---------------|
-| PlatformHostedZoneId | 
+| PlatformHostedZoneId | |
 
-[1]: https://github.com/alphagov/di-domains/tree/main 
+[1]: https://github.com/govuk-one-login/domains/tree/main
