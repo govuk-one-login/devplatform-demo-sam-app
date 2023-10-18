@@ -12,7 +12,7 @@ This stack supports sam-app by creating the below zones:
 
 - `platform.sandpit.account.gov.uk`
     - Deployed in di-devplatform-prod-demo.
-    - Delegation is managed in [di-domains repo](1)
+    - Delegation is managed in [di-domains repo][1]
 
 ### Parameters
 The list of parameters for this template:
@@ -33,6 +33,6 @@ The list of resources this template creates:
 The list of outputs this template exposes:
 | Output           | Description   |
 |------------------|---------------|
-| PlatformHostedZoneId | 
+| PlatformHostedZoneId | |
 
-[1]: https://github.com/alphagov/di-domains/tree/main 
+[1]: https://github.com/govuk-one-login/domains/tree/main
