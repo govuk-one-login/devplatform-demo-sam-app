@@ -53,7 +53,7 @@ Resources:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
       LoadBalancers:
-        - ContainerName: node-server
+        - ContainerName: !Sub "${AWS::StackName}-node-server"
           ContainerPort: 8000
           TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
       NetworkConfiguration:
@@ -150,7 +150,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-        - Name: node-server
+        - Name: !Sub "${AWS::StackName}-node-server"
           Image: "CONTAINER-IMAGE-PLACEHOLDER"
           PortMappings:
             - ContainerPort: 8000
@@ -219,7 +219,7 @@ Resources:
   ApiGateway:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-      Name: node-server-endpoint
+      Name: !Sub "${AWS::StackName}-node-server-endpoint"
       ProtocolType: HTTP
       Tags:
         Name: !Sub "${AWS::StackName}-ApiGateway"
@@ -380,7 +380,7 @@ Resources:
   ApplicationCacheSubnetGroup:
     Type: AWS::ElastiCache::SubnetGroup
     Properties:
-      CacheSubnetGroupName: application-cache-subnet-group
+      CacheSubnetGroupName: !Sub "${AWS::StackName}-application-cache-subnet-group"
       Description: Cache Subnet Group
       SubnetIds:
         - Fn::ImportValue:
@@ -427,7 +427,7 @@ Resources:
   ApplicationAuthPass:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: elasticache-application
+      Name: !Sub "${AWS::StackName}-elasticache-application"
       Description: Random password for elastiCache
       GenerateSecretString:
         ExcludeLowercase: false
