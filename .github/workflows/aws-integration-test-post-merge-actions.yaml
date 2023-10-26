@@ -21,7 +21,7 @@ jobs:
         working-directory: ./aws-integration-test/aws-integration
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -65,7 +65,7 @@ jobs:
         working-directory: ./aws-integration-test/app
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -99,7 +99,7 @@ jobs:
         run: ./build.sh
 
       - name: Deploy
-        uses: alphagov/di-devplatform-upload-action@v3.2
+        uses: govuk-one-login/devplatform-upload-action@v3.3
         with:
           artifact-bucket-name: ${{ secrets.AWS_INTEGRATION_TEST_ARTIFACT_SOURCE_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}

@@ -14,7 +14,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
@@ -61,7 +61,7 @@ jobs:
       - name: Test lambda2
         run: ./gradlew clean test
         working-directory: ./sam-app/HelloWorldFunction2
-        
+
       - name: Publish test results
         uses: mikepenz/action-junit-report@75b84e78b3f0aaea7ed7cf8d1d100d7f97f963ec
         if: always() # always run even if the previous step fails
