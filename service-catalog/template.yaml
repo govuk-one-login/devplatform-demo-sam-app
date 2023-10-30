@@ -1,0 +1,224 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Sample Service catalog app POC.
+  Managed by dev-platform
+
+# Set Cloudformation
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Service Catalog Portfolio Details"
+        Parameters:
+          - PortfolioDisplayName
+          - PortfolioProviderName
+          - PortfolioDescription
+      -
+        Label:
+          default: "Service Catalog Portfolio Tags"
+        Parameters:
+          - Name
+          - Dept
+          - Env
+          - User
+          - Owner  
+      -
+        Label:
+          default: "Service Catalog Product Tag Options Activation"
+        Parameters:
+          - ActivateProductTagOptions
+      -
+        Label:
+          default: "Service Catalog Product Tag Options"
+        Parameters:
+          - ProductDept
+          - ProductEnv
+          - ProductUser
+          - ProductOwner
+      -
+        Label:
+          default: "Portfolio Sharing"
+        Parameters:
+          - ShareThisPortfolio
+          - AccountIdOfChildAWSAccount
+
+Parameters:
+#TBC
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+    Default: "none"
+
+  Environment:
+    Description: "The name of the environment to deploy to"
+    Type: "String"
+    Default: dev
+    AllowedValues:
+      - "dev"
+#TBC
+#  PermissionsBoundary:
+#    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+#    Type: String
+#    Default: "none"
+
+#TBC
+#  GitHubActionsRoleArn:
+#    Description: "GitHub Actions Role Arn to be used"
+#    Type: "String"
+#    Default: "none"
+
+#is the name needed?
+  GitHubActionsRoleName:
+    Description: "GitHub Actions Role Name to be used"
+    Type: "String"
+    Default: "none"
+#TBC
+  GitHubActionsValidateRoleArn:
+    Description: "GitHub Actions Validate Role Arn to be used"
+    Type: "String"
+    Default: "none"    
+
+#TBC
+# Department
+  Dept:
+    Description:    Please specify the Department. Used for tagging
+    Type:           String
+    Default:        "1234"
+# Owner
+  Owner:
+    Description:    Please specify the Owner. Used for tagging
+    Type:           String
+    Default:        "Owner"
+
+# Product Enviornment type
+  ProductEnv:
+    Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+    Type:           String
+    Default:        "dev"
+    AllowedValues:
+      - test
+      - dev
+      - prod
+
+# Product Department
+  ProductDept:
+    Description:    Please specify the Department. Used for tagging
+    Type:           String
+    Default:        "1234"
+
+# Product User
+  ProductUser:
+    Description:    Please specify the User. Used for tagging
+    Type:           String
+    Default:        "User"
+
+# Product Owner
+  ProductOwner:
+    Description:    Please specify the Owner. Used for tagging
+    Type:           String
+    Default:        "Owner"    
+
+# Portfolio Provider Name
+  PortfolioProviderName:
+    Description:    Please specify the Portfolio Provider Name.
+    Type:           String
+    Default:        "dev-platform"
+
+# Portfolio Description
+  PortfolioDescription:
+    Description:    Please specify the Portfolio Description.
+    Type:           String
+    Default:        "Service Catalog Portfolio for Business Unit (BU)"
+
+# Portfolio Display Name
+  PortfolioDisplayName:
+    Description:    Please specify the Portfolio Description. Must satisfy regular expression pattern, (^[a-zA-Z0-9_\-]*)
+    Type:           String
+    Default:        "dev-platform"
+
+# Tag Options Activation
+  ActivateProductTagOptions:
+    Description:    Activate Custom Tag Options? Used for portfolio tagging
+    Type:           String
+    Default:        "true"
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+# Share Portfolio
+  ShareThisPortfolio:
+    Description:    Please specify if this Portfolio will be Shared with additonal accounts?
+    Type:           String
+    Default:        "false"
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+# AccountId
+  AccountIdOfChildAWSAccount:
+    Description:    Please specify the Sub AWS Account ID.
+    Type:           String
+   # Default:        "1234567890" 
+    Default:        "1234"      
+
+Conditions:
+
+  ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
+
+Resources:
+
+   ServiceCatalogPortfolio:
+     Type: "AWS::ServiceCatalog::Portfolio"
+     Properties:
+       ProviderName: 'dev-platform'
+       DisplayName: 'dev-platform'
+       Description: 'dev-platform'
+      #  Tags:
+      #    - Key:    Name
+      #      Value:  !Sub '${PortfolioDisplayName}'
+      #    - Key:    Dept
+      #      Value:  !Sub '${Dept}'
+      #    - Key:    Env
+      #      Value:  'dev'
+      #    - Key:    User
+      #      Value:  !Sub '${User}'
+      #    - Key:    Owner
+      #      Value:  !Sub '${Owner}'
+
+   ServiceCatalogProductTagOptions:
+     Type: "AWS::ServiceCatalog::TagOption"
+     Properties:
+        Active:     Boolean
+        Key:        String
+        Value:      String
+  #      Key:        Env
+  #      Value:      !Sub '${ProductEnv}'
+  #      Key:        User
+  #      Value:      !Sub '${ProductUser}'
+  #      Key:        Owner
+  #      Value:      !Sub '${ProductOwner}'
+
+  # ServiceCatalogPortfolioShare:
+  #   Type: "AWS::ServiceCatalog::PortfolioShare"
+  #   Condition: ConditionShareThisPortfolio
+  #   Properties:
+  #     AccountId: !Ref 'AccountIdOfChildAWSAccount'
+  #     PortfolioId: !Ref 'ServiceCatalogPortfolio'
+
+# Outputs:
+
+#   ServiceCatalogPortfolio:
+#     Value:    !Ref 'ServiceCatalogPortfolio'
+#     Export:
+#       Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
+
+#   ServiceCatalogPortfolioName:
+#     Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
+#     Export:
+#       Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
+
+#   ServiceCatalogProductTagOptions:
+#     Value:    !Ref 'ServiceCatalogProductTagOptions'
+#     Export:
+#       Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
