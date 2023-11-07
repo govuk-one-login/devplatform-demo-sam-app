@@ -47,7 +47,7 @@ jobs:
         uses: aws-actions/setup-sam@v2
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
           role-to-assume: ${{ secrets.SAM_APP2_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
