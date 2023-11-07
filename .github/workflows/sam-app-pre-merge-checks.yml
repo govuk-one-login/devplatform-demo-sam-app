@@ -63,7 +63,7 @@ jobs:
         working-directory: ./sam-app/HelloWorldFunction2
 
       - name: Publish test results
-        uses: mikepenz/action-junit-report@75b84e78b3f0aaea7ed7cf8d1d100d7f97f963ec
+        uses: mikepenz/action-junit-report@0831a82caad2465c31c6dd929978f640cb42556c
         if: always() # always run even if the previous step fails
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
