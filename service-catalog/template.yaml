@@ -192,6 +192,7 @@ Resources:
         Active:     Boolean
         Key:        String
         Value:      String
+  #      not needed from here      
   #      Key:        Env
   #      Value:      !Sub '${ProductEnv}'
   #      Key:        User
