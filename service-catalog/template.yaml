@@ -186,12 +186,12 @@ Resources:
       #    - Key:    Owner
       #      Value:  !Sub '${Owner}'
 
-   ServiceCatalogProductTagOptions:
-     Type: "AWS::ServiceCatalog::TagOption"
-     Properties:
-        Active:     Boolean
-        Key:        String
-        Value:      String
+  #  ServiceCatalogProductTagOptions:
+  #    Type: "AWS::ServiceCatalog::TagOption"
+  #    Properties:
+  #       Active:     Boolean
+  #       Key:        String
+  #       Value:      String
   #      Key:        Env
   #      Value:      !Sub '${ProductEnv}'
   #      Key:        User
