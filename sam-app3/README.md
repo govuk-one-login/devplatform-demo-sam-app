@@ -2,7 +2,7 @@
 
 This project contains an example container application with a ECS canary deployment template.
 It uses `TimeBasedLinear` configuration to shift traffic from one version of the deployment to the other.
-It also creates demo lambda for `BeforeAllowTraffic` hooks which can be modified to add any smoke tests that run before traffic is shifted to the replacement task set 
+It also creates demo lambda for `BeforeAllowTraffic` hooks which can be modified to add any smoke tests that run before traffic is shifted to the replacement task set
 
 - image/ - Contains simple hello world application with Dockerfile
 - template.yaml - A template that defines the application's AWS resources and deploys updates in a blue/green manner.
