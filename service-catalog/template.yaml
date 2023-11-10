@@ -191,8 +191,7 @@ Resources:
      Properties:
         Active:     Boolean
         Key:        String
-        Value:      String
-  #      not needed from here      
+        Value:      String    
   #      Key:        Env
   #      Value:      !Sub '${ProductEnv}'
   #      Key:        User
