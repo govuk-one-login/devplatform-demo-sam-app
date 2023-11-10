@@ -199,12 +199,12 @@ Resources:
   #      Key:        Owner
   #      Value:      !Sub '${ProductOwner}'
 
-  ServiceCatalogPortfolioShare:
-    Type: "AWS::ServiceCatalog::PortfolioShare"
-    Condition: ConditionShareThisPortfolio
-    Properties:
-      AccountId: '1234'
-      PortfolioId: '1234'
+   ServiceCatalogPortfolioShare:
+     Type: "AWS::ServiceCatalog::PortfolioShare"
+     Condition: ConditionShareThisPortfolio
+     Properties:
+       AccountId: '1234'
+       PortfolioId: '1234'
 
 # Outputs:
 
