@@ -189,9 +189,9 @@ Resources:
    ServiceCatalogProductTagOptions:
      Type: "AWS::ServiceCatalog::TagOption"
      Properties:
-        Active:     Boolean
-        Key:        String
-        Value:      String    
+  #      Active:     Boolean
+        Key:        'String'
+        Value:      'String'  
   #      Key:        Env
   #      Value:      !Sub '${ProductEnv}'
   #      Key:        User
