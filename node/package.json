@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "aws-sdk": "2.1376.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "cfenv": "1.2.4",
     "connect-dynamodb": "2.0.6",
     "di-ipv-cri-common-express": "github:alphagov/di-ipv-cri-common-express#v0.0.36",
