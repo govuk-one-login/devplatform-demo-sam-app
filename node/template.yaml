@@ -38,6 +38,8 @@ Mappings:
     eu-west-2:
       AccountId: 652711504416
   EnvironmentConfiguration:
+    # Requires KMSApiEnabled and SecretsManagerApiEnabled in the VPC Stack
+    # See https://github.com/govuk-one-login/observability-infrastructure/blob/main/fargate/README.md
     dev:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
     build:
