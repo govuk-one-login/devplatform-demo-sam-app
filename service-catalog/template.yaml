@@ -163,7 +163,7 @@ Parameters:
     Default:        "1234"      
 
 Conditions:
-
+#adding for testing
   ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
 
 Resources:
