@@ -75,6 +75,8 @@ Resources:
     Properties:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
+      DeploymentController:
+        Type: CODE_DEPLOY
       LoadBalancers:
         - ContainerName: !Sub "${AWS::StackName}-node-server"
           ContainerPort: 8000
