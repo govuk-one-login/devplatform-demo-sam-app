@@ -140,7 +140,7 @@ Parameters:
     Description: Please specify ServiceCatalog Product Artifact Description.
     Type: String
     Default: "ProductExample"
-# update to check code
+# update to check code more checking
 Resources:
   ServiceCatalogCloudFormationProduct:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
