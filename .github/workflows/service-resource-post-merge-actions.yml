@@ -55,4 +55,4 @@ jobs:
             artifact-bucket-name: ${{ secrets.SERVICE_RESOURCE_ARTIFACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
             working-directory: ./service-catalog/.aws-sam/build
-            template-file: product.yaml
+#            template-file: product.yaml
