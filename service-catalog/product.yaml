@@ -173,7 +173,8 @@ Resources:
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}"
+#        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
   # ServiceCatalogCustomTagOptionsAssociation:
