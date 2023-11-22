@@ -1,6 +1,7 @@
+
 AWSTemplateFormatVersion: "2010-09-09"
 Description:
-  This template creates AWS Service Catalog Product."
+  This template creates AWS Service Catalog Product, please make sure you review billing costs for AWS Service Catalog."
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -76,7 +77,7 @@ Parameters:
   ServiceCatalogPortfolioStackName:
     Description: Please specify the Service Catalog Portfolio Stack Name.
     Type: String
-    Default: "dev-platform"
+    Default: ""
 
   # ServiceCatalog Product Name
   SCProductName:
@@ -137,7 +138,7 @@ Parameters:
     Description: Please specify ServiceCatalog Product Artifact Description.
     Type: String
     Default: "ProductExample"
-# update to check code more checking
+
 Resources:
   ServiceCatalogCloudFormationProduct:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
