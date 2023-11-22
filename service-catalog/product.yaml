@@ -173,16 +173,15 @@ Resources:
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}"
-#        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
-  # ServiceCatalogCustomTagOptionsAssociation:
-  #   Type: "AWS::ServiceCatalog::TagOptionAssociation"
-  #   Properties:
-  #     TagOptionId:
-  #       Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
-  #     ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
+  ServiceCatalogCustomTagOptionsAssociation:
+    Type: "AWS::ServiceCatalog::TagOptionAssociation"
+    Properties:
+      TagOptionId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
+      ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
 
 Outputs:
   ServiceCatalogCloudFormationProductName:

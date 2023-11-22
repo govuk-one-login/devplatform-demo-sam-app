@@ -206,19 +206,19 @@ Resources:
        AccountId: '1234'
        PortfolioId: '1234'
 
-# Outputs:
+Outputs:
 
-#   ServiceCatalogPortfolio:
-#     Value:    !Ref 'ServiceCatalogPortfolio'
-#     Export:
-#       Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
+  ServiceCatalogPortfolio:
+    Value:    !Ref 'ServiceCatalogPortfolio'
+    Export:
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
 
-#   ServiceCatalogPortfolioName:
-#     Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
-#     Export:
-#       Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
+  ServiceCatalogPortfolioName:
+    Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
+    Export:
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
 
-#   ServiceCatalogProductTagOptions:
-#     Value:    !Ref 'ServiceCatalogProductTagOptions'
-#     Export:
-#       Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
+  ServiceCatalogProductTagOptions:
+    Value:    !Ref 'ServiceCatalogProductTagOptions'
+    Export:
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
