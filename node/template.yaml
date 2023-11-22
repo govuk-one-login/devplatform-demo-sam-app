@@ -41,15 +41,15 @@ Mappings:
     # Requires KMSApiEnabled and SecretsManagerApiEnabled in the VPC Stack
     # See https://github.com/govuk-one-login/observability-infrastructure/blob/main/fargate/README.md
     dev:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     build:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     staging:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     integration:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     production:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables     # pragma: allowlist secret
 
 Resources:
   #
@@ -245,10 +245,10 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - secretsmanager:ListSecrets
-                  - secretsmanager:GetSecretValue
+                  - secretsmanager:ListSecrets                                # pragma: allowlist secret
+                  - secretsmanager:GetSecretValue                             # pragma: allowlist secret
                 Resource:
-                  - arn:aws:secretsmanager:eu-west-2:216552277552:secret:*
+                  - arn:aws:secretsmanager:eu-west-2:216552277552:secret:*    # pragma: allowlist secret
               - Effect: Allow
                 Action:
                   - kms:Decrypt
