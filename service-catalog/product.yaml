@@ -1,8 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description:
-  "CI/CD optimized AWS CloudFormation Sample Template for AWS Service Catalog Product creation.
-  ### Before deployment please make sure that all parameters are reviewed and updated according the specific use case. ###
-  **WARNING**
   This template creates AWS Service Catalog Product."
 Metadata:
   AWS::CloudFormation::Interface:
@@ -179,12 +176,12 @@ Resources:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
-  ServiceCatalogCustomTagOptionsAssociation:
-    Type: "AWS::ServiceCatalog::TagOptionAssociation"
-    Properties:
-      TagOptionId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
-      ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
+  # ServiceCatalogCustomTagOptionsAssociation:
+  #   Type: "AWS::ServiceCatalog::TagOptionAssociation"
+  #   Properties:
+  #     TagOptionId:
+  #       Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
+  #     ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
 
 Outputs:
   ServiceCatalogCloudFormationProductName:
