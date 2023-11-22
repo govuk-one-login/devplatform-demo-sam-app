@@ -174,30 +174,30 @@ Resources:
        ProviderName: 'dev-platform'
        DisplayName: 'dev-platform'
        Description: 'dev-platform'
-      #  Tags:
-      #    - Key:    Name
-      #      Value:  !Sub '${PortfolioDisplayName}'
-      #    - Key:    Dept
-      #      Value:  !Sub '${Dept}'
-      #    - Key:    Env
-      #      Value:  'dev'
-      #    - Key:    User
-      #      Value:  !Sub '${User}'
-      #    - Key:    Owner
-      #      Value:  !Sub '${Owner}'
+       Tags:
+         - Key:    Name
+           Value:  !Sub '${PortfolioDisplayName}'
+         - Key:    Dept
+           Value:  !Sub '${Dept}'
+         - Key:    Env
+           Value:  'dev'
+         - Key:    User
+           Value:  !Sub '${User}'
+         - Key:    Owner
+           Value:  !Sub '${Owner}'
 
    ServiceCatalogProductTagOptions:
      Type: "AWS::ServiceCatalog::TagOption"
      Properties:
-  #      Active:     Boolean
+        Active:     Boolean
         Key:        'String'
         Value:      'String'  
-  #      Key:        Env
-  #      Value:      !Sub '${ProductEnv}'
-  #      Key:        User
-  #      Value:      !Sub '${ProductUser}'
-  #      Key:        Owner
-  #      Value:      !Sub '${ProductOwner}'
+        Key:        Env
+        Value:      !Sub '${ProductEnv}'
+        Key:        User
+        Value:      !Sub '${ProductUser}'
+        Key:        Owner
+        Value:      !Sub '${ProductOwner}'
 
    ServiceCatalogPortfolioShare:
      Type: "AWS::ServiceCatalog::PortfolioShare"
