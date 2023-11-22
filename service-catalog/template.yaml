@@ -1,200 +1,222 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description:
-  This template creates AWS Service Catalog Product, please make sure you review billing costs for AWS Service Catalog."
+# /*
+# * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# *
+# * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# * software and associated documentation files (the "Software"), to deal in the Software
+# * without restriction, including without limitation the rights to use, copy, modify,
+# * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# * permit persons to whom the Software is furnished to do so.
+# *
+# * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# */
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CI/CD optimized AWS CloudFormation Sample Template for AWS Service Catalog Portfolio creation.
+             ### Before deployment please make sure that all parameters are reviewed and updated according the specific use case. ###
+             **WARNING**
+             This template creates AWS Service Catalog Portfolio, please make sure you review billing costs for AWS Service Catalog.'
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label:
-          default: "Service Catalog Product Tags"
-        Parameters:
-          - AppName
-          - Env
-          - Dept
-          - User
-          - Owner
-      - Label:
-          default: "Service Catalog Portfolio Stack Name"
-        Parameters:
-          - ServiceCatalogPortfolioStackName
-      - Label:
-          default: "Service Catalog Product Details"
-        Parameters:
-          - SCProductName
-          - SCProductDescription
-          - SCProductOwner
-          - SCProductSupport
-          - SCProductDistributor
-          - SCSupportEmail
-          - SCSupportUrl
-      - Label:
-          default: "Service Catalog Portfolio Display Name"
+      -
+        Label:
+          default: "Service Catalog Portfolio Details"
         Parameters:
           - PortfolioDisplayName
-      - Label:
-          default: "Service Catalog Product Details"
+          - PortfolioProviderName
+          - PortfolioDescription
+      -
+        Label:
+          default: "Service Catalog Portfolio Tags"
         Parameters:
-          - ProvisioningArtifactTemplateUrl
-          - ProvisioningArtifactNameParameter
-          - ProvisioningArtifactDescriptionParameter
+          - Name
+          - Dept
+          - Env
+          - User
+          - Owner
+      -
+        Label:
+          default: "Service Catalog Product Tag Options Activation"
+        Parameters:
+          - ActivateProductTagOptions
+      -
+        Label:
+          default: "Service Catalog Product Tag Options"
+        Parameters:
+          - ProductDept
+          - ProductEnv
+          - ProductUser
+          - ProductOwner
+      -
+        Label:
+          default: "Portfolio Sharing"
+        Parameters:
+          - ShareThisPortfolio
+          - AccountIdOfChildAWSAccount
 
 Parameters:
-  # Enviornment type
+
+# Enviornment type
   Env:
-    Description: Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
-    Type: String
-    Default: "dev"
+    Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+    Type:           String
+    Default:        "dev"
     AllowedValues:
       - test
       - dev
       - prod
 
-  # Application Name
-  AppName:
-    Description: Please specify the Application Name. Used for tagging and resource names. Mandatory LOWER CASE.
-    Type: String
-    Default: "app"
-
-  # Department
+# Department
   Dept:
-    Description: Please specify the Department. Used for tagging
-    Type: String
-    Default: "1234"
+    Description:    Please specify the Department. Used for tagging
+    Type:           String
+    Default:        "1234"
 
-  # User
+# User
   User:
-    Description: Please specify the User. Used for tagging
-    Type: String
-    Default: "User"
+    Description:    Please specify the User. Used for tagging
+    Type:           String
+    Default:        "User"
 
-  # Owner
+# Owner
   Owner:
-    Description: Please specify the Owner. Used for tagging
-    Type: String
-    Default: "Owner"
+    Description:    Please specify the Owner. Used for tagging
+    Type:           String
+    Default:        "Owner"
 
-  # Service Catalog Portfolio Stack Name
-  ServiceCatalogPortfolioStackName:
-    Description: Please specify the Service Catalog Portfolio Stack Name.
-    Type: String
-    Default: ""
+# Product Enviornment type
+  ProductEnv:
+    Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+    Type:           String
+    Default:        "dev"
+    AllowedValues:
+      - test
+      - dev
+      - prod
 
-  # ServiceCatalog Product Name
-  SCProductName:
-    Description: Please specify ServiceCatalog Product Name.
-    Type: String
-    Default: "ProductName"
+# Product Department
+  ProductDept:
+    Description:    Please specify the Department. Used for tagging
+    Type:           String
+    Default:        "1234"
 
-  # ServiceCatalog Product Name Description
-  SCProductDescription:
-    Description: Please specify ServiceCatalog Product Name Description.
-    Type: String
-    Default: "ProductDescription"
+# Product User
+  ProductUser:
+    Description:    Please specify the User. Used for tagging
+    Type:           String
+    Default:        "User"
 
-  # ServiceCatalog Product Name Owner
-  SCProductOwner:
-    Description: Please specify ServiceCatalog Product Owner.
-    Type: String
-    Default: "ProductOwner"
+# Product Owner
+  ProductOwner:
+    Description:    Please specify the Owner. Used for tagging
+    Type:           String
+    Default:        "Owner"
 
-  # ServiceCatalog Product Support
-  SCProductSupport:
-    Description: Please specify ServiceCatalog Product Support.
-    Type: String
-    Default: "IT Support can be reached @support"
+# Portfolio Provider Name
+  PortfolioProviderName:
+    Description:    Please specify the Portfolio Provider Name.
+    Type:           String
+    Default:        "IT Provider"
 
-  # ServiceCatalog Product Distributor
-  SCProductDistributor:
-    Description: Please specify ServiceCatalog Product Distributor.
-    Type: String
-    Default: "App Vendor"
+# Portfolio Description
+  PortfolioDescription:
+    Description:    Please specify the Portfolio Description.
+    Type:           String
+    Default:        "Service Catalog Portfolio for Business Unit (BU)"
 
-  # ServiceCatalog Product Support Email
-  SCSupportEmail:
-    Description: Please specify ServiceCatalog Product Support Email.
-    Type: String
-    Default: "support@example.com"
+# Portfolio Display Name
+  PortfolioDisplayName:
+    Description:    Please specify the Portfolio Description. Must satisfy regular expression pattern, (^[a-zA-Z0-9_\-]*)
+    Type:           String
+    Default:        "Test_Portfolio"
 
-  # ServiceCatalog Product Support URL
-  SCSupportUrl:
-    Description: Please specify ServiceCatalog Product Support URL.
-    Type: String
-    Default: "https://www.support.example.com"
+# Tag Options Activation
+  ActivateProductTagOptions:
+    Description:    Activate Custom Tag Options? Used for portfolio tagging
+    Type:           String
+    Default:        "true"
+    AllowedValues:
+      - 'true'
+      - 'false'
 
-  # ServiceCatalog Product S3 Bucket
-  ProvisioningArtifactTemplateUrl:
-    Description: Please specify the S3 URL of the template
-    Type: String
-    Default: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+# Share Portfolio
+  ShareThisPortfolio:
+    Description:    Please specify if this Portfolio will be Shared with additonal accounts?
+    Type:           String
+    Default:        "false"
+    AllowedValues:
+      - 'true'
+      - 'false'
 
-  # ServiceCatalog Product Artifact Name
-  ProvisioningArtifactNameParameter:
-    Description: Please specify ServiceCatalog Product Artifact Name.
-    Type: String
-    Default: "ProductExample"
+# AccountId
+  AccountIdOfChildAWSAccount:
+    Description:    Please specify the Sub AWS Account ID.
+    Type:           String
+    Default:        "1234567890"
 
-  # ServiceCatalog Product Artifact Description
-  ProvisioningArtifactDescriptionParameter:
-    Description: Please specify ServiceCatalog Product Artifact Description.
-    Type: String
-    Default: "ProductExample"
+
+Conditions:
+
+  ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
 
 Resources:
-  ServiceCatalogCloudFormationProduct:
-    Type: "AWS::ServiceCatalog::CloudFormationProduct"
+
+  ServiceCatalogPortfolio:
+    Type: "AWS::ServiceCatalog::Portfolio"
     Properties:
-      Name: !Ref "SCProductName"
-      Description: !Ref "SCProductDescription"
-      Owner: !Ref "SCProductOwner"
-      SupportDescription: !Ref "SCProductSupport"
-      Distributor: !Ref "SCProductDistributor"
-      SupportEmail: !Ref "SCSupportEmail"
-      SupportUrl: !Sub "${SCSupportUrl}"
+      ProviderName: !Ref 'PortfolioProviderName'
+      Description: !Ref 'PortfolioDescription'
+      DisplayName: !Ref 'PortfolioDisplayName'
       Tags:
-        - Key: Name
-          Value: !Sub "${AppName}"
-        - Key: App
-          Value: !Sub "${AppName}"
-        - Key: Dept
-          Value: !Sub "${Dept}"
-        - Key: Env
-          Value: !Sub "${Env}"
-        - Key: User
-          Value: !Sub "${User}"
-        - Key: Owner
-          Value: !Sub "${Owner}"
-      ProvisioningArtifactParameters:
-        - Name: !Sub "${ProvisioningArtifactNameParameter}"
-          Description: !Sub "${ProvisioningArtifactDescriptionParameter}"
-          Info:
-            LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
+        - Key:    Name
+          Value:  !Sub '${PortfolioDisplayName}'
+        - Key:    Dept
+          Value:  !Sub '${Dept}'
+        - Key:    Env
+          Value:  !Sub '${Env}'
+        - Key:    User
+          Value:  !Sub '${User}'
+        - Key:    Owner
+          Value:  !Sub '${Owner}'
 
-  ServiceCatalogPortfolioProductAssociation:
-    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-    DependsOn: ServiceCatalogCloudFormationProduct
+  ServiceCatalogProductTagOptions:
+    Type: "AWS::ServiceCatalog::TagOption"
     Properties:
-      PortfolioId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-      ProductId: !Ref "ServiceCatalogCloudFormationProduct"
+      Active:     !Ref 'ActivateProductTagOptions'
+      Key:        Dept
+      Value:      !Sub '${ProductDept}'
+      Key:        Env
+      Value:      !Sub '${ProductEnv}'
+      Key:        User
+      Value:      !Sub '${ProductUser}'
+      Key:        Owner
+      Value:      !Sub '${ProductOwner}'
 
-  ServiceCatalogCustomTagOptionsAssociation:
-    Type: "AWS::ServiceCatalog::TagOptionAssociation"
+  ServiceCatalogPortfolioShare:
+    Type: "AWS::ServiceCatalog::PortfolioShare"
+    Condition: ConditionShareThisPortfolio
     Properties:
-      TagOptionId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
-      ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
+      AccountId: !Ref 'AccountIdOfChildAWSAccount'
+      PortfolioId: !Ref 'ServiceCatalogPortfolio'
 
 Outputs:
-  ServiceCatalogCloudFormationProductName:
-    Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProductName"
-    Export:
-      Name: !Sub "${AppName}-ServiceCatalogCloudFormationProductName"
 
-  ServiceCatalogProvisioningArtifactIds:
-    Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactIds"
+  ServiceCatalogPortfolio:
+    Value:    !Ref 'ServiceCatalogPortfolio'
     Export:
-      Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactIds"
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
 
-  ServiceCatalogProvisioningArtifactNames:
-    Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
+  ServiceCatalogPortfolioName:
+    Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
     Export:
-      Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
+
+  ServiceCatalogProductTagOptions:
+    Value:    !Ref 'ServiceCatalogProductTagOptions'
+    Export:
+      Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
