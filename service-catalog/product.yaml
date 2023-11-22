@@ -77,7 +77,7 @@ Parameters:
   ServiceCatalogPortfolioStackName:
     Description: Please specify the Service Catalog Portfolio Stack Name.
     Type: String
-    Default: ""
+    Default: "service-catalog-poc"
 
   # ServiceCatalog Product Name
   SCProductName:
