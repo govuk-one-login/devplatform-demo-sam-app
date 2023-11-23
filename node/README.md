@@ -8,7 +8,15 @@ This project contains source code and supporting files for a fargate application
 The application uses several AWS resources, including an API Gateway API. These resources are defined in the `template.yaml` file in this project.
 You can update the template to add AWS resources through the same deployment process that updates your application code.
 
+## Deploy the sample application via Github Actions
+
+You can run the Github action with your BRANCH. The action is called "Node deploy using Environment secrets"
+https://github.com/govuk-one-login/devplatform-demo-sam-app/actions/workflows/node-deploy-using-environment-secrets.yml
+
+
 ## Deploy the sample application with the CLI
+
+Note: This method works but its easier to use the GitHub Actions method above.
 
 - Follow the steps 1-3 of [How to deploy a container to Fargate with secure pipelines][1] docs to create a VPC, a pipeline and an ECR repo.
 - From the outputs of the pipeline, ECR and container-signer stacks, you would require the `GitHubArtifactSourceBucketName`, the `ContainerRepositoryUri` and the `ContainerSignerKmsKeyArn`
