@@ -199,4 +199,3 @@ Outputs:
     Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
     Export:
       Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
-#comment to force a run
