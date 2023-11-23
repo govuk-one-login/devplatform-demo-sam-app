@@ -23,7 +23,7 @@ Hooks:
     Properties:
       LifecycleEventHooks:
         # Dynamic values not supported in Hooks
-        BeforeAllowTraffic: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
+        BeforeAllowTraffic: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME" # pragma: allowlist secret
       ServiceRole: "HooksServiceRole-PLACEHOLDER_STACK_NAME"
       TrafficRoutingConfig:
         Type: TimeBasedLinear
@@ -647,7 +647,7 @@ Resources:
              - id: "CKV_AWS_117"
                comment: "Internet access not required"
         Properties:
-          FunctionName: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"
+          FunctionName: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"  # pragma: allowlist secret
           Runtime: nodejs14.x
           Policies:
             - AWSLambdaBasicExecutionRole
