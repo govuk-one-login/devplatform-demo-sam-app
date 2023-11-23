@@ -13,6 +13,9 @@ You can update the template to add AWS resources through the same deployment pro
 You can run the Github action with your BRANCH. The action is called "Node deploy using Environment secrets"
 https://github.com/govuk-one-login/devplatform-demo-sam-app/actions/workflows/node-deploy-using-environment-secrets.yml
 
+When the aboive is running, then look in AWS Cloudfromation, there is a stack called "node-app", it should have new events.
+If those all worked fine, then look in "Outputs" for the API Gateway URL and test it loads.
+
 
 ## Deploy the sample application with the CLI
 
