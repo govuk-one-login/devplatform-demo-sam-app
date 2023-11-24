@@ -15,6 +15,16 @@ Parameters:
     Type: String
     Default: "none"
 
+  Environment:
+    Description: "The name of the environment to deploy to"
+    Type: "String"
+    AllowedValues:
+      - build
+      - staging
+      - production
+      - integration
+      - dev
+
 Conditions:
   UsePermissionsBoundary:
     Fn::Not:
@@ -27,6 +37,19 @@ Mappings:
   ElasticLoadBalancerAccountIds:
     eu-west-2:
       AccountId: 652711504416
+  EnvironmentConfiguration:
+    # Requires KMSApiEnabled and SecretsManagerApiEnabled in the VPC Stack
+    # See https://github.com/govuk-one-login/observability-infrastructure/blob/main/fargate/README.md
+    dev:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
+    build:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
+    staging:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
+    integration:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
+    production:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables     # pragma: allowlist secret
 
 Resources:
   #
@@ -163,6 +186,22 @@ Resources:
               awslogs-region: "eu-west-2"
               awslogs-create-group: "true"
               awslogs-stream-prefix: "ecs"
+          Secrets:
+          - Name: DT_TENANT
+            ValueFrom: !Join
+              - ''
+              - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+                - ':DT_TENANT::'
+          - Name: DT_TENANTTOKEN
+            ValueFrom: !Join
+              - ''
+              - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+                - ':DT_TENANTTOKEN::'
+          - Name: DT_CONNECTION_POINT
+            ValueFrom: !Join
+            - ''
+            - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+              - ':DT_CONNECTION_POINT::'
       Cpu: 256
       Memory: 512
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
@@ -200,6 +239,21 @@ Resources:
                 Action:
                   - logs:CreateLogGroup
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*"
+        - PolicyName: GetDynatraceSecret
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:ListSecrets                                # pragma: allowlist secret
+                  - secretsmanager:GetSecretValue                             # pragma: allowlist secret
+                Resource:
+                  - arn:aws:secretsmanager:eu-west-2:216552277552:secret:*    # pragma: allowlist secret
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource:
+                  - arn:aws:kms:eu-west-2:216552277552:key/*
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
