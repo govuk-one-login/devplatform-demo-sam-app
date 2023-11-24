@@ -9,7 +9,7 @@ pageNotFound:
   title: Hello World
   h1: Hello Tom
   content:
-    - Welcome to the Platform SRE Show and tell
+    - Welcome to the Platform SRE Show and tell !
     - <h2>What you can do</h2>
     - <a href="https://www.gov.uk/" class="govuk-button" data-module="govuk-button">Go to the GOV.UK homepage</a>
 
