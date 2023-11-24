@@ -25,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "@cucumber/cucumber": "^10.0.1",
-    "chai": "4.3.7",
+    "chai": "4.3.10",
     "chai-as-promised": "7.1.1",
     "copyfiles": "2.4.1",
     "eslint": "8.45.0",
@@ -40,8 +40,8 @@
     "uglify-js": "3.17.4"
   },
   "dependencies": {
-    "aws-sdk": "2.1376.0",
-    "axios": "^1.6.0",
+    "aws-sdk": "2.1502.0",
+    "axios": "^1.6.2",
     "cfenv": "1.2.4",
     "connect-dynamodb": "3.0.2",
     "ipv-cri-common-express": "github:govuk-one-login/ipv-cri-common-express#v3.4.0",
@@ -51,7 +51,7 @@
     "express-session": "1.17.3",
     "govuk-frontend": "4.7.0",
     "hmpo-app": "3.0.1",
-    "hmpo-components": "6.2.0",
+    "hmpo-components": "6.4.0",
     "hmpo-form-wizard": "13.0.0",
     "hmpo-i18n": "6.0.1",
     "hmpo-logger": "7.0.1",
