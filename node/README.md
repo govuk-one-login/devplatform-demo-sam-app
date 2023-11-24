@@ -66,5 +66,5 @@ When running [build-tag-push-ecr.sh][3] on MacOS, the `sed` command with -i opti
 ```
 
 [1]: https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3107258369/How+to+deploy+a+container+to+Fargate+with+secure+pipelines
-[2]: https://github.com/alphagov/di-devplatform-upload-action-ecr
-[3]: https://github.com/alphagov/di-devplatform-upload-action-ecr/blob/main/scripts/build-tag-push-ecr.sh
+[2]: https://github.com/govuk-one-login/devplatform-upload-action-ecr
+[3]: https://github.com/govuk-one-login/devplatform-upload-action-ecr/blob/main/scripts/build-tag-push-ecr.sh
