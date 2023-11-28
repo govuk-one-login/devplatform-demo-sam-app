@@ -1,7 +1,6 @@
 
 AWSTemplateFormatVersion: "2010-09-09"
-Description:
-  This template creates AWS Service Catalog Product, please make sure you review billing costs for AWS Service Catalog."
+Description: 'This template creates AWS Service Catalog Product, please make sure you review billing costs for AWS Service Catalog."
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -199,4 +198,5 @@ Outputs:
     Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
     Export:
       Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
+#comment to rebuild
 #comment to rebuild
