@@ -39,47 +39,17 @@ Conditions:
           - "none"
 
 Mappings:
-  DynatraceAgent:
+  EnvironmentConfiguration:
     dev:
-      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
-      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
-      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
-      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
-      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
-      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
-      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
     build:
-      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
-      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
-      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
-      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
-      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
-      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
-      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
     staging:
-      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
-      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
-      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
-      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
-      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
-      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
-      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
     integration:
-      JavaLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentJavaLayer:14
-      NodeLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentNodeJSLayer:13
-      PythonLayer: arn:aws:lambda:eu-west-2:985486846182:layer:DTOneAgentPythonLayer:13
-      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:AUTH_TOKEN-uI6on7 # pragma: allowlist secret
-      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:BASE_URL-nA86Kg # pragma: allowlist secret
-      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:CLUSTER_ID-Sa24Vl # pragma: allowlist secret
-      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:985486846182:secret:TENANT-CcYEOa # pragma: allowlist secret
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
     production:
-      NodeLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentNodeJSLayer:3
-      PythonLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentPythonLayer:3
-      JavaLayer: arn:aws:lambda:eu-west-2:841529299698:layer:DTOneAgentJavaLayer:4
-      AuthTokenSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:AUTH_TOKEN-BVGfK8 # pragma: allowlist secret
-      BaseUrlSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:BASE_URL-6Q7MxC # pragma: allowlist secret
-      ClusterIdSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:CLUSTER_ID-nKBZpt # pragma: allowlist secret
-      TenantSecretArn: arn:aws:secretsmanager:eu-west-2:841529299698:secret:TENANT-iS9w22 # pragma: allowlist secret
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables      # pragma: allowlist secret
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -96,22 +66,35 @@ Globals:
     Environment:
       Variables:
         AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
-        ### These secrets are centrally hosted in the Dynatrace Account, access is limited to Lambdas running in GDS/OneLogin organisations.
-        DT_CONNECTION_AUTH_TOKEN: !Sub
-          - '{{resolve:secretsmanager:${AuthTokenSecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'
-          - AuthTokenSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, AuthTokenSecretArn ]
-        DT_CONNECTION_BASE_URL: !Sub
-          - '{{resolve:secretsmanager:${BaseUrlSecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
-          - BaseUrlSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, BaseUrlSecretArn ]
-        DT_CLUSTER_ID: !Sub
-          - '{{resolve:secretsmanager:${ClusterIdSecretArn}:SecretString:DT_CLUSTER_ID}}'
-          - ClusterIdSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, ClusterIdSecretArn ]
-        DT_TENANT: !Sub
-          - '{{resolve:secretsmanager:${TenantSecretArn}:SecretString:DT_TENANT}}'
-          - TenantSecretArn: !FindInMap [ DynatraceAgent, !Ref Environment, TenantSecretArn ]
+        DT_CONNECTION_AUTH_TOKEN:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'           # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_CONNECTION_BASE_URL:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'             # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_CLUSTER_ID:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'                      # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_LOG_COLLECTION_AUTH_TOKEN:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'       # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_TENANT:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'                          # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
         DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+    # https://govukverify.atlassian.net/wiki/spaces/Architecture/pages/3521183835/ADR+0082+Run+Lambda+functions+on+arm64+processor+architecture
+    Architectures:
+      - arm64
     Layers:
-      - !FindInMap [ DynatraceAgent, !Ref Environment, JavaLayer ]
+      - !Sub
+        - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}'                             # pragma: allowlist secret
+        - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+
 
 Resources:
   HelloWorldFunction:
@@ -130,8 +113,6 @@ Resources:
       AutoPublishAlias: LatestVersion
       Handler: helloworld.App::handleRequest
       Runtime: java11
-      Architectures:
-        - x86_64
       MemorySize: 2048
       ReservedConcurrentExecutions: 5
       Events:
