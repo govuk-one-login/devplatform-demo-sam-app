@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'This template creates AWS Service Catalog Portfolio.'
+Description: This template creates AWS Service Catalog Portfolio.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -201,3 +201,4 @@ Outputs:
     Value:    !Ref 'ServiceCatalogProductTagOptions'
     Export:
       Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
+#comment to rebuild
