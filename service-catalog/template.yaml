@@ -102,13 +102,13 @@ Parameters:
   PortfolioProviderName:
     Description:    Please specify the Portfolio Provider Name.
     Type:           String
-    Default:        "IT Provider"
+    Default:        "dev-platform"
 
 # Portfolio Description
   PortfolioDescription:
     Description:    Please specify the Portfolio Description.
     Type:           String
-    Default:        "Service Catalog Portfolio for Business Unit (BU)"
+    Default:        "Service Catalog Portfolio for Business Unit GDS"
 
 # Portfolio Display Name
   PortfolioDisplayName:
@@ -180,10 +180,18 @@ Resources:
 
   ServiceCatalogPortfolioShare:
     Type: "AWS::ServiceCatalog::PortfolioShare"
+           AWS::ServiceCatalog::AcceptedPortfolioShare
     Condition: ConditionShareThisPortfolio
     Properties:
       AccountId: !Ref 'AccountIdOfChildAWSAccount'
       PortfolioId: !Ref 'ServiceCatalogPortfolio'
+
+# Accepts portfolio share - not sure if needed yet  
+#   ServiceCatalogAcceptPortfolioShare:
+#      Type: AWS::ServiceCatalog::AcceptedPortfolioShare
+#      Properties:
+#        AcceptLanguage: String
+#        PortfolioId: String
 
 Outputs:
 
