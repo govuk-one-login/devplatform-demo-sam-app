@@ -180,7 +180,6 @@ Resources:
 
   ServiceCatalogPortfolioShare:
     Type: "AWS::ServiceCatalog::PortfolioShare"
-           AWS::ServiceCatalog::AcceptedPortfolioShare
     Condition: ConditionShareThisPortfolio
     Properties:
       AccountId: !Ref 'AccountIdOfChildAWSAccount'
