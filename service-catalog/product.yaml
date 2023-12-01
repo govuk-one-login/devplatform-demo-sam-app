@@ -125,7 +125,7 @@ Parameters:
     Description: Please specify the S3 URL of the template
     Type: String
     #Default: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/sample1-template.yaml"
-    Default: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+    https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/sample1.template
 
   # ServiceCatalog Product Artifact Name
   ProvisioningArtifactNameParameter:
