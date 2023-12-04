@@ -169,7 +169,7 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
 
-  ServiceCatalogCloudFormationProduct:
+  ServiceCatalogCloudFormationProduct1:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       Name: "Product 1"
@@ -198,7 +198,7 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
-  ServiceCatalogCloudFormationProduct:
+  ServiceCatalogCloudFormationProduct2:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       Name: "Product 2"
