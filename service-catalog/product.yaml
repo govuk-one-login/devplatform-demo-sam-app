@@ -198,6 +198,35 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
+  ServiceCatalogCloudFormationProduct:
+    Type: "AWS::ServiceCatalog::CloudFormationProduct"
+    Properties:
+      Name: "Product 2"
+      Description: "Product 2 description description"
+      Owner: "Dev Platform"
+      SupportDescription: "Product 2 description description"
+      Distributor: "Dev Platform"
+      SupportEmail: "dev-platform@example.com"
+      SupportUrl: "https://www.support.example.com"
+      Tags:
+        - Key: Name
+          Value: "Product 2"
+        - Key: App
+          Value: "Product 2"
+        - Key: Dept
+          Value: "Dev Platform"
+        - Key: Env
+          Value: "Dev Platform"
+        - Key: User
+          Value: "User"
+        - Key: Owner
+          Value: "Dev Platform"
+      ProvisioningArtifactParameters:
+        - Name:  "Product 2"
+          Description: "Product 2 description description"
+          Info:
+            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     DependsOn: ServiceCatalogCloudFormationProduct
