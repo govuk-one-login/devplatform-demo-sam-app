@@ -194,7 +194,7 @@ Resources:
           Value: "Dev Platform"
       ProvisioningArtifactParameters:
         - Name:  "Product 1"
-          Description: "Product 1 description description"
+          Description: "Product 1 description"
           Info:
             LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
@@ -223,7 +223,7 @@ Resources:
           Value: "Dev Platform"
       ProvisioningArtifactParameters:
         - Name:  "Product 2"
-          Description: "Product 2 description description"
+          Description: "Product 2 description"
           Info:
             LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
@@ -252,10 +252,10 @@ Resources:
           Value: "Dev Platform"
       ProvisioningArtifactParameters:
         - Name:  "Product 3"
-          Description: "Product 3 description description"
+          Description: "Product 3 description"
           Info:
             #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-            LoadTemplateFromURL: "cd templates/dev-env-template"
+            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
