@@ -255,7 +255,7 @@ Resources:
           Description: "Product 3 description"
           Info:
             #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            LoadTemplateFromURL: "https://github.com/govuk-one-login/devplatform-demo-sam-app/blob/071cc46341db50d7909aeaa813e499d8d537efdd/service-catalog/templates/dev-env.template"
 
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
