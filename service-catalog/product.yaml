@@ -173,9 +173,9 @@ Resources:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       Name: "Product 1"
-      Description: "Product 1 description description"
+      Description: "Product 1 description"
       Owner: "Dev Platform"
-      SupportDescription: "Product 1 description description"
+      SupportDescription: "Product 1 description"
       Distributor: "Dev Platform"
       SupportEmail: "dev-platform@example.com"
       SupportUrl: "https://www.support.example.com"
@@ -202,9 +202,9 @@ Resources:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       Name: "Product 2"
-      Description: "Product 2 description description"
+      Description: "Product 2 description"
       Owner: "Dev Platform"
-      SupportDescription: "Product 2 description description"
+      SupportDescription: "Product 2 description"
       Distributor: "Dev Platform"
       SupportEmail: "dev-platform@example.com"
       SupportUrl: "https://www.support.example.com"
@@ -231,9 +231,9 @@ Resources:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       Name: "Product 3"
-      Description: "Product 3 description description"
+      Description: "Product 3 description"
       Owner: "Dev Platform"
-      SupportDescription: "Product 3 description description"
+      SupportDescription: "Product 3 description"
       Distributor: "Dev Platform"
       SupportEmail: "dev-platform@example.com"
       SupportUrl: "https://www.support.example.com"
@@ -254,7 +254,8 @@ Resources:
         - Name:  "Product 3"
           Description: "Product 3 description description"
           Info:
-            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            LoadTemplateFromURL: "cd templates/dev-env-template"
 
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
