@@ -196,7 +196,7 @@ Resources:
         - Name:  "Product 1"
           Description: "Product 1 description description"
           Info:
-            LoadTemplateFromURL: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/sample1.template"
+            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
