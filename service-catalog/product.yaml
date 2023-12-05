@@ -1,5 +1,5 @@
 
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 Description: "This template creates AWS Service Catalog Product."
 Metadata:
   AWS::CloudFormation::Interface:
@@ -264,10 +264,10 @@ Resources:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
- ServiceCatalogCloudFormationProduct4:
+  ServiceCatalogCloudFormationProduct4:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
-      Name: "Product 3"
+      Name: "Product 4"
       Description: "Product 4 description"
       Owner: "Dev Platform"
       SupportDescription: "Product 4 description"
@@ -291,8 +291,15 @@ Resources:
         - Name:  "Product 4"
           Description: "Product 4 description"
           Info:
-            #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
+
+  ServiceCatalogPortfolioProductAssociation:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
