@@ -286,21 +286,21 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
 
-  # ServiceCatalogPortfolioProductAssociation:
-  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-  #   DependsOn: ServiceCatalogCloudFormationProduct
-  #   Properties:
-  #     PortfolioId:
-  #       Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-  #     ProductId: !Ref "ServiceCatalogCloudFormationProduct"
-
-  ServiceCatalogPortfolioProductAssociation1:
+  ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: "service-catalog-poc-service-catalog-poc"
-      ProductId: "pa-t7x5r3gy3xufu"
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct"
+
+  # ServiceCatalogPortfolioProductAssociation1:
+  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+  #   DependsOn: ServiceCatalogCloudFormationProduct
+  #   Properties:
+  #     PortfolioId:
+  #       Fn::ImportValue: "service-catalog-poc-service-catalog-poc"
+  #     ProductId: "pa-t7x5r3gy3xufu"
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
