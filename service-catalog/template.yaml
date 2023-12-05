@@ -165,24 +165,6 @@ Resources:
         - Key:    Owner
           Value:  !Sub '${Owner}'
 
-  ServiceCatalogPortfolio:
-    Type: "AWS::ServiceCatalog::Portfolio"
-    Properties:
-      ProviderName: "dev-platform 2"
-      Description: "dev-platform 2 test"
-      DisplayName: "Test_Portfolio"
-      Tags:
-        - Key:    Name
-          Value:  "Test_Portfolio"
-        - Key:    Dept
-          Value:  "dev"
-        - Key:    Env
-          Value:  "dev"
-        - Key:    User
-          Value:  !Sub '${User}'
-        - Key:    Owner
-          Value:  !Sub '${Owner}'
-
   ServiceCatalogProductTagOptions:
     Type: "AWS::ServiceCatalog::TagOption"
     Properties:

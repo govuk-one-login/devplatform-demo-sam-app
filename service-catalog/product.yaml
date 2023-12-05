@@ -254,7 +254,6 @@ Resources:
         - Name:  "Product 3"
           Description: "Product 3 description"
           Info:
-            #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
 
   ServiceCatalogCloudFormationProduct4:
