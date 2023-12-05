@@ -256,7 +256,7 @@ Resources:
           Info:
             #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
             #LoadTemplateFromURL: "https://github.com/govuk-one-login/devplatform-demo-sam-app/blob/071cc46341db50d7909aeaa813e499d8d537efdd/service-catalog/templates/dev-env.template"
-            LoadTemplateFromURL: "https://phillip-test-open.s3.eu-west-2.amazonaws.com/test-templates/sam-deploy-pipeline/1template.yaml"
+            LoadTemplateFromURL: "https://phillip-test-open.s3.eu-west-2.amazonaws.com/test-templates/sam-deploy-pipeline/development-environment.template"
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     DependsOn: ServiceCatalogCloudFormationProduct
