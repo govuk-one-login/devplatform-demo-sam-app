@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template creates AWS Service Catalog Product"
+Description: "This template creates AWS Service Catalog Product."
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -254,10 +254,8 @@ Resources:
         - Name:  "Product 3"
           Description: "Product 3 description"
           Info:
-            LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-            #LoadTemplateFromURL: "https://github.com/govuk-one-login/devplatform-demo-sam-app/blob/071cc46341db50d7909aeaa813e499d8d537efdd/service-catalog/templates/dev-env.template"
-            #LoadTemplateFromURL: "https://phillip-test-open.s3.eu-west-2.amazonaws.com/test-templates/sam-deploy-pipeline/development-environment.template"
-            #LoadTemplateFromURL: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/development-environment.template"
+            #LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            LoadTemplateFromURL: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/development-environment.template"
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     DependsOn: ServiceCatalogCloudFormationProduct
