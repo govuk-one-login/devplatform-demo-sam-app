@@ -298,7 +298,7 @@ Resources:
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: "service-catalog-poc"
+        Fn::ImportValue: "dev-platform"
       ProductId: "pa-pa-t7x5r3gy3xufu"
 #product 2 association with profile
 
@@ -324,5 +324,3 @@ Outputs:
     Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
     Export:
       Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
-#comment to rebuild
-#comment to rebuild
