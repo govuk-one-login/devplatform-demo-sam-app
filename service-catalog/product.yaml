@@ -309,13 +309,13 @@ Resources:
         Fn::ImportValue: "service-catalog-poc"
       ProductId: "pa-t7x5r3gy3xufu"
 
-  # ServiceCatalogPortfolioProductAssociation:
-  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-  #   DependsOn: ServiceCatalogCloudFormationProduct
-  #   Properties:
-  #     PortfolioId:
-  #       Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-  #     ProductId: !Ref "ServiceCatalogCloudFormationProduct"
+  ServiceCatalogPortfolioProductAssociation:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
