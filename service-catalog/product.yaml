@@ -323,15 +323,13 @@ Resources:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct"
 
-  # ServiceCatalogPortfolioProductAssociation2:
-  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-  #   DependsOn: ServiceCatalogCloudFormationProduct
-  #   Properties:
-  #     PortfolioId:
-  #       Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-  #       Fn::ImportValue: "service-catalog-poc-ServiceCatalogPortfolio"
-  #     ProductId: "pa-t7x5r3gy3xufu"
-#product 2 association with profile - dev-platform ID - pa-sxdiwzgyznzuq
+  ServiceCatalogPortfolioProductAssociation2:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: "port-2dxlpq5clctnw"
+      ProductId: "prod-kitusiac4o3ci"
+#alerting-integration association with profile - dev-platform ID - pa-sxdiwzgyznzuq
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
