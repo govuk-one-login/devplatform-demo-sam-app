@@ -300,7 +300,7 @@ Resources:
       PortfolioId:
         #Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
         Fn::ImportValue: "service-catalog-poc-ServiceCatalogPortfolio"
-      ProductId: "pa-sxdiwzgyznzuq"
+      ProductId: "pa-t7x5r3gy3xufu"
 #product 2 association with profile - dev-platform ID - pa-sxdiwzgyznzuq
 
   ServiceCatalogCustomTagOptionsAssociation:
