@@ -298,10 +298,10 @@ Resources:
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-        #Fn::ImportValue: "service-catalog-poc-ServiceCatalogPortfolio"
+        #Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+        Fn::ImportValue: "service-catalog-poc-ServiceCatalogPortfolio"
       ProductId: "pa-sxdiwzgyznzuq"
-#product 2 association with profile - dev-platform ID - port-2dxlpq5clctnw
+#product 2 association with profile - dev-platform ID - pa-sxdiwzgyznzuq
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
