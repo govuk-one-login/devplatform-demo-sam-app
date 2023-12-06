@@ -300,8 +300,8 @@ Resources:
       PortfolioId:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
         #Fn::ImportValue: "service-catalog-poc-ServiceCatalogPortfolio"
-      ProductId: "pa-t7x5r3gy3xufu"
-#product 2 association with profile
+      ProductId: "pa-sxdiwzgyznzuq"
+#product 2 association with profile - dev-platform ID - port-2dxlpq5clctnw
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
