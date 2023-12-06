@@ -181,7 +181,7 @@ Resources:
         - Key:    User
           Value:  !Sub '${User}'
         - Key:    Owner
-          Value:  !Sub '${Owner}'         
+          Value:  !Sub '${Owner}'
 
   ServiceCatalogProductTagOptions:
     Type: "AWS::ServiceCatalog::TagOption"
