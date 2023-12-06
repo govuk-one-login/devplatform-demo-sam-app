@@ -321,14 +321,14 @@ Resources:
     Properties:
       PortfolioId:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-      ProductId: !Ref "ServiceCatalogCloudFormationProduct"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct5"
 
-  ServiceCatalogPortfolioProductAssociation2:
-    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-    DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: "port-2dxlpq5clctnw"
-      ProductId: "prod-kitusiac4o3ci"
+  # ServiceCatalogPortfolioProductAssociation2:
+  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+  #   DependsOn: ServiceCatalogCloudFormationProduct
+  #   Properties:
+  #     PortfolioId: "port-2dxlpq5clctnw"
+  #     ProductId: "prod-kitusiac4o3ci"
 #alerting-integration association with profile - dev-platform ID - pa-sxdiwzgyznzuq
 
   ServiceCatalogCustomTagOptionsAssociation:
