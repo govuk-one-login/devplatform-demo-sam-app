@@ -227,6 +227,14 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
 
+  ServiceCatalogPortfolioProductAssociation:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct2"            
+
   ServiceCatalogCloudFormationProduct3:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
@@ -255,6 +263,14 @@ Resources:
           Description: "Product 3 description"
           Info:
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
+   
+   ServiceCatalogPortfolioProductAssociation:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct3"           
 
   ServiceCatalogCloudFormationProduct4:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
@@ -284,6 +300,14 @@ Resources:
           Description: "Product 4 description"
           Info:
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
+
+   ServiceCatalogPortfolioProductAssociation:
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
+    DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId:
+        Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
+      ProductId: !Ref "ServiceCatalogCloudFormationProduct4"           
 
   ServiceCatalogCloudFormationProduct5:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
@@ -322,14 +346,6 @@ Resources:
       PortfolioId:
         Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
       ProductId: !Ref "ServiceCatalogCloudFormationProduct5"
-
-  # ServiceCatalogPortfolioProductAssociation2:
-  #   Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
-  #   DependsOn: ServiceCatalogCloudFormationProduct
-  #   Properties:
-  #     PortfolioId: "port-2dxlpq5clctnw"
-  #     ProductId: "prod-kitusiac4o3ci"
-#alerting-integration association with profile - dev-platform ID - pa-sxdiwzgyznzuq
 
   ServiceCatalogCustomTagOptionsAssociation:
     Type: "AWS::ServiceCatalog::TagOptionAssociation"
