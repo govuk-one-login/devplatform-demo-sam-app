@@ -298,7 +298,7 @@ Resources:
     DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
       PortfolioId:
-        Fn::ImportValue: "service-catalog-pocdev-platform"
+        Fn::ImportValue: "service-catalog-poc-dev-platform"
       ProductId: "pa-pa-t7x5r3gy3xufu"
 #product 2 association with profile
 
