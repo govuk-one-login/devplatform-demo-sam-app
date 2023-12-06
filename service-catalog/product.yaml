@@ -285,6 +285,35 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
 
+  ServiceCatalogCloudFormationProduct5:
+    Type: "AWS::ServiceCatalog::CloudFormationProduct"
+    Properties:
+      Name: "alerting-integration"
+      Description: "Alerting-integration description"
+      Owner: "Dev Platform"
+      SupportDescription: "Alerting-integration description"
+      Distributor: "Dev Platform"
+      SupportEmail: "dev-platform@example.com"
+      SupportUrl: "https://www.support.example.com"
+      Tags:
+        - Key: Name
+          Value: "Alerting-integration"
+        - Key: App
+          Value: "Alerting-integration"
+        - Key: Dept
+          Value: "Dev Platform"
+        - Key: Env
+          Value: "Dev Platform"
+        - Key: User
+          Value: "User"
+        - Key: Owner
+          Value: "Dev Platform"
+      ProvisioningArtifactParameters:
+        - Name:  "Alerting-integration"
+          Description: "Alerting-integration description"
+          Info:
+            LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
+
   ServiceCatalogPortfolioProductAssociation:
     Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     DependsOn: ServiceCatalogCloudFormationProduct
