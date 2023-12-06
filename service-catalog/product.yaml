@@ -312,6 +312,7 @@ Resources:
         - Name:  "Alerting-integration"
           Description: "Alerting-integration description"
           Info:
+            #Correct template needed
             LoadTemplateFromURL: "https://service-resource-pipeline-pipelinebucket-1kztnwacj9bje.s3.eu-west-2.amazonaws.com/development-environment.template"
 
   ServiceCatalogPortfolioProductAssociation:
