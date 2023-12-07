@@ -165,11 +165,11 @@ Resources:
         - Key:    Owner
           Value:  !Sub '${Owner}'
 
-   ServiceCatalogPortfolioCRI:
+  ServiceCatalogPortfoliocri:
     Type: "AWS::ServiceCatalog::Portfolio"
     Properties:
       ProviderName: "CRI"
-      Description: "CRI description"
+      Description: "CRI"
       DisplayName: "CRI"
       Tags:
         - Key:    Name
