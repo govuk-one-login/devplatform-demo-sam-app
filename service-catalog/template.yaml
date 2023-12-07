@@ -165,23 +165,23 @@ Resources:
         - Key:    Owner
           Value:  !Sub '${Owner}'
 
-  #  ServiceCatalogPortfoliodevplatform:
-  #   Type: "AWS::ServiceCatalog::Portfolio"
-  #   Properties:
-  #     ProviderName: "dev-platform"
-  #     Description: "dev-platform description"
-  #     DisplayName: "dev-platform"
-  #     Tags:
-  #       - Key:    Name
-  #         Value:  !Sub '${PortfolioDisplayName}'
-  #       - Key:    Dept
-  #         Value:  !Sub '${Dept}'
-  #       - Key:    Env
-  #         Value:  !Sub '${Env}'
-  #       - Key:    User
-  #         Value:  !Sub '${User}'
-  #       - Key:    Owner
-  #         Value:  !Sub '${Owner}'
+   ServiceCatalogPortfolioCRI:
+    Type: "AWS::ServiceCatalog::Portfolio"
+    Properties:
+      ProviderName: "CRI"
+      Description: "CRI description"
+      DisplayName: "CRI"
+      Tags:
+        - Key:    Name
+          Value:  !Sub '${PortfolioDisplayName}'
+        - Key:    Dept
+          Value:  !Sub '${Dept}'
+        - Key:    Env
+          Value:  !Sub '${Env}'
+        - Key:    User
+          Value:  !Sub '${User}'
+        - Key:    Owner
+          Value:  !Sub '${Owner}'
 
   ServiceCatalogProductTagOptions:
     Type: "AWS::ServiceCatalog::TagOption"
