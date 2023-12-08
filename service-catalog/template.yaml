@@ -15,7 +15,7 @@ Metadata:
         Label:
           default: "Service Catalog Portfolio Tags"
         Parameters:
-          - Name
+          #- Name
           - Dept
           - Env
           - User
@@ -30,9 +30,9 @@ Metadata:
           default: "Service Catalog Product Tag Options"
         Parameters:
           - ProductDept
-          - ProductEnv
-          - ProductUser
-          - ProductOwner
+      #     - ProductEnv
+      #     - ProductUser
+      #     - ProductOwner
       -
         Label:
           default: "Portfolio Sharing"
@@ -53,6 +53,12 @@ Parameters:
       - prod
 
 # Department
+  # Name:
+  #   Description:    Please specify the Department Name Used for tagging
+  #   Type:           String
+  #   Default:        "1234"
+
+# Department
   Dept:
     Description:    Please specify the Department. Used for tagging
     Type:           String
@@ -71,32 +77,32 @@ Parameters:
     Default:        "Owner"
 
 # Product Enviornment type
-  ProductEnv:
-    Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
-    Type:           String
-    Default:        "dev"
-    AllowedValues:
-      - test
-      - dev
-      - prod
+  # ProductEnv:
+  #   Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+  #   Type:           String
+  #   Default:        "dev"
+  #   AllowedValues:
+  #     - test
+  #     - dev
+  #     - prod
 
-# Product Department
+#Product Department
   ProductDept:
     Description:    Please specify the Department. Used for tagging
     Type:           String
     Default:        "1234"
 
 # Product User
-  ProductUser:
-    Description:    Please specify the User. Used for tagging
-    Type:           String
-    Default:        "User"
+  # ProductUser:
+  #   Description:    Please specify the User. Used for tagging
+  #   Type:           String
+  #   Default:        "User"
 
 # Product Owner
-  ProductOwner:
-    Description:    Please specify the Owner. Used for tagging
-    Type:           String
-    Default:        "Owner"
+  # ProductOwner:
+  #   Description:    Please specify the Owner. Used for tagging
+  #   Type:           String
+  #   Default:        "Owner"
 
 # Portfolio Provider Name
   PortfolioProviderName:
@@ -189,12 +195,12 @@ Resources:
       Active:     !Ref 'ActivateProductTagOptions'
       Key:        Dept
       Value:      !Sub '${ProductDept}'
-      Key:        Env
-      Value:      !Sub '${ProductEnv}'
-      Key:        User
-      Value:      !Sub '${ProductUser}'
-      Key:        Owner
-      Value:      !Sub '${ProductOwner}'
+      # Key:        Env
+      # Value:      !Sub '${ProductEnv}'
+      # Key:        User
+      # Value:      !Sub '${ProductUser}'
+      # Key:        Owner
+      # Value:      !Sub '${ProductOwner}'
 
   ServiceCatalogPortfolioShare:
     Type: "AWS::ServiceCatalog::PortfolioShare"
@@ -203,7 +209,7 @@ Resources:
       AccountId: !Ref 'AccountIdOfChildAWSAccount'
       PortfolioId: !Ref 'ServiceCatalogPortfolio'
 
-# Accepts portfolio share - not sure if needed yet  
+# Accepts portfolio share - not sure if needed yet
 #   ServiceCatalogAcceptPortfolioShare:
 #      Type: AWS::ServiceCatalog::AcceptedPortfolioShare
 #      Properties:
@@ -226,5 +232,3 @@ Outputs:
     Value:    !Ref 'ServiceCatalogProductTagOptions'
     Export:
       Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
-#comment to rebuild
-#comment to rebuild
