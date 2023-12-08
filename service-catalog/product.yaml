@@ -228,4 +228,4 @@ Outputs:
     Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
     Export:
       Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
-#comment to rebuild
+#comment to trigger rebuild
