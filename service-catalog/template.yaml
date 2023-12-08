@@ -108,7 +108,7 @@ Parameters:
   PortfolioProviderName:
     Description:    Please specify the Portfolio Provider Name.
     Type:           String
-    Default:        "dev-platform"
+    Default:        "devplatform-min"
 
 # Portfolio Description
   PortfolioDescription:
@@ -120,7 +120,7 @@ Parameters:
   PortfolioDisplayName:
     Description:    Please specify the Portfolio Description. Must satisfy regular expression pattern, (^[a-zA-Z0-9_\-]*)
     Type:           String
-    Default:        "dev-platform"
+    Default:        "devplatform-min"
 
 # Tag Options Activation
   ActivateProductTagOptions:
@@ -171,12 +171,12 @@ Resources:
         - Key:    Owner
           Value:  !Sub '${Owner}'
 
-  ServiceCatalogPortfoliocri:
+  ServiceCatalogPortfoliodevplatform-opt:
     Type: "AWS::ServiceCatalog::Portfolio"
     Properties:
-      ProviderName: "CRI"
-      Description: "CRI"
-      DisplayName: "CRI"
+      ProviderName: "devplatform-opt"
+      Description: "devplatform-opt"
+      DisplayName: "devplatform-opt"
       Tags:
         - Key:    Name
           Value:  !Sub '${PortfolioDisplayName}'
