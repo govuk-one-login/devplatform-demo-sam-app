@@ -153,23 +153,23 @@ Conditions:
 
 Resources:
 
-  ServiceCatalogPortfolio:
-    Type: "AWS::ServiceCatalog::Portfolio"
-    Properties:
-      ProviderName: !Ref 'PortfolioProviderName'
-      Description: !Ref 'PortfolioDescription'
-      DisplayName: !Ref 'PortfolioDisplayName'
-      Tags:
-        - Key:    Name
-          Value:  !Sub '${PortfolioDisplayName}'
-        - Key:    Dept
-          Value:  !Sub '${Dept}'
-        - Key:    Env
-          Value:  !Sub '${Env}'
-        - Key:    User
-          Value:  !Sub '${User}'
-        - Key:    Owner
-          Value:  !Sub '${Owner}'
+  # ServiceCatalogPortfolio:
+  #   Type: "AWS::ServiceCatalog::Portfolio"
+  #   Properties:
+  #     ProviderName: !Ref 'PortfolioProviderName'
+  #     Description: !Ref 'PortfolioDescription'
+  #     DisplayName: !Ref 'PortfolioDisplayName'
+  #     Tags:
+  #       - Key:    Name
+  #         Value:  !Sub '${PortfolioDisplayName}'
+  #       - Key:    Dept
+  #         Value:  !Sub '${Dept}'
+  #       - Key:    Env
+  #         Value:  !Sub '${Env}'
+  #       - Key:    User
+  #         Value:  !Sub '${User}'
+  #       - Key:    Owner
+  #         Value:  !Sub '${Owner}'
 
   ServiceCatalogPortfoliodevplatform-opt:
     Type: "AWS::ServiceCatalog::Portfolio"
