@@ -10,6 +10,11 @@ Parameters:
       run.
     Type: String
 
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+    Default: none
+
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
@@ -26,6 +31,12 @@ Parameters:
       - dev
 
 Conditions:
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
   UsePermissionsBoundary:
     Fn::Not:
       - Fn::Equals:
@@ -75,6 +86,8 @@ Resources:
     Properties:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
+      DeploymentController:
+        Type: CODE_DEPLOY
       LoadBalancers:
         - ContainerName: !Sub "${AWS::StackName}-node-server"
           ContainerPort: 8000
@@ -426,6 +439,36 @@ Resources:
       IpProtocol: tcp
       FromPort: 8000
       ToPort: 8000
+
+  #
+  # Blue/Green deployment stack
+  #
+
+  ECSCanaryDeploymentStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
+      Parameters:
+        VpcId: !Sub ${VpcStackName}-VpcId
+        # Parameters below to be filled by developers
+        # Replace with logical ID in this template
+        ECSClusterName: !Ref FargateCluster
+        ECSServiceName: !GetAtt ContainerService.Name
+        TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
+        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
+        ECSServiceTaskDefinition: !Ref TaskDefinition
+        DeploymentStrategy: CodeDeployDefault.ECSCanary10Percent5Minutes
+        # Replace with values correspondent to your app container
+        ContainerName: !Sub "${AWS::StackName}-node-server"
+        ContainerPort: 8000
+        PermissionsBoundary: !If
+          - UsePermissionsBoundary
+          - !Ref PermissionsBoundary
+          - "none"
+        CodeSigningConfigArn: !If
+          - UseCodeSigning
+          - !Ref CodeSigningConfigArn
+          - "none"
 
   #
   #  ElastiCache
