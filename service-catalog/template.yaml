@@ -9,8 +9,8 @@ Metadata:
           default: "Service Catalog Portfolio Details"
         Parameters:
           - PortfolioDisplayName
-          - PortfolioProviderName
-          - PortfolioDescription
+          #- PortfolioProviderName
+          #- PortfolioDescription
       -
         Label:
           default: "Service Catalog Portfolio Tags"
@@ -104,17 +104,17 @@ Parameters:
   #   Type:           String
   #   Default:        "Owner"
 
-# Portfolio Provider Name
-  PortfolioProviderName:
-    Description:    Please specify the Portfolio Provider Name.
-    Type:           String
-    Default:        "devplatform-min"
+# # Portfolio Provider Name
+#   PortfolioProviderName:
+#     Description:    Please specify the Portfolio Provider Name.
+#     Type:           String
+#     Default:        "devplatform-min"
 
 # Portfolio Description
-  PortfolioDescription:
-    Description:    Please specify the Portfolio Description.
-    Type:           String
-    Default:        "Service Catalog Portfolio for Business Unit Dev-Ops"
+  # PortfolioDescription:
+  #   Description:    Please specify the Portfolio Description.
+  #   Type:           String
+  #   Default:        "Service Catalog Portfolio for Business Unit Dev-Ops"
 
 # Portfolio Display Name
   PortfolioDisplayName:
@@ -171,7 +171,7 @@ Resources:
   #       - Key:    Owner
   #         Value:  !Sub '${Owner}'
 
-  ServiceCatalogPortfoliodevplatform-opt:
+  ServiceCatalogPortfolio:
     Type: "AWS::ServiceCatalog::Portfolio"
     Properties:
       ProviderName: "devplatform-opt"
