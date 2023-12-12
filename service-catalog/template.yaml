@@ -186,7 +186,7 @@ Parameters:
   AccountIdOfChildAWSAccount:
     Description:    Please specify the Sub AWS Account ID.
     Type:           String
-    Default:        "1234567890"
+    Default:        "123456789012"
 
 # Application Name
   AppName:
