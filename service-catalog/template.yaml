@@ -313,12 +313,13 @@ Resources:
       # Value:      !Sub '${ProductOwner}'
 
   # Share Portfolio with an AWS account
-  ServiceCatalogPortfolioShare:
-    Type: AWS::ServiceCatalog::PortfolioShare
-    Condition: ConditionShareThisPortfolio
-    Properties:
-      AccountId: !Ref AccountIdOfChildAWSAccount
-      PortfolioId: !Ref ServiceCatalogPortfolio1
+  #  need to add permisisons to "CreatePortfolioShare"
+  # ServiceCatalogPortfolioShare:
+  #   Type: AWS::ServiceCatalog::PortfolioShare
+  #   Condition: ConditionShareThisPortfolio
+  #   Properties:
+  #     AccountId: !Ref AccountIdOfChildAWSAccount
+  #     PortfolioId: !Ref ServiceCatalogPortfolio1
 
 # Accepts portfolio share - not sure if needed yet
 #   ServiceCatalogAcceptPortfolioShare:
