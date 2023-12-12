@@ -354,7 +354,7 @@ Resources:
           - Name: "ProvisioningArtifactNameParameter"
             Description: "ProvisioningArtifactDescriptionParameter"
             Info:
-              LoadTemplateFromURL: "ProvisioningArtifactTemplateUrl"
+              LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
 
  
 
