@@ -482,3 +482,4 @@ Resources:
   #   Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
   #   Export:
   #     Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
+  # 
