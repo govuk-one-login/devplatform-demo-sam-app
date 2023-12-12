@@ -72,6 +72,12 @@ Metadata:
           - ProvisioningArtifactNameParameter
           - ProvisioningArtifactDescriptionParameter
 
+#  Would this ampping work ?
+  # Mappings: 
+  #   ProductName: 
+  #     us-east-1: 
+  #       test: "ami-8ff710e2"
+  #       prod: "ami-f5f41398"
 
 ####################################
 # Parameters
@@ -428,7 +434,7 @@ Resources:
 ####################################
 # Outputs
 ####################################
-Outputs:
+# Outputs:
 
   # ServiceCatalogPortfolio:
   #   Value:    !Ref ServiceCatalogPortfolio
