@@ -297,6 +297,12 @@ Resources:
       Description: "base aws account"
       DisplayName: "base aws account"
 
+ ServiceCatalogPortfolio2:
+    Type: AWS::ServiceCatalog::Portfolio
+    Properties:
+      ProviderName: "frontend team"
+      Description: "frontend team"
+      DisplayName: "frontend team"
   
 
   ServiceCatalogProductTagOptions:
@@ -384,6 +390,7 @@ Resources:
     Properties:
       PortfolioId: !Ref ServiceCatalogPortfolio1
       ProductId: !Ref ServiceCatalogCloudFormationProduct2
+
   # ServiceCatalogCloudFormationProduct:
   #     Type: AWS::ServiceCatalog::CloudFormationProduct
   #     Properties:
@@ -411,26 +418,26 @@ Resources:
   #     TagOptionId: !Ref ServiceCatalogProductTagOptions
   #     ResourceId: !Ref ServiceCatalogCloudFormationProduct
 
-  ServiceCatalogCloudFormationProduct5:
-    Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:
-      Name: "alerting-integration"
-      Description: "Alerting-integration description"
-      Owner: "Dev Platform"
-      SupportDescription: "Alerting-integration description"
-      Distributor: "Dev Platform"
-      SupportEmail: "dev-platform@example.com"
-      SupportUrl: "https://www.support.example.com"
-      # Tags:
-      #   - Key: Name
-      #     Value: "Alerting-integration"
-      #   - Key: App
-      #     Value: "Alerting-integration"
-      ProvisioningArtifactParameters:
-        - Name:  "Alerting-integration"
-          Description: "Alerting-integration description"
-          Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
+  # ServiceCatalogCloudFormationProduct5:
+  #   Type: AWS::ServiceCatalog::CloudFormationProduct
+  #   Properties:
+  #     Name: "alerting-integration"
+  #     Description: "Alerting-integration description"
+  #     Owner: "Dev Platform"
+  #     SupportDescription: "Alerting-integration description"
+  #     Distributor: "Dev Platform"
+  #     SupportEmail: "dev-platform@example.com"
+  #     SupportUrl: "https://www.support.example.com"
+  #     # Tags:
+  #     #   - Key: Name
+  #     #     Value: "Alerting-integration"
+  #     #   - Key: App
+  #     #     Value: "Alerting-integration"
+  #     ProvisioningArtifactParameters:
+  #       - Name:  "Alerting-integration"
+  #         Description: "Alerting-integration description"
+  #         Info:
+  #           LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
 
   # ServiceCatalogPortfolioProductAssociation5:
   #   Type: AWS::ServiceCatalog::PortfolioProductAssociation
