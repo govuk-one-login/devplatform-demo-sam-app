@@ -297,7 +297,7 @@ Resources:
       Description: "base aws account"
       DisplayName: "base aws account"
 
- ServiceCatalogPortfolio2:
+  ServiceCatalogPortfolio2:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
       ProviderName: "frontend team"
