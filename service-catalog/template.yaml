@@ -335,8 +335,8 @@ Resources:
         Owner: "Product 1 owner"
         SupportDescription: "Description"
         Distributor: "distributor"
-        SupportEmail: "email"
-        SupportUrl: "url"
+        SupportEmail: "email@exmaple.com"
+        SupportUrl: "https://bbc.co.uk"
         # Tags:
         #   - Key: Name
         #     Value: !Sub "${AppName}"
