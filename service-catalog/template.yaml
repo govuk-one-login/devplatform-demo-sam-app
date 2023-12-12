@@ -171,7 +171,7 @@ Parameters:
   ShareThisPortfolio:
     Description:    Please specify if this Portfolio will be Shared with additonal accounts?
     Type:           String
-    Default:        "false"
+    Default:        "true"
     AllowedValues:
       - 'true'
       - 'false'
