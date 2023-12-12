@@ -266,23 +266,32 @@ Conditions:
 ####################################
 Resources:
 
-  ServiceCatalogPortfolio:
+  # ServiceCatalogPortfolio:
+  #   Type: AWS::ServiceCatalog::Portfolio
+  #   Properties:
+  #     ProviderName: !Ref PortfolioProviderName
+  #     Description: !Ref PortfolioDescription
+  #     DisplayName: !Ref PortfolioDisplayName
+      # Tags:
+      #   - Key:    Name
+      #     Value:  !Sub '${PortfolioDisplayName}'
+      #   - Key:    Dept
+      #     Value:  !Sub '${Dept}'
+      #   - Key:    Env
+      #     Value:  !Sub '${Env}'
+      #   - Key:    User
+      #     Value:  !Sub '${User}'
+      #   - Key:    Owner
+      #     Value:  !Sub '${Owner}'
+
+  ServiceCatalogPortfolio1:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
-      ProviderName: !Ref PortfolioProviderName
-      Description: !Ref PortfolioDescription
-      DisplayName: !Ref PortfolioDisplayName
-      Tags:
-        - Key:    Name
-          Value:  !Sub '${PortfolioDisplayName}'
-        - Key:    Dept
-          Value:  !Sub '${Dept}'
-        - Key:    Env
-          Value:  !Sub '${Env}'
-        - Key:    User
-          Value:  !Sub '${User}'
-        - Key:    Owner
-          Value:  !Sub '${Owner}'
+      ProviderName: "base aws account"
+      Description: "base aws account"
+      DisplayName: "base aws account"
+
+  
 
   ServiceCatalogProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
@@ -297,12 +306,13 @@ Resources:
       # Key:        Owner
       # Value:      !Sub '${ProductOwner}'
 
+  # Share Portfolio with an AWS account
   ServiceCatalogPortfolioShare:
     Type: AWS::ServiceCatalog::PortfolioShare
     Condition: ConditionShareThisPortfolio
     Properties:
       AccountId: !Ref AccountIdOfChildAWSAccount
-      PortfolioId: !Ref ServiceCatalogPortfolio
+      PortfolioId: !Ref ServiceCatalogPortfolio1
 
 # Accepts portfolio share - not sure if needed yet
 #   ServiceCatalogAcceptPortfolioShare:
@@ -315,36 +325,68 @@ Resources:
       Type: AWS::ServiceCatalog::CloudFormationProduct
       Properties:
         Name: !Ref SCProductName
-        Description: !Ref SCProductDescription
-        Owner: !Ref SCProductOwner
-        SupportDescription: !Ref SCProductSupport
-        Distributor: !Ref SCProductDistributor
-        SupportEmail: !Ref SCSupportEmail
-        SupportUrl: !Sub "${SCSupportUrl}"
-        Tags:
-          - Key: Name
-            Value: !Sub "${AppName}"
-          - Key: App
-            Value: !Sub "${AppName}"
-          - Key: Dept
-            Value: !Sub "${Dept}"
-          - Key: Env
-            Value: !Sub "${Env}"
-          - Key: User
-            Value: !Sub "${User}"
-          - Key: Owner
-            Value: !Sub "${Owner}"
+        Description: "Product 1"
+        Owner: "Product 1 owner"
+        SupportDescription: "Description"
+        Distributor: "distributor"
+        SupportEmail: "email"
+        SupportUrl: "url"
+        # Tags:
+        #   - Key: Name
+        #     Value: !Sub "${AppName}"
+        #   - Key: App
+        #     Value: !Sub "${AppName}"
+        #   - Key: Dept
+        #     Value: !Sub "${Dept}"
+        #   - Key: Env
+        #     Value: !Sub "${Env}"
+        #   - Key: User
+        #     Value: !Sub "${User}"
+        #   - Key: Owner
+        #     Value: !Sub "${Owner}"
         ProvisioningArtifactParameters:
-          - Name: !Sub "${ProvisioningArtifactNameParameter}"
-            Description: !Sub "${ProvisioningArtifactDescriptionParameter}"
+          - Name: "ProvisioningArtifactNameParameter"
+            Description: "ProvisioningArtifactDescriptionParameter"
             Info:
-              LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
+              LoadTemplateFromURL: "ProvisioningArtifactTemplateUrl"
 
-  ServiceCatalogCustomTagOptionsAssociation:
-    Type: AWS::ServiceCatalog::TagOptionAssociation
-    Properties:
-      TagOptionId: !Ref ServiceCatalogProductTagOptions
-      ResourceId: !Ref ServiceCatalogCloudFormationProduct
+ 
+
+
+  # ServiceCatalogCloudFormationProduct:
+  #     Type: AWS::ServiceCatalog::CloudFormationProduct
+  #     Properties:
+  #       Name: !Ref SCProductName
+  #       Description: !Ref SCProductDescription
+  #       Owner: !Ref SCProductOwner
+  #       SupportDescription: !Ref SCProductSupport
+  #       Distributor: !Ref SCProductDistributor
+  #       SupportEmail: !Ref SCSupportEmail
+  #       SupportUrl: !Sub "${SCSupportUrl}"
+  #       # Tags:
+  #       #   - Key: Name
+  #       #     Value: !Sub "${AppName}"
+  #       #   - Key: App
+  #       #     Value: !Sub "${AppName}"
+  #       #   - Key: Dept
+  #       #     Value: !Sub "${Dept}"
+  #       #   - Key: Env
+  #       #     Value: !Sub "${Env}"
+  #       #   - Key: User
+  #       #     Value: !Sub "${User}"
+  #       #   - Key: Owner
+  #       #     Value: !Sub "${Owner}"
+  #       ProvisioningArtifactParameters:
+  #         - Name: !Sub "${ProvisioningArtifactNameParameter}"
+  #           Description: !Sub "${ProvisioningArtifactDescriptionParameter}"
+  #           Info:
+  #             LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
+
+  # ServiceCatalogCustomTagOptionsAssociation:
+  #   Type: AWS::ServiceCatalog::TagOptionAssociation
+  #   Properties:
+  #     TagOptionId: !Ref ServiceCatalogProductTagOptions
+  #     ResourceId: !Ref ServiceCatalogCloudFormationProduct
 
   ServiceCatalogCloudFormationProduct5:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -356,19 +398,19 @@ Resources:
       Distributor: "Dev Platform"
       SupportEmail: "dev-platform@example.com"
       SupportUrl: "https://www.support.example.com"
-      Tags:
-        - Key: Name
-          Value: "Alerting-integration"
-        - Key: App
-          Value: "Alerting-integration"
-        - Key: Dept
-          Value: "Dev Platform"
-        - Key: Env
-          Value: "Dev Platform"
-        - Key: User
-          Value: "User"
-        - Key: Owner
-          Value: "Dev Platform"
+      # Tags:
+      #   - Key: Name
+      #     Value: "Alerting-integration"
+      #   - Key: App
+      #     Value: "Alerting-integration"
+      #   - Key: Dept
+      #     Value: "Dev Platform"
+      #   - Key: Env
+      #     Value: "Dev Platform"
+      #   - Key: User
+      #     Value: "User"
+      #   - Key: Owner
+      #     Value: "Dev Platform"
       ProvisioningArtifactParameters:
         - Name:  "Alerting-integration"
           Description: "Alerting-integration description"
@@ -388,15 +430,15 @@ Resources:
 ####################################
 Outputs:
 
-  ServiceCatalogPortfolio:
-    Value:    !Ref ServiceCatalogPortfolio
-    Export:
-      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
+  # ServiceCatalogPortfolio:
+  #   Value:    !Ref ServiceCatalogPortfolio
+  #   Export:
+  #     Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolio'
 
-  ServiceCatalogPortfolioName:
-    Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
-    Export:
-      Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
+  # ServiceCatalogPortfolioName:
+  #   Value:    !GetAtt 'ServiceCatalogPortfolio.PortfolioName'
+  #   Export:
+  #     Name:   !Sub '${AWS::StackName}-ServiceCatalogPortfolioName'
 
   # ServiceCatalogProductTagOptions:
   #   Value:    !Ref 'ServiceCatalogProductTagOptions'
@@ -404,20 +446,20 @@ Outputs:
   #     Name:   !Sub '${AWS::StackName}-ServiceCatalogProductTagOptions'
 
 
-  ServiceCatalogCloudFormationProductName:
-      Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProductName"
-      Export:
-        Name: !Sub "${AppName}-ServiceCatalogCloudFormationProductName"
+  # ServiceCatalogCloudFormationProductName:
+  #     Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProductName"
+  #     Export:
+  #       Name: !Sub "${AppName}-ServiceCatalogCloudFormationProductName"
 
-  ServiceCatalogProvisioningArtifactIds:
-    Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactIds"
-    Export:
-      Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactIds"
+  # ServiceCatalogProvisioningArtifactIds:
+  #   Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactIds"
+  #   Export:
+  #     Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactIds"
 
-  ServiceCatalogProvisioningArtifactNames:
-    Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
-    Export:
-      Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
+  # ServiceCatalogProvisioningArtifactNames:
+  #   Value: !GetAtt "ServiceCatalogCloudFormationProduct.ProvisioningArtifactNames"
+  #   Export:
+  #     Name: !Sub "${AppName}-ServiceCatalogCloudFormationProvisioningArtifactNames"
 
       # trigegr deploy
       # dfggfdfg
