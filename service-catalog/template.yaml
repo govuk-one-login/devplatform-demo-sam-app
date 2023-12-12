@@ -340,12 +340,12 @@ Resources:
             Info:
               LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
 
-  ServiceCatalogCustomTagOptionsAssociation:
-    Type: "AWS::ServiceCatalog::TagOptionAssociation"
-    Properties:
-      TagOptionId: !Ref "ServiceCatalogProductTagOptions"
-        # Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
-      ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
+  # ServiceCatalogCustomTagOptionsAssociation:
+  #   Type: "AWS::ServiceCatalog::TagOptionAssociation"
+  #   Properties:
+  #     TagOptionId: !Ref "ServiceCatalogProductTagOptions"
+  #       # Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogProductTagOptions"
+  #     ResourceId: !Ref "ServiceCatalogCloudFormationProduct"
 
   ServiceCatalogCloudFormationProduct5:
     Type: "AWS::ServiceCatalog::CloudFormationProduct"
