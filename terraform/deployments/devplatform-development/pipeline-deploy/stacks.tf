@@ -14,7 +14,7 @@ module "service-catalog-pipeline" {
     Environment                = "dev"
     VpcStackName               = "vpc"
     IncludePromotion           = "No"
-    # AWSOrganizationId          = data.aws_organizations_organization.gds.id
+    # AWSOrganizationId        = data.aws_organizations_organization.gds.id
     LogRetentionDays           = 7
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
