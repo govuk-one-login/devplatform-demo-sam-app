@@ -278,17 +278,17 @@ Resources:
   #     ProviderName: !Ref PortfolioProviderName
   #     Description: !Ref PortfolioDescription
   #     DisplayName: !Ref PortfolioDisplayName
-      # Tags:
-      #   - Key:    Name
-      #     Value:  !Sub '${PortfolioDisplayName}'
-      #   - Key:    Dept
-      #     Value:  !Sub '${Dept}'
-      #   - Key:    Env
-      #     Value:  !Sub '${Env}'
-      #   - Key:    User
-      #     Value:  !Sub '${User}'
-      #   - Key:    Owner
-      #     Value:  !Sub '${Owner}'
+  #     Tags:
+  #       - Key:    Name
+  #         Value:  !Sub '${PortfolioDisplayName}'
+  #       - Key:    Dept
+  #         Value:  !Sub '${Dept}'
+  #       - Key:    Env
+  #         Value:  !Sub '${Env}'
+  #       - Key:    User
+  #         Value:  !Sub '${User}'
+  #       - Key:    Owner
+  #         Value:  !Sub '${Owner}'
 
   ServiceCatalogPortfolio1:
     Type: AWS::ServiceCatalog::Portfolio
@@ -326,57 +326,24 @@ Resources:
   #     AccountId: !Ref AccountIdOfChildAWSAccount
   #     PortfolioId: !Ref ServiceCatalogPortfolio1
 
-# Accepts portfolio share - not sure if needed yet
-#   ServiceCatalogAcceptPortfolioShare:
-#      Type: AWS::ServiceCatalog::AcceptedPortfolioShare
-#      Properties:
-#        AcceptLanguage: String
-#        PortfolioId: String
+  # Accepts portfolio share - not sure if needed yet
+  # ServiceCatalogAcceptPortfolioShare:
+  #    Type: AWS::ServiceCatalog::AcceptedPortfolioShare
+  #    Properties:
+  #      AcceptLanguage: String
+  #      PortfolioId: String
 
-  ServiceCatalogCloudFormationProduct1:
-      Type: AWS::ServiceCatalog::CloudFormationProduct
-      Properties:
-        Name: "Product1"
-        Description: "Product 1"
-        Owner: "Product 1 owner"
-        # SupportDescription: "Description"
-        # Distributor: "distributor"
-        # SupportEmail: "email@exmaple.com"
-        # SupportUrl: "https://bbc.co.uk"
-        # Tags:
-        #   - Key: Name
-        #     Value: !Sub "${AppName}"
-        #   - Key: App
-        #     Value: !Sub "${AppName}"
-        ProvisioningArtifactParameters:
-          - Name: "ProvisioningArtifactNameParameter"
-            Description: "ProvisioningArtifactDescriptionParameter"
-            Info:
-              LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
-
-  ServiceCatalogCloudFormationProduct2:
-    Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:
-      Name: "Product2"
-      Description: "Product 2"
-      Owner: "Product 2 owner"
-      # Tags:
-      #   - Key: Name
-      #     Value: !Sub "${AppName}"
-      #   - Key: App
-      #     Value: !Sub "${AppName}"
-      ProvisioningArtifactParameters:
-        - Name: "ProvisioningArtifactNameParameter"
-          Description: "ProvisioningArtifactDescriptionParameter"
-          Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
-
+ 
   ServiceCatalogCloudFormationProduct3:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "alerting-integration"
       Description: "Stack to create an SNS topic with external API subscriptions such as PagerDuty"
       Owner: "Product x owner"
+      # SupportDescription: "Description"
+      # Distributor: "distributor"
+      # SupportEmail: "email@exmaple.com"
+      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -406,20 +373,6 @@ Resources:
             LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/container-signer/template.yaml"
 
 
-  ServiceCatalogPortfolioProductAssociation1:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct1
-
-  ServiceCatalogPortfolioProductAssociation2:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct2
-
   ServiceCatalogPortfolioProductAssociation3:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
@@ -441,34 +394,6 @@ Resources:
   #     TagOptionId: !Ref ServiceCatalogProductTagOptions
   #     ResourceId: !Ref ServiceCatalogCloudFormationProduct
 
-  # ServiceCatalogCloudFormationProduct5:
-  #   Type: AWS::ServiceCatalog::CloudFormationProduct
-  #   Properties:
-  #     Name: "alerting-integration"
-  #     Description: "Alerting-integration description"
-  #     Owner: "Dev Platform"
-  #     SupportDescription: "Alerting-integration description"
-  #     Distributor: "Dev Platform"
-  #     SupportEmail: "dev-platform@example.com"
-  #     SupportUrl: "https://www.support.example.com"
-  #     # Tags:
-  #     #   - Key: Name
-  #     #     Value: "Alerting-integration"
-  #     #   - Key: App
-  #     #     Value: "Alerting-integration"
-  #     ProvisioningArtifactParameters:
-  #       - Name:  "Alerting-integration"
-  #         Description: "Alerting-integration description"
-  #         Info:
-  #           LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
-
-  # ServiceCatalogPortfolioProductAssociation5:
-  #   Type: AWS::ServiceCatalog::PortfolioProductAssociation
-  #   DependsOn: ServiceCatalogCloudFormationProduct
-  #   Properties:
-  #     PortfolioId: !Ref ServiceCatalogProductTagOptions
-  #       # Fn::ImportValue: !Sub "${ServiceCatalogPortfolioStackName}-ServiceCatalogPortfolio"
-  #     ProductId: !Ref ServiceCatalogCloudFormationProduct5
 
 ####################################
 # Outputs
