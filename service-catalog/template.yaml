@@ -340,9 +340,9 @@ Resources:
         Description: "Product 1"
         Owner: "Product 1 owner"
         SupportDescription: "Description"
-        Distributor: "distributor"
-        SupportEmail: "email@exmaple.com"
-        SupportUrl: "https://bbc.co.uk"
+        # Distributor: "distributor"
+        # SupportEmail: "email@exmaple.com"
+        # SupportUrl: "https://bbc.co.uk"
         # Tags:
         #   - Key: Name
         #     Value: !Sub "${AppName}"
@@ -361,9 +361,9 @@ Resources:
       Description: "Product 2"
       Owner: "Product 2 owner"
       SupportDescription: "Description"
-      Distributor: "distributor"
-      SupportEmail: "email@exmaple.com"
-      SupportUrl: "https://bbc.co.uk"
+      # Distributor: "distributor"
+      # SupportEmail: "email@exmaple.com"
+      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -382,9 +382,9 @@ Resources:
       Description: "Stack to create an SNS topic with external API subscriptions such as PagerDuty"
       Owner: "Product x owner"
       SupportDescription: "Description"
-      Distributor: "distributor"
-      SupportEmail: "email@exmaple.com"
-      SupportUrl: "https://bbc.co.uk"
+      # Distributor: "distributor"
+      # SupportEmail: "email@exmaple.com"
+      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -403,9 +403,9 @@ Resources:
       Description: "Container Signer KMS Key template managed by dev-platform"
       Owner: "Product x owner"
       SupportDescription: "Description"
-      Distributor: "distributor"
-      SupportEmail: "email@exmaple.com"
-      SupportUrl: "https://bbc.co.uk"
+      # Distributor: "distributor"
+      # SupportEmail: "email@exmaple.com"
+      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
