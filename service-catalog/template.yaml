@@ -319,12 +319,12 @@ Resources:
       # Value:      !Sub '${ProductOwner}'
 
   # Share Portfolio with an AWS account
-  ServiceCatalogPortfolioShare:
-    Type: AWS::ServiceCatalog::PortfolioShare
-    Condition: ConditionShareThisPortfolio
-    Properties:
-      AccountId: !Ref AccountIdOfChildAWSAccount
-      PortfolioId: !Ref ServiceCatalogPortfolio1
+  # ServiceCatalogPortfolioShare:
+  #   Type: AWS::ServiceCatalog::PortfolioShare
+  #   Condition: ConditionShareThisPortfolio
+  #   Properties:
+  #     AccountId: !Ref AccountIdOfChildAWSAccount
+  #     PortfolioId: !Ref ServiceCatalogPortfolio1
 
 # Accepts portfolio share - not sure if needed yet
 #   ServiceCatalogAcceptPortfolioShare:
@@ -339,7 +339,7 @@ Resources:
         Name: "Product1"
         Description: "Product 1"
         Owner: "Product 1 owner"
-        SupportDescription: "Description"
+        # SupportDescription: "Description"
         # Distributor: "distributor"
         # SupportEmail: "email@exmaple.com"
         # SupportUrl: "https://bbc.co.uk"
@@ -360,10 +360,6 @@ Resources:
       Name: "Product2"
       Description: "Product 2"
       Owner: "Product 2 owner"
-      SupportDescription: "Description"
-      # Distributor: "distributor"
-      # SupportEmail: "email@exmaple.com"
-      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -381,10 +377,6 @@ Resources:
       Name: "alerting-integration"
       Description: "Stack to create an SNS topic with external API subscriptions such as PagerDuty"
       Owner: "Product x owner"
-      SupportDescription: "Description"
-      # Distributor: "distributor"
-      # SupportEmail: "email@exmaple.com"
-      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -402,10 +394,6 @@ Resources:
       Name: "container-signer"
       Description: "Container Signer KMS Key template managed by dev-platform"
       Owner: "Product x owner"
-      SupportDescription: "Description"
-      # Distributor: "distributor"
-      # SupportEmail: "email@exmaple.com"
-      # SupportUrl: "https://bbc.co.uk"
       # Tags:
       #   - Key: Name
       #     Value: !Sub "${AppName}"
@@ -446,26 +434,6 @@ Resources:
       PortfolioId: !Ref ServiceCatalogPortfolio1
       ProductId: !Ref ServiceCatalogCloudFormationProduct4
 
-  # ServiceCatalogCloudFormationProduct:
-  #     Type: AWS::ServiceCatalog::CloudFormationProduct
-  #     Properties:
-  #       Name: !Ref SCProductName
-  #       Description: !Ref SCProductDescription
-  #       Owner: !Ref SCProductOwner
-  #       SupportDescription: !Ref SCProductSupport
-  #       Distributor: !Ref SCProductDistributor
-  #       SupportEmail: !Ref SCSupportEmail
-  #       SupportUrl: !Sub "${SCSupportUrl}"
-  #       # Tags:
-  #       #   - Key: Name
-  #       #     Value: !Sub "${AppName}"
-  #       #   - Key: App
-  #       #     Value: !Sub "${AppName}"
-  #       ProvisioningArtifactParameters:
-  #         - Name: !Sub "${ProvisioningArtifactNameParameter}"
-  #           Description: !Sub "${ProvisioningArtifactDescriptionParameter}"
-  #           Info:
-  #             LoadTemplateFromURL: !Sub "${ProvisioningArtifactTemplateUrl}"
 
   # ServiceCatalogCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
