@@ -149,6 +149,7 @@ Resources:
       DisplayName: "Frontend team"
   
 
+
   SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
     Properties:
@@ -291,3 +292,4 @@ Resources:
 ####################################
 # Outputs:
 
+# 
