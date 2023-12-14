@@ -251,6 +251,23 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/container-signer/template.yaml"
 
+    SCCProduct5:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "api-gateway-logs"
+      Description: "Stack to setup accounts that use API Gateway logging. Managed by dev-platform."
+      Owner: "Product x owner"
+      # Tags:
+      #   - Key: Name
+      #     Value: !Sub "${AppName}"
+      #   - Key: App
+      #     Value: !Sub "${AppName}"
+      ProvisioningArtifactParameters:
+        - Name: "ProvisioningArtifactNameParameter"
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/api-gateway-logs/template.yaml"
+
   SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
@@ -279,6 +296,13 @@ Resources:
       PortfolioId: !Ref SCPortfolioBaseAccount
       ProductId: !Ref SCCProduct4
 
+  SCPortfolioProductAssociation5:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioFrontend
+      ProductId: !Ref SCCProduct5
+      
 
   # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
