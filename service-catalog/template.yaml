@@ -65,19 +65,13 @@ Metadata:
       #   Parameters:
       #     - PortfolioDisplayName
 
-      - Label:
-          default: "Service Catalog Product Details"
-        Parameters:
-          - ProvisioningArtifactTemplateUrl
-          - ProvisioningArtifactNameParameter
-          - ProvisioningArtifactDescriptionParameter
+      # - Label:
+      #     default: "Service Catalog Product Details"
+      #   Parameters:
+      #     - ProvisioningArtifactTemplateUrl
+      #     - ProvisioningArtifactNameParameter
+      #     - ProvisioningArtifactDescriptionParameter
 
-#  Would this ampping work ?
-  # Mappings: 
-  #   ProductName: 
-  #     us-east-1: 
-  #       test: "ami-8ff710e2"
-  #       prod: "ami-f5f41398"
 
 ####################################
 # Parameters
@@ -242,24 +236,24 @@ Parameters:
   #   Type: String
   #   Default: "https://www.support.example.com"
 
-  # ServiceCatalog Product S3 Bucket
-  ProvisioningArtifactTemplateUrl:
-    Description: Please specify the S3 URL of the template
-    Type: String
-    Default: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
-    #Default: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/sample1.template"
+  # # ServiceCatalog Product S3 Bucket
+  # ProvisioningArtifactTemplateUrl:
+  #   Description: Please specify the S3 URL of the template
+  #   Type: String
+  #   Default: "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+  #   #Default: "https://phillip-test.s3.eu-west-2.amazonaws.com/teamtemplates/sample1.template"
 
-  # ServiceCatalog Product Artifact Name
-  ProvisioningArtifactNameParameter:
-    Description: Please specify ServiceCatalog Product Artifact Name.
-    Type: String
-    Default: "ProductExample"
+  # # ServiceCatalog Product Artifact Name
+  # ProvisioningArtifactNameParameter:
+  #   Description: Please specify ServiceCatalog Product Artifact Name.
+  #   Type: String
+  #   Default: "ProductExample"
 
-  # ServiceCatalog Product Artifact Description
-  ProvisioningArtifactDescriptionParameter:
-    Description: Please specify ServiceCatalog Product Artifact Description.
-    Type: String
-    Default: "ProductExample"
+  # # ServiceCatalog Product Artifact Description
+  # ProvisioningArtifactDescriptionParameter:
+  #   Description: Please specify ServiceCatalog Product Artifact Description.
+  #   Type: String
+  #   Default: "ProductExample"
 
 ####################################
 # Conditions
