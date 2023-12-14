@@ -37,6 +37,11 @@ Metadata:
 ####################################
 Parameters:
 
+  S3BucketUrl:
+    Description:    Please specify the S3 Bucket name.
+    Type:           String
+    Default:        "template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com"
+
 # Enviornment type
   Env:
     Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
@@ -187,8 +192,7 @@ Resources:
         - Name: "ProvisioningArtifactNameParameter"
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/template.yaml"
-
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -205,7 +209,7 @@ Resources:
         - Name: "ProvisioningArtifactNameParameter"
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/signer/template.yaml"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/signer/template.yaml"
 
  
   SCCProduct3:
@@ -227,7 +231,7 @@ Resources:
         - Name: "ProvisioningArtifactNameParameter"
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/alerting-integration/template.yaml"
 
   SCCProduct4:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -244,7 +248,7 @@ Resources:
         - Name: "ProvisioningArtifactNameParameter"
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/container-signer/template.yaml"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/container-signer/template.yaml"
 
   SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
