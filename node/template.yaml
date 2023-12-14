@@ -102,7 +102,7 @@ Resources:
             - Fn::ImportValue:
                 !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
-      TaskDefinition: !Ref TaskDefinition
+      # TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
