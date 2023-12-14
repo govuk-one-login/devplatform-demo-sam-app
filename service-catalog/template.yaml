@@ -4,12 +4,12 @@ Description: This template creates AWS Service Catalog Portfolio.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label:
-          default: "Service Catalog Portfolio Details"
-        Parameters:
-          - PortfolioDisplayName
-          - PortfolioProviderName
-          - PortfolioDescription
+      # - Label:
+      #     default: "Service Catalog Portfolio Details"
+      #   Parameters:
+      #     - PortfolioDisplayName
+      #     - PortfolioProviderName
+      #     - PortfolioDescription
       # - Label:
       #     default: "Service Catalog Portfolio Tags"
       #   Parameters:
@@ -49,21 +49,21 @@ Metadata:
       #   Parameters:
       #     - ServiceCatalogPortfolioStackName
 
-      - Label:
-          default: "Service Catalog Product Details"
-        Parameters:
-          - SCProductName
-          - SCProductDescription
-          - SCProductOwner
-          - SCProductSupport
-          - SCProductDistributor
-          - SCSupportEmail
-          - SCSupportUrl
+      # - Label:
+      #     default: "Service Catalog Product Details"
+      #   Parameters:
+      #     - SCProductName
+      #     - SCProductDescription
+      #     - SCProductOwner
+      #     - SCProductSupport
+      #     - SCProductDistributor
+      #     - SCSupportEmail
+      #     - SCSupportUrl
 
-      - Label:
-          default: "Service Catalog Portfolio Display Name"
-        Parameters:
-          - PortfolioDisplayName
+      # - Label:
+      #     default: "Service Catalog Portfolio Display Name"
+      #   Parameters:
+      #     - PortfolioDisplayName
 
       - Label:
           default: "Service Catalog Product Details"
@@ -146,23 +146,23 @@ Parameters:
 #     Type:           String
 #     Default:        "Owner"
 
-# Portfolio Provider Name
-  PortfolioProviderName:
-    Description:    Please specify the Portfolio Provider Name.
-    Type:           String
-    Default:        "devplatform-min"
+# # Portfolio Provider Name
+#   PortfolioProviderName:
+#     Description:    Please specify the Portfolio Provider Name.
+#     Type:           String
+#     Default:        "devplatform-min"
 
-# Portfolio Description
-  PortfolioDescription:
-    Description:    Please specify the Portfolio Description.
-    Type:           String
-    Default:        "Service Catalog Portfolio for Business Unit Dev-Ops"
+# # Portfolio Description
+#   PortfolioDescription:
+#     Description:    Please specify the Portfolio Description.
+#     Type:           String
+#     Default:        "Service Catalog Portfolio for Business Unit Dev-Ops"
 
-# Portfolio Display Name
-  PortfolioDisplayName:
-    Description:    Please specify the Portfolio Description. Must satisfy regular expression pattern, (^[a-zA-Z0-9_\-]*)
-    Type:           String
-    Default:        "devplatform-min"
+# # Portfolio Display Name
+#   PortfolioDisplayName:
+#     Description:    Please specify the Portfolio Description. Must satisfy regular expression pattern, (^[a-zA-Z0-9_\-]*)
+#     Type:           String
+#     Default:        "devplatform-min"
 
 # Tag Options Activation
   ActivateProductTagOptions:
@@ -200,47 +200,47 @@ Parameters:
 #     Type: String
 #     Default: "service-catalog-poc"
 
-  # ServiceCatalog Product Name
-  SCProductName:
-    Description: Please specify ServiceCatalog Product Name.
-    Type: String
-    Default: "ProductName"
+  # # ServiceCatalog Product Name
+  # SCProductName:
+  #   Description: Please specify ServiceCatalog Product Name.
+  #   Type: String
+  #   Default: "ProductName"
 
   # ServiceCatalog Product Name Description
-  SCProductDescription:
-    Description: Please specify ServiceCatalog Product Name Description.
-    Type: String
-    Default: "ProductDescription"
+  # SCProductDescription:
+  #   Description: Please specify ServiceCatalog Product Name Description.
+  #   Type: String
+  #   Default: "ProductDescription"
 
-  # ServiceCatalog Product Name Owner
-  SCProductOwner:
-    Description: Please specify ServiceCatalog Product Owner.
-    Type: String
-    Default: "ProductOwner"
+  # # ServiceCatalog Product Name Owner
+  # SCProductOwner:
+  #   Description: Please specify ServiceCatalog Product Owner.
+  #   Type: String
+  #   Default: "ProductOwner"
 
-  # ServiceCatalog Product Support
-  SCProductSupport:
-    Description: Please specify ServiceCatalog Product Support.
-    Type: String
-    Default: "IT Support can be reached @support"
+  # # ServiceCatalog Product Support
+  # SCProductSupport:
+  #   Description: Please specify ServiceCatalog Product Support.
+  #   Type: String
+  #   Default: "IT Support can be reached @support"
 
-  # ServiceCatalog Product Distributor
-  SCProductDistributor:
-    Description: Please specify ServiceCatalog Product Distributor.
-    Type: String
-    Default: "App Vendor"
+  # # ServiceCatalog Product Distributor
+  # SCProductDistributor:
+  #   Description: Please specify ServiceCatalog Product Distributor.
+  #   Type: String
+  #   Default: "App Vendor"
 
-  # ServiceCatalog Product Support Email
-  SCSupportEmail:
-    Description: Please specify ServiceCatalog Product Support Email.
-    Type: String
-    Default: "support@example.com"
+  # # ServiceCatalog Product Support Email
+  # SCSupportEmail:
+  #   Description: Please specify ServiceCatalog Product Support Email.
+  #   Type: String
+  #   Default: "support@example.com"
 
-  # ServiceCatalog Product Support URL
-  SCSupportUrl:
-    Description: Please specify ServiceCatalog Product Support URL.
-    Type: String
-    Default: "https://www.support.example.com"
+  # # ServiceCatalog Product Support URL
+  # SCSupportUrl:
+  #   Description: Please specify ServiceCatalog Product Support URL.
+  #   Type: String
+  #   Default: "https://www.support.example.com"
 
   # ServiceCatalog Product S3 Bucket
   ProvisioningArtifactTemplateUrl:
