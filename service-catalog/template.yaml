@@ -129,22 +129,22 @@ Conditions:
 ####################################
 Resources:
 
-  ServiceCatalogPortfolio1:
+  SCPortfolioBaseAccount:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
-      ProviderName: "base aws account"
+      ProviderName: "Base AWS account"
       Description: "base aws account"
       DisplayName: "base aws account"
 
-  ServiceCatalogPortfolio2:
+  SCPortfolioFrontend:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
-      ProviderName: "frontend team"
-      Description: "frontend team"
-      DisplayName: "frontend team"
+      ProviderName: "Frontend team"
+      Description: "Frontend team"
+      DisplayName: "Frontend team"
   
 
-  ServiceCatalogProductTagOptions:
+  SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
     Properties:
       Active:     !Ref ActivateProductTagOptions
@@ -172,7 +172,7 @@ Resources:
   #      AcceptLanguage: String
   #      PortfolioId: String
 
-  ServiceCatalogCloudFormationProduct1:
+  SCCProduct1:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "vpc"
@@ -190,7 +190,7 @@ Resources:
             LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/template.yaml"
 
 
-  ServiceCatalogCloudFormationProduct2:
+  SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "signer"
@@ -208,7 +208,7 @@ Resources:
             LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/signer/template.yaml"
 
  
-  ServiceCatalogCloudFormationProduct3:
+  SCCProduct3:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "alerting-integration"
@@ -229,7 +229,7 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/alerting-integration/template.yaml"
 
-  ServiceCatalogCloudFormationProduct4:
+  SCCProduct4:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "container-signer"
@@ -246,36 +246,36 @@ Resources:
           Info:
             LoadTemplateFromURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/container-signer/template.yaml"
 
-  ServiceCatalogPortfolioProductAssociation1:
+  SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct1
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct1
 
-  ServiceCatalogPortfolioProductAssociation2:
+  SCPortfolioProductAssociation2:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct2
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct2
 
-  ServiceCatalogPortfolioProductAssociation3:
+  SCPortfolioProductAssociation3:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct3
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct3
 
-  ServiceCatalogPortfolioProductAssociation4:
+  SCPortfolioProductAssociation4:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
     Properties:
-      PortfolioId: !Ref ServiceCatalogPortfolio1
-      ProductId: !Ref ServiceCatalogCloudFormationProduct4
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct4
 
 
-  # ServiceCatalogCustomTagOptionsAssociation:
+  # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
   #   Properties:
   #     TagOptionId: !Ref ServiceCatalogProductTagOptions
