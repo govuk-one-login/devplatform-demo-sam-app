@@ -251,7 +251,7 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/container-signer/template.yaml"
 
-    SCCProduct5:
+  SCCProduct5:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
       Name: "api-gateway-logs"
