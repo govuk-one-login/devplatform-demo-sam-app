@@ -253,6 +253,24 @@ Resources:
         CachingEnabled: false
 
 
+  RestApiGatewayCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+      DomainValidationOptions:
+        - DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+          HostedZoneId: !ImportValue PlatformSandpitHostedZone
+
+  RestApiGatewayDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+      RegionalCertificateArn: !Ref RestApiGatewayCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
