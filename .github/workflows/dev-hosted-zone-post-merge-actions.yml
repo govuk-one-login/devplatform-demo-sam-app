@@ -53,4 +53,4 @@ jobs:
         with:
           artifact-bucket-name: ${{ secrets.DEV_HOSTED_ZONE_ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-          working-directory: ./.aws-sam/build
+          working-directory: ./platform-hosted-zone/.aws-sam/build
