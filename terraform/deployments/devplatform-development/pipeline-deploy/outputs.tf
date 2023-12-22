@@ -41,3 +41,13 @@ output "cloudfront-estimate-ecr_stack_outputs" {
 output "cloudfront-estimate-ecr_stack_tags" {
   value = module.cloudfront-estimate-ecr.stack_tags
 }
+
+output "dev-dns-pipeline_stack_id" {
+  value = module.dev-dns-pipeline.stack_id
+}
+output "dev-dns-pipeline_stack_outputs" {
+  value = module.dev-dns-pipeline.stack_outputs
+}
+output "dev-dns-pipeline_stack_tags" {
+  value = module.dev-dns-pipeline.stack_tags
+}
