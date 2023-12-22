@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - bau-cloudfront-estimate
+    paths:
+      - 'platform-hosted-zone/**'
 
 defaults:
   run:
@@ -50,4 +52,4 @@ jobs:
         with:
           artifact-bucket-name: ${{ secrets.DEV_HOSTED_ZONE_ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-          working-directory: ./sam-app2/.aws-sam/build
+          working-directory: ./.aws-sam/build

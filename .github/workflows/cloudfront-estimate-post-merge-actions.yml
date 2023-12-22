@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - bau-cloudfront-estimate
+    paths:
+      - 'node-with-waf/**'
 
 defaults:
   run:
