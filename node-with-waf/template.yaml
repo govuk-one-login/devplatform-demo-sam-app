@@ -117,7 +117,7 @@ Resources:
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: ECSServiceAverageCPUUtilization
-        TargetValue: 70
+        TargetValue: 80
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
