@@ -51,3 +51,13 @@ output "dev-dns-pipeline_stack_outputs" {
 output "dev-dns-pipeline_stack_tags" {
   value = module.dev-dns-pipeline.stack_tags
 }
+
+output "waf-pipeline_stack_id" {
+  value = module.waf-pipeline.stack_id
+}
+output "waf-pipeline_stack_outputs" {
+  value = module.waf-pipeline.stack_outputs
+}
+output "waf-pipeline_stack_tags" {
+  value = module.waf-pipeline.stack_tags
+}

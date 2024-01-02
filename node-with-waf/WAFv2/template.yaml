@@ -41,7 +41,7 @@ Resources:
     Type: AWS::WAFv2::WebACL
     Properties:
       DefaultAction:
-        Block: {}
+        Allow: {}
       Scope: REGIONAL
       Rules:
         # Optional rule set to restrict to GDS IP addresses.
@@ -182,6 +182,8 @@ Resources:
             SampledRequestsEnabled: true
             CloudWatchMetricsEnabled: true
             MetricName: !Sub '${AWS::StackName}-${Environment}-SQLinjection-ruleset-metric'
+
+
 
         - Name: RateBased-CountIpRule # WCU = 30 (estimated)
           Priority: 6
