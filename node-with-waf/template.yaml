@@ -272,13 +272,15 @@ Resources:
     Properties:
       DomainName: !Join
         - ''
-        - - node-with-waf.
+        - - !Sub ${AWS::StackName}
+          - .
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
       DomainValidationOptions:
         - DomainName: !Join
             - ''
-            - - node-with-waf.
+            - - !Sub ${AWS::StackName}
+              - .
               - !Ref Environment
               - .platform.sandpit.account.gov.uk
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
@@ -288,7 +290,12 @@ Resources:
   RestApiGatewayDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: !Sub ${AWS::StackName}.dev.platform.sandpit.account.gov.uk
+      Name: !Join
+        - ''
+        - - !Sub ${AWS::StackName}
+          - .
+          - !Ref Environment
+          - .platform.sandpit.account.gov.uk
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
@@ -304,7 +311,8 @@ Resources:
     Properties:
       DomainName: !Join
         - ''
-        - - node-with-waf.
+        - - !Sub ${AWS::StackName}
+          - .
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
