@@ -301,7 +301,7 @@ Resources:
       AliasTarget:
         DNSName: !Join
           - ''
-          - - !Ref RestApiGateway
+          - - d-eugpywk32f
             - .execute-api.eu-west-2.amazonaws.com
         HostedZoneId: ZJ5UAJN8Y3Z2Q
         EvaluateTargetHealth: false
