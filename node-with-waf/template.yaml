@@ -513,7 +513,7 @@ Resources:
   ApplicationParameterGroup:
     Type: AWS::ElastiCache::ParameterGroup
     Properties:
-      CacheParameterGroupFamily: redis6.x
+      CacheParameterGroupFamily: redis7
       Description: Hello! This is a nice description
       Properties:
         cluster-enabled: "yes"
