@@ -147,7 +147,7 @@ Resources:
       ProviderName: "Frontend team"
       Description: "Frontend team"
       DisplayName: "Frontend team"
-  
+
 
 
   SCPProductTagOptions:
@@ -212,7 +212,7 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/signer/template.yaml"
 
- 
+
   SCCProduct3:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
@@ -302,7 +302,7 @@ Resources:
     Properties:
       PortfolioId: !Ref SCPortfolioFrontend
       ProductId: !Ref SCCProduct5
-      
+
 
   # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
