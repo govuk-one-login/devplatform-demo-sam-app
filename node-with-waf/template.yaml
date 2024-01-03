@@ -316,6 +316,7 @@ Resources:
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
+      CertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
           - REGIONAL
@@ -327,7 +328,6 @@ Resources:
       DomainName: !Ref RestApiGatewayDomainName
       RestApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
-
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
