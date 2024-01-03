@@ -319,12 +319,12 @@ Resources:
           - REGIONAL
       SecurityPolicy: TLS_1_2
 
-  #ApiGatewayMappingV2:
-  #  Type: AWS::ApiGatewayV2::ApiMapping
-  #  Properties:
-  #    DomainName: !Ref RestApiGatewayDomainName
-  #    ApiId: !Ref RestApiGateway
-  #    Stage: !Ref ApiGatewayStage
+  ApiGatewayMappingV2:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      DomainName: !Ref RestApiGatewayDomainName
+      ApiId: !Ref RestApiGateway
+      Stage: !Ref ApiGatewayStage
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
