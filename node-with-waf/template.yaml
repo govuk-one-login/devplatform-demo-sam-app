@@ -279,6 +279,8 @@ Resources:
               - !Ref Environment
               - .platform.sandpit.account.gov.uk
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      ValidationMethod: DNS
+      KeyAlgorithm: RSA_2048
 
   RestApiGatewayDomainName:
     Type: AWS::ApiGateway::DomainName
