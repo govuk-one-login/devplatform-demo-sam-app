@@ -245,6 +245,7 @@ Resources:
       EndpointConfiguration:
         Types:
         - REGIONAL
+      DisableExecuteApiEndpoint: True
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-RestApiGateway"
