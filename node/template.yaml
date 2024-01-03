@@ -20,6 +20,11 @@ Parameters:
     Type: String
     Default: "none"
 
+  DeploymentStrategy:
+    Description: "Predefined deployment configuration for ECS application"
+    Type: String
+    Default: "CodeDeployDefault.ECSCanary10Percent5Minutes"
+
   Environment:
     Description: "The name of the environment to deploy to"
     Type: "String"
@@ -457,7 +462,7 @@ Resources:
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
-        DeploymentStrategy: CodeDeployDefault.ECSCanary10Percent5Minutes
+        DeploymentStrategy: !Ref DeploymentStrategy
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
