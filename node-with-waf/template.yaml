@@ -242,6 +242,9 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: !Sub "${AWS::StackName}-RestApiGateway"
+      EndpointConfiguration:
+        Types:
+        - REGIONAL
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-RestApiGateway"
@@ -281,6 +284,20 @@ Resources:
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
+
+  RestApiGatewayDomainNameRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Sub ${AWS::StackName}.dev.platform.sandpit.account.gov.uk
+      Type: A
+      HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      AliasTarget:
+        DNSName: !Join
+          - ''
+          - - !Ref RestApiGateway
+            - .execute-api.eu-west-2.amazonaws.com
+        HostedZoneId: ZJ5UAJN8Y3Z2Q
+        EvaluateTargetHealth: false
 
   RestApiGatewayDomainName:
     Type: AWS::ApiGateway::DomainName
