@@ -10,6 +10,17 @@ Parameters:
       run.
     Type: String
 
+  Environment:
+    Description: "The environment we're deploying into."
+    Type: "String"
+    Default: dev
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
+
   PipelineStackName:
     Description: "The name of the pipeline stack that deploys this application stack"
     Type: String
@@ -256,15 +267,27 @@ Resources:
   RestApiGatewayCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+      DomainName: !Join
+        - ''
+        - - node-with-waf.
+          - !Ref Environment
+          - .platform.sandpit.account.gov.uk
       DomainValidationOptions:
-        - DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+        - DomainName: !Join
+            - ''
+            - - node-with-waf.
+              - !Ref Environment
+              - .platform.sandpit.account.gov.uk
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
 
   RestApiGatewayDomainName:
     Type: AWS::ApiGateway::DomainName
     Properties:
-      DomainName: node-with-waf.build.platform.sandpit.account.gov.uk
+      DomainName: !Join
+        - ''
+        - - node-with-waf.
+          - !Ref Environment
+          - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
