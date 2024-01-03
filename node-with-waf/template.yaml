@@ -245,7 +245,6 @@ Resources:
       EndpointConfiguration:
         Types:
         - REGIONAL
-      DisableExecuteApiEndpoint: True
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-RestApiGateway"
@@ -324,10 +323,10 @@ Resources:
       SecurityPolicy: TLS_1_2
 
   ApiGatewayMapping:
-    Type: AWS::ApiGateway::BasePathMapping
+    Type: AWS::ApiGatewayV2::ApiMapping
     Properties:
       DomainName: !Ref RestApiGatewayDomainName
-      RestApiId: !Ref RestApiGateway
+      ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
 
   RestApiGatewayMethod:
