@@ -299,11 +299,8 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Join
-          - ''
-          - - d-eugpywk32f
-            - .execute-api.eu-west-2.amazonaws.com
-        HostedZoneId: ZJ5UAJN8Y3Z2Q
+        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
   RestApiGatewayDomainName:
@@ -316,7 +313,6 @@ Resources:
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
-      CertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
           - REGIONAL
