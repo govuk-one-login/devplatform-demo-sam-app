@@ -15,20 +15,20 @@ Metadata:
       #     - ProductEnv
       #     - ProductUser
       #     - ProductOwner
-      - Label:
-          default: "Portfolio Sharing"
-        Parameters:
-          - ShareThisPortfolio
-          - AccountIdOfChildAWSAccount
+      # - Label:
+      #     default: "Portfolio Sharing"
+      #   Parameters:
+      #     - ShareThisPortfolio
+      #     - AccountIdOfChildAWSAccount
 
-      - Label:
-          default: "Service Catalog Product Tags"
-        Parameters:
-          - AppName
-          - Env
-          - Dept
-          - User
-          - Owner
+      # - Label:
+      #     default: "Service Catalog Product Tags"
+      #   Parameters:
+      #     - AppName
+      #     - Env
+      #     - Dept
+      #     - User
+      #     - Owner
 
 
 
@@ -42,15 +42,15 @@ Parameters:
     Type:           String
     Default:        "template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com"
 
-# Enviornment type
-  Env:
-    Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
-    Type:           String
-    Default:        "dev"
-    AllowedValues:
-      - test
-      - dev
-      - prod
+# # Enviornment type
+#   Env:
+#     Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+#     Type:           String
+#     Default:        "dev"
+#     AllowedValues:
+#       - test
+#       - dev
+#       - prod
 
 # Department
   # Name:
@@ -58,23 +58,23 @@ Parameters:
   #   Type:           String
   #   Default:        "1234"
 
-# Department
-  Dept:
-    Description:    Please specify the Department. Used for tagging
-    Type:           String
-    Default:        "1234"
+# # Department
+#   Dept:
+#     Description:    Please specify the Department. Used for tagging
+#     Type:           String
+#     Default:        "1234"
 
-# User
-  User:
-    Description:    Please specify the User. Used for tagging
-    Type:           String
-    Default:        "User"
+# # User
+#   User:
+#     Description:    Please specify the User. Used for tagging
+#     Type:           String
+#     Default:        "User"
 
-# Owner
-  Owner:
-    Description:    Please specify the Owner. Used for tagging
-    Type:           String
-    Default:        "Owner"
+# # Owner
+#   Owner:
+#     Description:    Please specify the Owner. Used for tagging
+#     Type:           String
+#     Default:        "Owner"
 
 # Product Enviornment type
   # ProductEnv:
@@ -103,31 +103,31 @@ Parameters:
       - 'false'
 
 # Share Portfolio
-  ShareThisPortfolio:
-    Description:    Please specify if this Portfolio will be Shared with additonal accounts?
-    Type:           String
-    Default:        "true"
-    AllowedValues:
-      - 'true'
-      - 'false'
+  # ShareThisPortfolio:
+  #   Description:    Please specify if this Portfolio will be Shared with additonal accounts?
+  #   Type:           String
+  #   Default:        "true"
+  #   AllowedValues:
+  #     - 'true'
+  #     - 'false'
 
-# AccountId
-  AccountIdOfChildAWSAccount:
-    Description:    Please specify the Sub AWS Account ID.
-    Type:           String
-    Default:        "123456789012"
+# # AccountId
+#   AccountIdOfChildAWSAccount:
+#     Description:    Please specify the Sub AWS Account ID.
+#     Type:           String
+#     Default:        "123456789012"
 
-# Application Name
-  AppName:
-    Description: Please specify the Application Name. Used for tagging and resource names. Mandatory LOWER CASE.
-    Type: String
-    Default: "app"
+# # Application Name
+#   AppName:
+#     Description: Please specify the Application Name. Used for tagging and resource names. Mandatory LOWER CASE.
+#     Type: String
+#     Default: "app"
 
 ####################################
 # Conditions
 ####################################
-Conditions:
-  ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
+# Conditions:
+#   ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
 
 ####################################
 # Resources
