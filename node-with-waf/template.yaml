@@ -242,6 +242,7 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: !Sub "${AWS::StackName}-RestApiGateway"
+      DisableExecuteApiEndpoint: False
       EndpointConfiguration:
         Types:
         - REGIONAL
