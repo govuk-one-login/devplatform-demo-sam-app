@@ -195,6 +195,7 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
       ReplaceProvisioningArtifacts: "true"
+      #testing versioning
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
