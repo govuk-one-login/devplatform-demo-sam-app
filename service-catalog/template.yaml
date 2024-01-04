@@ -194,7 +194,7 @@ Resources:
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
-      ReplaceProvisioningArtifacts: "true"
+      #ReplaceProvisioningArtifacts: "true"
       #testing versioning
 
   SCCProduct2:
