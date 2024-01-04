@@ -190,7 +190,7 @@ Resources:
       #   - Key: App
       #     Value: !Sub "${AppName}"
       ProvisioningArtifactParameters:
-        - Name: v1
+        - Name: v2
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
