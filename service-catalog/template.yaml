@@ -190,11 +190,11 @@ Resources:
       #   - Key: App
       #     Value: !Sub "${AppName}"
       ProvisioningArtifactParameters:
-        - Name: "ProvisioningArtifactNameParameter"
+        - Name: v1
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
-      #ReplaceProvisioningArtifacts: "true"
+      ReplaceProvisioningArtifacts: "true"
       #testing versioning
 
   SCCProduct2:
