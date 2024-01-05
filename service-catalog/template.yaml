@@ -190,15 +190,18 @@ Resources:
       #   - Key: App
       #     Value: !Sub "${AppName}"
       ProvisioningArtifactParameters:
-        - Name: v2
+        - Name: v3
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/a51cca2003f8fa7575fd3c3dfd3b5403"
       ReplaceProvisioningArtifacts: "true"
-#        - Name: v3
-#          Description: "ProvisioningArtifactDescriptionParameter"
-#          Info:
-#            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=e8SB_1NNw2IX9s23iCtDcNeXLgqdA8pH"
+        # - Name: v3
+        #   Description: "ProvisioningArtifactDescriptionParameter"
+        #   Info:
+        #     LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=e8SB_1NNw2IX9s23iCtDcNeXLgqdA8pH"
+#template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/6931582eef3a0ae5391eac2d48074e93
+#template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403   
+
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
