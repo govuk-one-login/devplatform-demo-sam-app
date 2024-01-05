@@ -190,10 +190,11 @@ Resources:
       #   - Key: App
       #     Value: !Sub "${AppName}"
       ProvisioningArtifactParameters:
-        - Name: v3
+        - Name: v1
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
+            #LoadTemplateFromURL: https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
       ReplaceProvisioningArtifacts: "true"
         # - Name: v3
         #   Description: "ProvisioningArtifactDescriptionParameter"
