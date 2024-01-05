@@ -193,7 +193,7 @@ Resources:
         - Name: v3
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=a51cca2003f8fa7575fd3c3dfd3b5403"
+            LoadTemplateFromURL: https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
       ReplaceProvisioningArtifacts: "true"
         # - Name: v3
         #   Description: "ProvisioningArtifactDescriptionParameter"
