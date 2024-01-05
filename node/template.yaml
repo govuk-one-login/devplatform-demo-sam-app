@@ -24,6 +24,11 @@ Parameters:
     Description: "Predefined deployment configuration for ECS application"
     Type: String
     Default: "CodeDeployDefault.ECSCanary10Percent5Minutes"
+    # Allowed values: See https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
+    AllowedValues:
+      - CodeDeployDefault.ECSCanary10Percent5Minutes
+      - CodeDeployDefault.ECSCanary10Percent15Minutes
+      - CodeDeployDefault.ECSAllAtOnce
 
   Environment:
     Description: "The name of the environment to deploy to"
