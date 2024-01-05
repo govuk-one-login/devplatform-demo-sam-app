@@ -194,6 +194,7 @@ Resources:
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=oQxDzFdomHaB.wzxUyeZ1Gl.X1Mz_wZA"
             #LoadTemplateFromURL: https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
       ReplaceProvisioningArtifacts: "true"
         # - Name: v3
@@ -203,8 +204,6 @@ Resources:
 #template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/6931582eef3a0ae5391eac2d48074e93
 #template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
 #https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy
-#https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy
-
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
