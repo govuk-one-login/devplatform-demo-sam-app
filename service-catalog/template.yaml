@@ -199,7 +199,8 @@ Resources:
         - Name: VPC version3
           Description:  Next version of VPC
           #DisableTemplateValidation: 
-          Info: "LoadTemplateFromURL": !Sub "https://${S3BucketUrl}/vpc/template.yaml"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
           #Type: String
 
   SCCProduct2:
