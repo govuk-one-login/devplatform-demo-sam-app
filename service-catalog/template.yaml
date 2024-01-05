@@ -195,7 +195,12 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml"
       ReplaceProvisioningArtifacts: "true"
-      #testing versioning
+      ProvisioningArtifactProperties:
+        - Name: VPC version3
+          Description:  Next version of VPC
+          #DisableTemplateValidation: 
+          Info: "LoadTemplateFromURL": !Sub "https://${S3BucketUrl}/vpc/template.yaml"
+          #Type: String
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -213,7 +218,6 @@ Resources:
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/signer/template.yaml"
-
 
   SCCProduct3:
     Type: AWS::ServiceCatalog::CloudFormationProduct
