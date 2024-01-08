@@ -193,8 +193,8 @@ Resources:
         - Name: v1
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=oQxDzFdomHaB.wzxUyeZ1Gl.X1Mz_wZA"
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=gXWk6oPRGDtPfC0muaNX_LO7edIqov7v"
+            #LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=oQxDzFdomHaB.wzxUyeZ1Gl.X1Mz_wZA"
             #LoadTemplateFromURL: https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/vpc/a51cca2003f8fa7575fd3c3dfd3b5403
       ReplaceProvisioningArtifacts: "true"
         # - Name: v3
