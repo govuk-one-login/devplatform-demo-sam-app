@@ -287,7 +287,7 @@ Resources:
             Branch: "permissions-boundary"
             ConnectionArn: "arn:aws:codestar-connections:eu-north-1:842766856468:connection/03b13a37-005f-419f-8e0d-a33daf553984"
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
-        Type: CodeStar
+        Type: CODESTAR
 
 
 
