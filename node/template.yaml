@@ -20,6 +20,17 @@ Parameters:
     Type: String
     Default: "none"
 
+  DeploymentStrategy:
+    Description: "Predefined deployment configuration for ECS application"
+    Type: String
+    Default: "None"
+    # Allowed values: See https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
+    AllowedValues:
+      - None
+      - CodeDeployDefault.ECSCanary10Percent5Minutes
+      - CodeDeployDefault.ECSCanary10Percent15Minutes
+      - CodeDeployDefault.ECSAllAtOnce
+
   Environment:
     Description: "The name of the environment to deploy to"
     Type: "String"
@@ -42,6 +53,12 @@ Conditions:
       - Fn::Equals:
           - !Ref PermissionsBoundary
           - "none"
+
+  UseECSCanaryDeploymentStack:
+    Fn::Not:
+      - Fn::Equals:
+        - !Ref DeploymentStrategy
+        - None
 
 Mappings:
   # see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
@@ -87,7 +104,10 @@ Resources:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
       DeploymentController:
-        Type: CODE_DEPLOY
+        Type: !If
+          - UseECSCanaryDeploymentStack
+          - CODE_DEPLOY
+          - ECS
       LoadBalancers:
         - ContainerName: !Sub "${AWS::StackName}-node-server"
           ContainerPort: 8000
@@ -102,6 +122,10 @@ Resources:
             - Fn::ImportValue:
                 !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
+      TaskDefinition: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - !Ref TaskDefinition
       # TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
@@ -218,7 +242,7 @@ Resources:
       Cpu: 256
       Memory: 512
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
-      Family: server
+      Family: !Sub "${AWS::StackName}-server"
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -446,6 +470,7 @@ Resources:
 
   ECSCanaryDeploymentStack:
     Type: AWS::CloudFormation::Stack
+    Condition: UseECSCanaryDeploymentStack
     Properties:
       TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
       Parameters:
@@ -457,7 +482,7 @@ Resources:
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
-        DeploymentStrategy: CodeDeployDefault.ECSCanary10Percent5Minutes
+        DeploymentStrategy: !Ref DeploymentStrategy
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
