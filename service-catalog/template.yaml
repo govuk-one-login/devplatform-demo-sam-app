@@ -115,7 +115,7 @@ Parameters:
 #   AccountIdOfChildAWSAccount:
 #     Description:    Please specify the Sub AWS Account ID.
 #     Type:           String
-#     Default:        "123456789012"
+#     Default:        "842766856468"  # di-devplatform-development
 
 # # Application Name
 #   AppName:
@@ -169,7 +169,8 @@ Resources:
   #   Condition: ConditionShareThisPortfolio
   #   Properties:
   #     AccountId: !Ref AccountIdOfChildAWSAccount
-  #     PortfolioId: !Ref ServiceCatalogPortfolio1
+  #     PortfolioId: !Ref SCPortfolioBaseAccount
+
 
   # Accepts portfolio share - not sure if needed yet
   # ServiceCatalogAcceptPortfolioShare:
@@ -194,12 +195,11 @@ Resources:
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=gXWk6oPRGDtPfC0muaNX_LO7edIqov7v"
-      #ReplaceProvisioningArtifacts: "true"
         - Name: v2
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
-            
+
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
