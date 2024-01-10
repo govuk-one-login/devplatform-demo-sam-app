@@ -41,7 +41,7 @@ Resources:
     Type: AWS::WAFv2::WebACL
     Properties:
       DefaultAction:
-        Allow: {}
+        Block: {}
       Scope: REGIONAL
       Rules:
         # Optional rule set to restrict to GDS IP addresses.
@@ -49,7 +49,7 @@ Resources:
         - Name: GDSIPs
           Action:
             Allow: {}
-          Priority: 11
+          Priority: 10
           Statement:
             IPSetReferenceStatement:
               Arn: !GetAtt WAFv2GDSIPSet.Arn
