@@ -38,6 +38,13 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Sonar scan
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
+        working-directory: ./sam-app/HelloWorldFunction
+
       - name: Set up Python 3.8
         uses: actions/setup-python@v5
         with:
