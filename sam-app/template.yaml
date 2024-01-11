@@ -20,6 +20,19 @@ Parameters:
     Type: "String"
 
 Conditions:
+  IsNonDevEnvironment:
+    Fn::Not:
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref Environment
+          - "dev"
+        - Fn::Equals:
+          - !Ref Environment
+          - "demo"
+        - Fn::Equals:
+          - !Ref Environment
+          - "local"
+
   UseCodeSigning:
     Fn::Not:
       - Fn::Equals:
@@ -79,6 +92,7 @@ Resources:
   # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
   CSLSFirehoseSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
+    Condition: IsNonDevEnvironment
     Properties:
       DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
       FilterPattern: ""
@@ -115,6 +129,7 @@ Resources:
 
   HelloWorldRestAPIDomainName:
     Type: AWS::ApiGateway::DomainName
+    Condition: IsNonDevEnvironment
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -137,6 +152,7 @@ Resources:
 
   HelloWorldRestAPIBasePath:
     Type: AWS::ApiGateway::BasePathMapping
+    Condition: IsNonDevEnvironment
     DependsOn: HelloWorldRestAPIDomainName
     Properties:
       DomainName: !Sub
@@ -688,6 +704,7 @@ Resources:
 
   HelloWorldCertificateRecord:
     Type: AWS::Route53::RecordSet
+    Condition: IsNonDevEnvironment
     Properties:
       Name: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -707,6 +724,7 @@ Resources:
   #
   ApiGatewayCertificate:
     Type: AWS::CertificateManager::Certificate
+    Condition: IsNonDevEnvironment
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -751,6 +769,7 @@ Outputs:
     Value: !GetAtt HelloWorldFunction2Role.Arn
   HelloWorldApiDomain:
     Description: "API Gateway domain"
+    Condition: IsNonDevEnvironment
     Value: !Sub
       - "https://${AWS::StackName}.${DomainName}/hello/"
       - DomainName: !FindInMap
