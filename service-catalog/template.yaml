@@ -280,22 +280,22 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/api-gateway-logs/template.yaml"
 
-  # #  testing the codestar connection
-  # SCCProduct6:
-  #   Type: AWS::ServiceCatalog::CloudFormationProduct
-  #   Properties:
-  #     Name: "atest-code-star1"
-  #     Description: "codestar"
-  #     Owner: "Product x owner"
-  #     # ProductType: CLOUD_FORMATION_TEMPLATE
-  #     SourceConnection:
-  #       ConnectionParameters:
-  #         CodeStar:
-  #           ArtifactPath: "products/permissions-boundary/template.yaml"
-  #           Branch: "permissions-boundary"
-  #           ConnectionArn: "arn:aws:codestar-connections:eu-north-1:842766856468:connection/03b13a37-005f-419f-8e0d-a33daf553984"
-  #           Repository: "govuk-one-login/devplatform-service-catalog-poc"
-  #       Type: CODESTAR
+  #  testing the codestar connection
+  SCCProduct6:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "atest-code-star1"
+      Description: "codestar"
+      Owner: "Product x owner"
+      # ProductType: CLOUD_FORMATION_TEMPLATE
+      SourceConnection:
+        ConnectionParameters:
+          CodeStar:
+            ArtifactPath: "products/permissions-boundary/template.yaml"
+            Branch: "permissions-boundary"
+            ConnectionArn: "arn:aws:codestar-connections:eu-north-1:842766856468:connection/03b13a37-005f-419f-8e0d-a33daf553984"
+            Repository: "govuk-one-login/devplatform-service-catalog-poc"
+        Type: CODESTAR
 
       # ProvisioningArtifactParameters:
       #   - Name: "ProvisioningArtifactNameParameter"
