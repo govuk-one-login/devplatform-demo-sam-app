@@ -10,6 +10,17 @@ Parameters:
     Description: Asserts that lambdas are signed when deployed.
     Default: "none"
 
+  LambdaDeploymentPreference:
+    Description: "Specifies the configuration to enable gradual Lambda deployments"
+    Type: String
+    Default: "Canary10Percent5Minutes"
+    AllowedValues:
+      - AllAtOnce
+      - Canary10Percent5Minutes
+      - Canary10Percent10Minutes
+      - Canary10Percent15Minutes
+      - Canary10Percent30Minutes
+
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
@@ -211,7 +222,7 @@ Resources:
       AutoPublishAlias: HelloWorldFunction
       DeploymentPreference:
         # Testing against 10 percent of traffic: runs for 5 minutes, if no alarms fire, remaining traffic shifts.
-        Type: Canary10Percent5Minutes
+        Type: !Ref LambdaDeploymentPreference
         Alarms:
           - !Ref HelloWorldFunctionTooManyRequestsAlarm
           - !Ref HelloWorldLambdaErrors
