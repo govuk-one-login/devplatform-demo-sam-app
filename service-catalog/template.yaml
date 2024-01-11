@@ -199,6 +199,10 @@ Resources:
           Description: "ProvisioningArtifactDescriptionParameter"
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
+        - Name: v3
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"    
 
   SCCProduct2:
     Type: AWS::ServiceCatalog::CloudFormationProduct
