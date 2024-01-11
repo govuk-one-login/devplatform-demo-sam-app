@@ -297,8 +297,6 @@ Resources:
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
 
-
-
       # ProvisioningArtifactParameters:
       #   - Name: "ProvisioningArtifactNameParameter"
       #     Description: "ProvisioningArtifactDescriptionParameter"
