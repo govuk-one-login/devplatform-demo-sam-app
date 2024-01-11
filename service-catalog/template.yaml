@@ -293,7 +293,7 @@ Resources:
           CodeStar:
             ArtifactPath: "products/permissions-boundary/template.yaml"
             Branch: "permissions-boundary"
-            ConnectionArn: "arn:aws:codestar-connections:eu-north-1:842766856468:connection/03b13a37-005f-419f-8e0d-a33daf553984"
+            ConnectionArn: "arn:aws:codestar-connections:eu-west-2:842766856468:connection/03b13a37-005f-419f-8e0d-a33daf553984"
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
 
