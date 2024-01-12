@@ -353,13 +353,6 @@ Resources:
       PortfolioId: !Ref SCPortfolioFrontend
       ProductId: !Ref SCCProduct5
 
-  SCPortfolioProductAssociation7:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref SCPortfoliocri:
-      ProductId: !Ref SCCProduct7
-
   # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
   #   Properties:
