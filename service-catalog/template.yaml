@@ -280,7 +280,7 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/api-gateway-logs/template.yaml"
 
-  #  testing the codestar connection with more rights.
+  #  testing the codestar connection with more rights1.
   SCCProduct6:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
