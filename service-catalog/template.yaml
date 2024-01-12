@@ -147,14 +147,7 @@ Resources:
       ProviderName: "Frontend team"
       Description: "Frontend team"
       DisplayName: "Frontend team"
-
-  SCPortfoliocri:
-    Type: AWS::ServiceCatalog::Portfolio
-    Properties:
-      ProviderName: "CRI team"
-      Description: "CRI team"
-      DisplayName: "CRI team"      
-
+   
   SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
     Properties:
@@ -352,13 +345,6 @@ Resources:
     Properties:
       PortfolioId: !Ref SCPortfolioFrontend
       ProductId: !Ref SCCProduct5
-
-   SCPortfolioProductAssociation7:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref SCPortfolioFrontend
-      ProductId: !Ref SCCProduct7
 
   # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
