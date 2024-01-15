@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  allowed_account_ids = ["842766856468"]
+  allowed_account_ids = ["637423182621"]
 }
 
 module "state_bucket" {
