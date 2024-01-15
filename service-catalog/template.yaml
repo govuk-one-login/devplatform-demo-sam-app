@@ -146,7 +146,7 @@ Resources:
     Properties:
       ProviderName: "Frontend team"
       Description: "Frontend team"
-      DisplayName: "Frontend team"
+      DisplayName: "Frontend team"  
    
   SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
@@ -310,6 +310,7 @@ Resources:
             ConnectionArn: "arn:aws:codestar-connections:eu-west-2:842766856468:connection/b260a24c-e1e9-4b9a-b334-5d7ef65a200d"
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
+#testing
 
   SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
