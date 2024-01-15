@@ -68,6 +68,20 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
 
+      - name: Set up JDK 17 for Sonar
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Sonar scan
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
+        working-directory: ./sam-app/HelloWorldFunction
+
       - name: SAM validate
         run: sam validate
         working-directory: ./sam-app
