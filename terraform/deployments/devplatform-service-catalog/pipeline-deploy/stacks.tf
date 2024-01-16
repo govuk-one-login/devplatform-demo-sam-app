@@ -10,8 +10,8 @@ module "service-catalog-pipeline" {
   template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "service-catalog-pipeline"
   parameters = {
-    SAMStackName               = "service-catalog-poc"
-    Environment                = "dev"
+    SAMStackName               = "service-catalog"
+    Environment                = "prod"
     VpcStackName               = "vpc"
     IncludePromotion           = "No"
     # AWSOrganizationId        = data.aws_organizations_organization.gds.id
