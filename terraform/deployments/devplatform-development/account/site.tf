@@ -3,7 +3,7 @@ terraform {
 
   # Comment out when bootstrapping
   backend "s3" {
-    bucket = "devplatform-service-catalog-tfstate"
+    bucket = "devplatform-development-tfstate"
     key    = "account.tfstate"
     region = "eu-west-2"
   }
@@ -15,12 +15,12 @@ provider "aws" {
 
 module "state_bucket" {
   source         = "git@github.com:govuk-one-login/ipv-terraform-modules//common/state-bucket-logging-tls"
-  bucket_name    = "devplatform-service-catalog-tfstate"
-  logging_bucket = "devplatform-service-catalog-access-logs"
+  bucket_name    = "devplatform-development-tfstate"
+  logging_bucket = "devplatform-development-access-logs"
   enable_tls     = true
 }
 module "logging_bucket" {
   source         = "git@github.com:govuk-one-login/ipv-terraform-modules//common/state-bucket-logging-tls"
-  bucket_name    = "devplatform-service-catalog-access-logs"
+  bucket_name    = "devplatform-development-access-logs"
   enable_tls     = true
 }
