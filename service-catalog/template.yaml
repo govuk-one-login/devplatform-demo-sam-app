@@ -318,6 +318,22 @@ Resources:
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
 
+  SCCProduct8:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "permissions-boundary-kiwi"
+      Description: "codestar"
+      Owner: "KIWI"
+      # ProductType: CLOUD_FORMATION_TEMPLATE
+      SourceConnection:
+        ConnectionParameters:
+          CodeStar:
+            ArtifactPath: "products/permissions-boundary2/template.yaml"
+            Branch: "permissions-boundary"
+            ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
+            Repository: "govuk-one-login/devplatform-service-catalog-poc"
+        Type: CODESTAR
+        
   SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
