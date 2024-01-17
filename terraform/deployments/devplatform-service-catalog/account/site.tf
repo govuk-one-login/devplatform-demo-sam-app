@@ -2,11 +2,11 @@ terraform {
   required_version = ">= 1.0.11"
 
 #   # Comment out when bootstrapping
-#   backend "s3" {
-#     bucket = "devplatform-service-catalog-tfstate"
-#     key    = "account.tfstate"
-#     region = "eu-west-2"
-#   }
+  backend "s3" {
+    bucket = "devplatform-service-catalog-tfstate"
+    key    = "account.tfstate"
+    region = "eu-west-2"
+  }
 }
 
 provider "aws" {
