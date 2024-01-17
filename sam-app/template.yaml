@@ -10,6 +10,17 @@ Parameters:
     Description: Asserts that lambdas are signed when deployed.
     Default: "none"
 
+  LambdaDeploymentPreference:
+    Description: "Specifies the configuration to enable gradual Lambda deployments"
+    Type: String
+    Default: "Canary10Percent5Minutes"
+    AllowedValues:
+      - AllAtOnce
+      - Canary10Percent5Minutes
+      - Canary10Percent10Minutes
+      - Canary10Percent15Minutes
+      - Canary10Percent30Minutes
+
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
     Type: String
@@ -20,6 +31,19 @@ Parameters:
     Type: "String"
 
 Conditions:
+  IsNonDevEnvironment:
+    Fn::Not:
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref Environment
+          - "dev"
+        - Fn::Equals:
+          - !Ref Environment
+          - "demo"
+        - Fn::Equals:
+          - !Ref Environment
+          - "local"
+
   UseCodeSigning:
     Fn::Not:
       - Fn::Equals:
@@ -79,6 +103,7 @@ Resources:
   # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
   CSLSFirehoseSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
+    Condition: IsNonDevEnvironment
     Properties:
       DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
       FilterPattern: ""
@@ -115,6 +140,7 @@ Resources:
 
   HelloWorldRestAPIDomainName:
     Type: AWS::ApiGateway::DomainName
+    Condition: IsNonDevEnvironment
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -137,6 +163,7 @@ Resources:
 
   HelloWorldRestAPIBasePath:
     Type: AWS::ApiGateway::BasePathMapping
+    Condition: IsNonDevEnvironment
     DependsOn: HelloWorldRestAPIDomainName
     Properties:
       DomainName: !Sub
@@ -195,7 +222,7 @@ Resources:
       AutoPublishAlias: HelloWorldFunction
       DeploymentPreference:
         # Testing against 10 percent of traffic: runs for 5 minutes, if no alarms fire, remaining traffic shifts.
-        Type: Canary10Percent5Minutes
+        Type: !Ref LambdaDeploymentPreference
         Alarms:
           - !Ref HelloWorldFunctionTooManyRequestsAlarm
           - !Ref HelloWorldLambdaErrors
@@ -688,6 +715,7 @@ Resources:
 
   HelloWorldCertificateRecord:
     Type: AWS::Route53::RecordSet
+    Condition: IsNonDevEnvironment
     Properties:
       Name: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -707,6 +735,7 @@ Resources:
   #
   ApiGatewayCertificate:
     Type: AWS::CertificateManager::Certificate
+    Condition: IsNonDevEnvironment
     Properties:
       DomainName: !Sub
         - "${AWS::StackName}.${DomainName}"
@@ -751,6 +780,7 @@ Outputs:
     Value: !GetAtt HelloWorldFunction2Role.Arn
   HelloWorldApiDomain:
     Description: "API Gateway domain"
+    Condition: IsNonDevEnvironment
     Value: !Sub
       - "https://${AWS::StackName}.${DomainName}/hello/"
       - DomainName: !FindInMap

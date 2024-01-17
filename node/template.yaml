@@ -480,6 +480,7 @@ Resources:
         ECSClusterName: !Ref FargateCluster
         ECSServiceName: !GetAtt ContainerService.Name
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
+        LoadBalancerFullName: !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
