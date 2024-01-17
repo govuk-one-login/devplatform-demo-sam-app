@@ -1,6 +1,5 @@
 data "aws_organizations_organization" "gds" {}
 
-
 data "aws_cloudformation_stack" "aws-signer" {
   name = "aws-signer"
 }
@@ -11,7 +10,7 @@ module "service-catalog-pipeline" {
   stack_name = "service-catalog-pipeline"
   parameters = {
     SAMStackName               = "service-catalog"
-    Environment                = "prod"
+    Environment                = "build"
     VpcStackName               = "vpc"
     IncludePromotion           = "No"
     # AWSOrganizationId        = data.aws_organizations_organization.gds.id
@@ -19,8 +18,8 @@ module "service-catalog-pipeline" {
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"
-    SlackNotificationType      = "Failures"
-    BuildNotificationStackName = "build-notifications"
+    #SlackNotificationType      = "Failures"
+    #BuildNotificationStackName = "build-notifications"
   }
 
   tags_custom = {
