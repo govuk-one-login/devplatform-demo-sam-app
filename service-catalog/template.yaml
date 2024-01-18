@@ -177,6 +177,7 @@ Resources:
       AccountId: "842766856468"
       PortfolioId: !Ref SCPortfolioBaseAccount
 
+
   # Accepts portfolio share - not sure if needed yet
   # ServiceCatalogAcceptPortfolioShare:
   #    Type: AWS::ServiceCatalog::AcceptedPortfolioShare
