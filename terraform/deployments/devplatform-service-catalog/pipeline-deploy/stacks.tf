@@ -10,7 +10,7 @@ module "service-catalog-pipeline" {
   stack_name = "service-catalog-pipeline"
   parameters = {
     SAMStackName               = "service-catalog"
-    Environment                = "build"
+    Environment                = "dev"
     VpcStackName               = "vpc"
     IncludePromotion           = "No"
     # AWSOrganizationId        = data.aws_organizations_organization.gds.id
