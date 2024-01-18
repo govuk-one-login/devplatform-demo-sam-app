@@ -153,8 +153,8 @@ Resources:
     Properties:
       ProviderName: "CRI team"
       Description: "CRI team"
-      DisplayName: "CRI team"       
-   
+      DisplayName: "CRI team"
+
   SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
     Properties:
@@ -169,12 +169,13 @@ Resources:
       # Value:      !Sub '${ProductOwner}'
 
   # Share Portfolio with an AWS account
-  # ServiceCatalogPortfolioShare:
-  #   Type: AWS::ServiceCatalog::PortfolioShare
-  #   Condition: ConditionShareThisPortfolio
-  #   Properties:
-  #     AccountId: !Ref AccountIdOfChildAWSAccount
-  #     PortfolioId: !Ref SCPortfolioBaseAccount
+  ServiceCatalogPortfolioShare:
+    Type: AWS::ServiceCatalog::PortfolioShare
+    # Condition: ConditionShareThisPortfolio
+    Properties:
+      # AccountId: !Ref AccountIdOfChildAWSAccount
+      AccountId: "842766856468"
+      PortfolioId: !Ref SCPortfolioBaseAccount
 
 
   # Accepts portfolio share - not sure if needed yet
@@ -301,7 +302,7 @@ Resources:
             ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
-  
+
   SCCProduct7:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
@@ -333,7 +334,7 @@ Resources:
             ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
-        
+
   SCPortfolioProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
     # DependsOn: ServiceCatalogCloudFormationProduct
