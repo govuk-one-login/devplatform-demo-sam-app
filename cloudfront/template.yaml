@@ -12,14 +12,14 @@ Parameters:
 Mappings:
   EnvironmentConfiguration:
     "build":
-      CloudfrontCertificate: "arn:aws:acm:us-east-1:842766856468:certificate/96f7a219-7727-48e4-8385-9d4cce9cbad6" # we have to make this manually as it lives in us-east-1
+      CloudfrontCertificate: "arn:aws:acm:us-east-1:842766856468:certificate/ece18c99-4a54-42c2-8da6-5e0acd244f60" # we have to make this manually as it lives in us-east-1
 
 Resources:
 
   AssetsCDNRecord:
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: !Sub "${Environment}.platform.sandpit.account.gov.uk"
+      Name: !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
@@ -35,7 +35,7 @@ Resources:
     Properties:
       DistributionConfig:
         Aliases:
-          - !Sub "${Environment}.platform.sandpit.account.gov.uk"
+          - !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
         Origins:
           - DomainName:
               Fn::ImportValue:
