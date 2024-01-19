@@ -27,6 +27,25 @@ Resources:
         HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: true
 
+  #CloudfrontCachePolicy:
+  #  Type: AWS::CloudFront::CachePolicy
+  #  Properties:
+  #    MinTTL: 0
+  #    MaxTTL: 0
+  #    Name: "NoCachePolicy"
+  #    ParametersInCacheKeyAndForwardedToOrigin:
+  #      CookiesConfig:
+  #        CookieBehaviour: all
+  #      EnableAcceptEncodingGzip: true
+  #      HeadersConfig:
+  #        HeadersBehaviour: whitelist
+  #        Headers:
+  #          - x-forwarded-for
+  #          - forwarded
+  #      QueryStringConfig:
+  #        QueryStringBehavior: all
+
+
 
   CloudfrontDistribution:
     #checkov:skip=CKV_AWS_86:The repository is public for DNS failover, no Access Logs setup is required
@@ -59,6 +78,7 @@ Resources:
             - PATCH
             - POST
             - DELETE
+          CachePolicyId: CachingDisabled
           TargetOriginId: RestAPIGatewayOrigin
           ViewerProtocolPolicy: redirect-to-https
           FunctionAssociations:
