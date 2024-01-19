@@ -827,8 +827,10 @@ Outputs:
       Name: !Sub "DefaultApiDomainName-${Environment}"
 
   DefaultApiStage:
-    Description: API URL
-    Value: !Ref ApiGatewayStage
+    Description: API Path
+    Value: !Sub
+      - "/${stage_name}"
+      - stage_name: !Ref ApiGatewayStage
     Export:
       Name: !Sub "DefaultApiStage-${Environment}"
 
