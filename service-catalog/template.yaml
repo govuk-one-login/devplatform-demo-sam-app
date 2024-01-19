@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: This template creates AWS Service Catalog Portfolio.
+Description: This template creates AWS Service Catalog Portfolio and Products.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -12,14 +12,6 @@ Metadata:
           default: "Service Catalog Product Tag Options"
         Parameters:
           - ProductDept
-      #     - ProductEnv
-      #     - ProductUser
-      #     - ProductOwner
-      # - Label:
-      #     default: "Portfolio Sharing"
-      #   Parameters:
-      #     - ShareThisPortfolio
-      #     - AccountIdOfChildAWSAccount
 
       # - Label:
       #     default: "Service Catalog Product Tags"
@@ -102,32 +94,12 @@ Parameters:
       - 'true'
       - 'false'
 
-# Share Portfolio
-  # ShareThisPortfolio:
-  #   Description:    Please specify if this Portfolio will be Shared with additonal accounts?
-  #   Type:           String
-  #   Default:        "true"
-  #   AllowedValues:
-  #     - 'true'
-  #     - 'false'
-
-# # AccountId
-#   AccountIdOfChildAWSAccount:
-#     Description:    Please specify the Sub AWS Account ID.
-#     Type:           String
-#     Default:        "842766856468"  # di-devplatform-development
 
 # # Application Name
 #   AppName:
 #     Description: Please specify the Application Name. Used for tagging and resource names. Mandatory LOWER CASE.
 #     Type: String
 #     Default: "app"
-
-####################################
-# Conditions
-####################################
-# Conditions:
-#   ConditionShareThisPortfolio: !Equals [ !Ref ShareThisPortfolio, 'true']
 
 ####################################
 # Resources
@@ -161,19 +133,11 @@ Resources:
       Active:     !Ref ActivateProductTagOptions
       Key:        Dept
       Value:      !Sub '${ProductDept}'
-      # Key:        Env
-      # Value:      !Sub '${ProductEnv}'
-      # Key:        User
-      # Value:      !Sub '${ProductUser}'
-      # Key:        Owner
-      # Value:      !Sub '${ProductOwner}'
 
   # Share Portfolio with an AWS account
   ServiceCatalogPortfolioShare:
     Type: AWS::ServiceCatalog::PortfolioShare
-    # Condition: ConditionShareThisPortfolio
     Properties:
-      # AccountId: !Ref AccountIdOfChildAWSAccount
       AccountId: "842766856468"
       PortfolioId: !Ref SCPortfolioBaseAccount
 
@@ -252,40 +216,6 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/alerting-integration/template.yaml"
 
-  SCCProduct4:
-    Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:
-      Name: "container-signer"
-      Description: "Container Signer KMS Key template managed by dev-platform"
-      Owner: "Product x owner"
-      # Tags:
-      #   - Key: Name
-      #     Value: !Sub "${AppName}"
-      #   - Key: App
-      #     Value: !Sub "${AppName}"
-      ProvisioningArtifactParameters:
-        - Name: "ProvisioningArtifactNameParameter"
-          Description: "ProvisioningArtifactDescriptionParameter"
-          Info:
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/container-signer/template.yaml"
-
-  SCCProduct5:
-    Type: AWS::ServiceCatalog::CloudFormationProduct
-    Properties:
-      Name: "api-gateway-logs"
-      Description: "Stack to setup accounts that use API Gateway logging. Managed by dev-platform."
-      Owner: "Product x owner"
-      # Tags:
-      #   - Key: Name
-      #     Value: !Sub "${AppName}"
-      #   - Key: App
-      #     Value: !Sub "${AppName}"
-      ProvisioningArtifactParameters:
-        - Name: "ProvisioningArtifactNameParameter"
-          Description: "ProvisioningArtifactDescriptionParameter"
-          Info:
-            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/api-gateway-logs/template.yaml"
-
   #  testing the codestar connection with more rights1.
   SCCProduct6:
     Type: AWS::ServiceCatalog::CloudFormationProduct
@@ -293,7 +223,6 @@ Resources:
       Name: "atest-code-star1"
       Description: "codestar"
       Owner: "Product x owner"
-      # ProductType: CLOUD_FORMATION_TEMPLATE
       SourceConnection:
         ConnectionParameters:
           CodeStar:
@@ -309,7 +238,6 @@ Resources:
       Name: "permissions-boundary-cri"
       Description: "codestar"
       Owner: "CRI"
-      # ProductType: CLOUD_FORMATION_TEMPLATE
       SourceConnection:
         ConnectionParameters:
           CodeStar:
@@ -325,7 +253,6 @@ Resources:
       Name: "permissions-boundary-kiwi"
       Description: "codestar"
       Owner: "KIWI"
-      # ProductType: CLOUD_FORMATION_TEMPLATE
       SourceConnection:
         ConnectionParameters:
           CodeStar:
@@ -355,20 +282,6 @@ Resources:
     Properties:
       PortfolioId: !Ref SCPortfolioBaseAccount
       ProductId: !Ref SCCProduct3
-
-  SCPortfolioProductAssociation4:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref SCPortfolioBaseAccount
-      ProductId: !Ref SCCProduct4
-
-  SCPortfolioProductAssociation5:
-    Type: AWS::ServiceCatalog::PortfolioProductAssociation
-    # DependsOn: ServiceCatalogCloudFormationProduct
-    Properties:
-      PortfolioId: !Ref SCPortfolioFrontend
-      ProductId: !Ref SCCProduct5
 
   SCPortfolioProductAssociation7:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation
