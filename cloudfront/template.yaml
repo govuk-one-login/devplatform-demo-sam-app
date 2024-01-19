@@ -16,7 +16,7 @@ Mappings:
 
 Resources:
 
-  AssetsCDNRecord:
+  CloudfrontDistDNSRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
@@ -39,10 +39,10 @@ Resources:
         Origins:
           - DomainName:
               Fn::ImportValue:
-                Fn::Sub: "DefaultAPIDomainName_${Environment}"
+                Fn::Sub: "DefaultAPIDomainName-${Environment}"
             OriginPath:
               Fn::ImportValue:
-                Fn::Sub: "DefaultApiStage_${Environment}"
+                Fn::Sub: "DefaultApiStage-${Environment}"
             Id: RestAPIGatewayOrigin
             CustomOriginConfig:
               OriginProtocolPolicy: 'https-only'

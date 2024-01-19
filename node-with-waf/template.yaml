@@ -816,7 +816,7 @@ Outputs:
       - restapi_id: !Ref RestApiGateway
         stage_name: !Ref ApiGatewayStage
     Export:
-      Name: !Sub "DefaultApiURL_${Environment}"
+      Name: !Sub "DefaultApiURL-${Environment}"
 
   DefaultApiDomain:
     Description: API URL
@@ -824,11 +824,11 @@ Outputs:
       - "https://${restapi_id}.execute-api.${AWS::Region}.amazonaws.com"
       - restapi_id: !Ref RestApiGateway
     Export:
-      Name: !Sub "DefaultApiDomainName_${Environment}"
+      Name: !Sub "DefaultApiDomainName-${Environment}"
 
   DefaultApiStage:
     Description: API URL
     Value: !Ref ApiGatewayStage
     Export:
-      Name: !Sub "DefaultApiStage_${Environment}"
+      Name: !Sub "DefaultApiStage-${Environment}"
 
