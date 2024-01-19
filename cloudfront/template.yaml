@@ -37,8 +37,12 @@ Resources:
         Aliases:
           - !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
         Origins:
-          - DomainName: !ImportValue "DefaultApiDomainName-dev"
-            OriginPath: !ImportValue "DefaultApiStage-dev"
+          - DomainName:
+              Fn::ImportValue:
+                Fn::Sub: "DefaultApiDomainName-${Environment}"
+            OriginPath:
+              Fn::ImportValue:
+                Fn::Sub: "DefaultApiStage-${Environment}"
             Id: RestAPIGatewayOrigin
             CustomOriginConfig:
               OriginProtocolPolicy: 'https-only'
