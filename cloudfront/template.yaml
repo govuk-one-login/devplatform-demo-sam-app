@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Demo CloudFront Distribution.
+  Managed by dev-platform
+
+Parameters:
+  Environment:
+    Description: The name of the environment to deploy to.
+    Type: String
+    AllowedPattern: ((production)|(integration)|(staging)|(build)|(dev))
+
+Mappings:
+  EnvironmentConfiguration:
+    "build":
+      CloudfrontCertificate: "arn:aws:acm:us-east-1:842766856468:certificate/96f7a219-7727-48e4-8385-9d4cce9cbad6" # we have to make this manually as it lives in us-east-1
+
+Resources:
+
+  AssetsCDNRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Sub "${Environment}.platform.sandpit.account.gov.uk"
+      Type: A
+      HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      AliasTarget:
+        DNSName: !GetAtt CloudfrontDistribution.DomainName
+        HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+        EvaluateTargetHealth: true
+
+
+  CloudfrontDistribution:
+    #checkov:skip=CKV_AWS_86:The repository is public for DNS failover, no Access Logs setup is required
+    #checkov:skip=CKV_AWS_68:The repository is public for DNS failover, no WAF is required
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Sub "${Environment}.platform.sandpit.account.gov.uk"
+        Origins:
+          - DomainName:
+              Fn::ImportValue:
+                Fn::Sub: "DefaultAPIDomainName_${Environment}"
+            OriginPath:
+              Fn::ImportValue:
+                Fn::Sub: "DefaultApiStage_${Environment}"
+            Id: RestAPIGatewayOrigin
+            CustomOriginConfig:
+              OriginProtocolPolicy: 'https-only'
+              OriginSSLProtocols:
+                - TLSv1.2
+        Enabled: 'true'
+        Comment: CloudfrontToRestAPI
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - PATCH
+            - POST
+            - DELETE
+          TargetOriginId: RestAPIGatewayOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          #FunctionAssociations:
+          #  - EventType: viewer-response
+          #    FunctionARN: !GetAtt AssetsCDNHeadersFunction.FunctionMetadata.FunctionARN
+            #- EventType: viewer-request
+            #  FunctionARN: !GetAtt RedirectToBustCacheFunction.FunctionMetadata.FunctionARN
+        ViewerCertificate:
+          MinimumProtocolVersion: TLSv1.2_2018
+          SslSupportMethod: sni-only
+          AcmCertificateArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment,  CloudfrontCertificate ]
+
+  #RedirectToBustCacheFunction:
+  #  Type: AWS::CloudFront::Function
+  #  Properties:
+  #    AutoPublish: true
+  #    FunctionCode: |
+  #      function handler(event) {
+  #          var request = event.request;
+  #          return request;
+  #      }
+  #    FunctionConfig:
+  #      Comment: redirect to bust cache
+  #      Runtime: cloudfront-js-1.0
+  #    #FunctionMetadata:
+  #    #  FunctionARN: !Sub "RedirectToBustCache-${Environment}-${AWS::StackName}"
+  #    Name: "RedirectToBustCache"
+
+  AssetsCDNHeadersFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      AutoPublish: true
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var response = event.response;
+          var headers = response.headers;
+          var extension = request.uri.substring(request.uri.lastIndexOf("."));
+          console.log(extension);
+          switch(extension){
+            case '.html':
+              headers['content-type'] = { value: 'text/html; charset=utf-8' };
+              break;
+            case '.css':
+              headers['content-type'] = { value: 'text/css; charset=utf-8' };
+              break;
+            case '.js':
+            case '.mjs':
+              headers['content-type'] = { value: 'text/javascript; charset=utf-8' };
+              break;
+            case '.png':
+              headers['content-type'] = { value: 'image/png' };
+              break;
+            case '.jpeg':
+            case '.jpg':
+              headers['content-type'] = { value: 'image/jpeg' };
+              break;
+            case '.svg':
+              headers['content-type'] = { value: 'image/svg+xml' };
+              break;
+            case '.ttf':
+              headers['content-type'] = { value: 'font/ttf' };
+              break;
+            case '.woff':
+              headers['content-type'] = { value: 'font/woff' };
+              break;
+            case '.woff2':
+              headers['content-type'] = { value: 'font/woff2' };
+              break;
+          }
+          headers['access-control-allow-origin'] = { value: '*' };
+          headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
+          headers['cache-control'] = { value: 'public, max-age=31536000, immutable' }
+          return response;
+        }
+
+      FunctionConfig:
+        Comment: inject content type headers
+        Runtime: cloudfront-js-1.0
+      #FunctionMetadata:
+      #  FunctionARN: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
+      Name: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
+
+
