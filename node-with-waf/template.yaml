@@ -819,9 +819,9 @@ Outputs:
       Name: !Sub "DefaultApiURL-${Environment}"
 
   DefaultApiDomain:
-    Description: API URL
+    Description: API DomainName
     Value: !Sub
-      - "https://${restapi_id}.execute-api.${AWS::Region}.amazonaws.com"
+      - "${restapi_id}.execute-api.${AWS::Region}.amazonaws.com"
       - restapi_id: !Ref RestApiGateway
     Export:
       Name: !Sub "DefaultApiDomainName-${Environment}"
