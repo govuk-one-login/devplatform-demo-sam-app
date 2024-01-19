@@ -101,7 +101,7 @@ Resources:
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
-      MaxCapacity: 3
+      MaxCapacity: 5
       MinCapacity: 1
       ResourceId: !Join
         - '/'
@@ -128,7 +128,7 @@ Resources:
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: ECSServiceAverageCPUUtilization
-        TargetValue: 80
+        TargetValue: 70
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -815,4 +815,20 @@ Outputs:
       - "https://${restapi_id}.execute-api.${AWS::Region}.amazonaws.com/${stage_name}/"
       - restapi_id: !Ref RestApiGateway
         stage_name: !Ref ApiGatewayStage
+    Export:
+      Name: !Sub "DefaultApiURL_${Environment}"
+
+  DefaultApiDomain:
+    Description: API URL
+    Value: !Sub
+      - "https://${restapi_id}.execute-api.${AWS::Region}.amazonaws.com"
+      - restapi_id: !Ref RestApiGateway
+    Export:
+      Name: !Sub "DefaultApiDomainName_${Environment}"
+
+  DefaultApiStage:
+    Description: API URL
+    Value: !Ref ApiGatewayStage
+    Export:
+      Name: !Sub "DefaultApiStage_${Environment}"
 

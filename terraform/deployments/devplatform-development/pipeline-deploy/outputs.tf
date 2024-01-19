@@ -61,3 +61,13 @@ output "waf-pipeline_stack_outputs" {
 output "waf-pipeline_stack_tags" {
   value = module.waf-pipeline.stack_tags
 }
+
+output "cloudfront-pipeline_stack_id" {
+  value = module.cloudfront-pipeline.stack_id
+}
+output "cloudfront-pipeline_stack_outputs" {
+  value = module.cloudfront-pipeline.stack_outputs
+}
+output "cloudfront-pipeline_stack_tags" {
+  value = module.cloudfront-pipeline.stack_tags
+}
