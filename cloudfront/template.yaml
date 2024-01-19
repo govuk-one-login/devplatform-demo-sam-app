@@ -39,7 +39,7 @@ Resources:
         Origins:
           - DomainName:
               Fn::ImportValue:
-                Fn::Sub: "DefaultAPIDomainName-${Environment}"
+                Fn::Sub: "DefaultApiDomainName-${Environment}"
             OriginPath:
               Fn::ImportValue:
                 Fn::Sub: "DefaultApiStage-${Environment}"
