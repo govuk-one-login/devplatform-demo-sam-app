@@ -37,12 +37,8 @@ Resources:
         Aliases:
           - !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
         Origins:
-          - DomainName:
-              Fn::ImportValue:
-                Fn::Sub: "DefaultApiDomainName-${Environment}"
-            OriginPath:
-              Fn::ImportValue:
-                Fn::Sub: "DefaultApiStage-${Environment}"
+          - DomainName: !ImportValue "DefaultApiDomainName-dev"
+            OriginPath: !ImportValue "DefaultApiStage-dev"
             Id: RestAPIGatewayOrigin
             CustomOriginConfig:
               OriginProtocolPolicy: 'https-only'
@@ -61,9 +57,9 @@ Resources:
             - DELETE
           TargetOriginId: RestAPIGatewayOrigin
           ViewerProtocolPolicy: redirect-to-https
-          #FunctionAssociations:
-          #  - EventType: viewer-response
-          #    FunctionARN: !GetAtt AssetsCDNHeadersFunction.FunctionMetadata.FunctionARN
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
             #- EventType: viewer-request
             #  FunctionARN: !GetAtt RedirectToBustCacheFunction.FunctionMetadata.FunctionARN
         ViewerCertificate:
@@ -87,7 +83,7 @@ Resources:
   #    #  FunctionARN: !Sub "RedirectToBustCache-${Environment}-${AWS::StackName}"
   #    Name: "RedirectToBustCache"
 
-  AssetsCDNHeadersFunction:
+  FraudHeadersFunction:
     Type: AWS::CloudFront::Function
     Properties:
       AutoPublish: true
@@ -140,6 +136,6 @@ Resources:
         Runtime: cloudfront-js-1.0
       #FunctionMetadata:
       #  FunctionARN: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
-      Name: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
+      Name: !Sub "FraudHeaders-${Environment}-${AWS::StackName}"
 
 
