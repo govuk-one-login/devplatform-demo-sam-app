@@ -78,7 +78,7 @@ Resources:
             - PATCH
             - POST
             - DELETE
-          CachePolicyId: CachingDisabled
+          CachePolicyId: Managed-CachingDisabled
           TargetOriginId: RestAPIGatewayOrigin
           ViewerProtocolPolicy: redirect-to-https
           FunctionAssociations:
