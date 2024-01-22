@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Demo CloudFront Distribution.
+  Managed by dev-platform
+
+Parameters:
+  Environment:
+    Description: The name of the environment to deploy to.
+    Type: String
+    AllowedPattern: ((production)|(integration)|(staging)|(build)|(dev))
+
+Resources:
+  FraudHeadersFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      AutoPublish: true
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var headers = request.headers;
+
+          var txma-header  = {};
+          txma-header.timestamp = Date.now();
+          if("cloudfront-viewer-address" in headers){
+            txma-header.ip-address-port = headers['cloudfront-viewer-address'];
+          }
+          if("cloudfront-viewer-country" in headers){
+            txma-header.country-code = headers['cloudfront-viewer-country'];
+          }
+          if("user-agent" in headers){
+            txma-header.user-agent = headers['user-agent'];
+          }
+          if("accept-encoding" in headers){
+            txma-header.accept-language = headers['accept-language'];
+          }
+
+          headers['txma-audit-encoded'] = { value: btoa(txma-header) };
+          return request;
+        }
+
+      FunctionConfig:
+        Comment: Add TICF fraud headers
+        Runtime: cloudfront-js-2.0
+      Name: !Sub "FraudHeadersFunction-${Environment}"
+

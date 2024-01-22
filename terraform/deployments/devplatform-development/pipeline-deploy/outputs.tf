@@ -71,3 +71,12 @@ output "cloudfront-pipeline_stack_outputs" {
 output "cloudfront-pipeline_stack_tags" {
   value = module.cloudfront-pipeline.stack_tags
 }
+output "cloudfront-function-pipeline_stack_id" {
+  value = module.cloudfront-function-pipeline.stack_id
+}
+output "cloudfront-function-pipeline_stack_outputs" {
+  value = module.cloudfront-function-pipeline.stack_outputs
+}
+output "cloudfront-function-pipeline_stack_tags" {
+  value = module.cloudfront-function-pipeline.stack_tags
+}
