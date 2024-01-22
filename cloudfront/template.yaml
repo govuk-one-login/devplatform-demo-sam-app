@@ -16,16 +16,16 @@ Mappings:
 
 Resources:
 
-  CloudfrontDistDNSRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      Name: !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
-      Type: A
-      HostedZoneId: !ImportValue PlatformSandpitHostedZone
-      AliasTarget:
-        DNSName: !GetAtt CloudfrontDistribution.DomainName
-        HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
-        EvaluateTargetHealth: true
+ #CloudfrontDistDNSRecord:
+ #  Type: AWS::Route53::RecordSet
+ #  Properties:
+ #    Name: !Sub "cloudfront-estimate.${Environment}.platform.sandpit.account.gov.uk"
+ #    Type: A
+ #    HostedZoneId: !ImportValue PlatformSandpitHostedZone
+ #    AliasTarget:
+ #      DNSName: !GetAtt CloudfrontDistribution.DomainName
+ #      HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+ #      EvaluateTargetHealth: true
 
   #CloudfrontCachePolicy:
   #  Type: AWS::CloudFront::CachePolicy
@@ -161,5 +161,13 @@ Resources:
       #FunctionMetadata:
       #  FunctionARN: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
       Name: !Sub "FraudHeaders-${Environment}-${AWS::StackName}"
+
+Outputs:
+  CloudfrontDistDomain:
+    Description: Default distribution domain name
+    Value: !GetAtt CloudfrontDistribution.DomainName
+    Export:
+      Name: !Sub "CloudfrontDistDomain-${Environment}"
+
 
 
