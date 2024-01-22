@@ -114,45 +114,10 @@ Resources:
       FunctionCode: |
         function handler(event) {
           var request = event.request;
-          var response = event.response;
-          var headers = response.headers;
-          var extension = request.uri.substring(request.uri.lastIndexOf("."));
-          console.log(extension);
-          switch(extension){
-            case '.html':
-              headers['content-type'] = { value: 'text/html; charset=utf-8' };
-              break;
-            case '.css':
-              headers['content-type'] = { value: 'text/css; charset=utf-8' };
-              break;
-            case '.js':
-            case '.mjs':
-              headers['content-type'] = { value: 'text/javascript; charset=utf-8' };
-              break;
-            case '.png':
-              headers['content-type'] = { value: 'image/png' };
-              break;
-            case '.jpeg':
-            case '.jpg':
-              headers['content-type'] = { value: 'image/jpeg' };
-              break;
-            case '.svg':
-              headers['content-type'] = { value: 'image/svg+xml' };
-              break;
-            case '.ttf':
-              headers['content-type'] = { value: 'font/ttf' };
-              break;
-            case '.woff':
-              headers['content-type'] = { value: 'font/woff' };
-              break;
-            case '.woff2':
-              headers['content-type'] = { value: 'font/woff2' };
-              break;
-          }
-          headers['access-control-allow-origin'] = { value: '*' };
-          headers['cross-origin-resource-policy'] = { value: 'cross-origin' };
-          headers['cache-control'] = { value: 'public, max-age=31536000, immutable' }
-          return response;
+          var headers = request.headers;
+
+          headers['fraud'] = { value: 'some_base64' }
+          return request;
         }
 
       FunctionConfig:
