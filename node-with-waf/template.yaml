@@ -300,8 +300,10 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
-        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        DNSName:
+          Fn::ImportValue:
+            !Sub "CloudfrontDistDomain-${Environment}"
+        HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: false
 
   RestApiGatewayDomainName:
