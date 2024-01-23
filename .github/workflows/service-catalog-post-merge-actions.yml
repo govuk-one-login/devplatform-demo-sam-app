@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - bau-add-terraform-pipeline-provisioning
+      - PLAT-2898-service-catalog
 
     paths:
       - service-catalog/*
