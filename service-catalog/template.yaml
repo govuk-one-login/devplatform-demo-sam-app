@@ -233,6 +233,7 @@ Resources:
         Type: CODESTAR
 
 
+
   SCCProduct7:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
