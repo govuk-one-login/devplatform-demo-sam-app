@@ -6,13 +6,13 @@ on:
     branches:
       - bau-cloudfront-estimate
     paths:
-      - 'cloudfront/function/**'
+      - 'cloudfront/cloudfront-function/**'
       - '.github/workflows/cloudfront-estimate-function-post-merge-actions.yml'
 
 defaults:
   run:
     shell: bash
-    working-directory: ./cloudfront/function
+    working-directory: ./cloudfront/cloudfront-function
 
 jobs:
   deploy:
@@ -53,4 +53,4 @@ jobs:
         with:
           artifact-bucket-name: ${{ secrets.CLOUDFRONT_FUNC_ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-          working-directory: ./cloudfront/function/.aws-sam/build
+          working-directory: ./cloudfront/cloudfront-function/.aws-sam/build
