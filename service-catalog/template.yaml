@@ -232,6 +232,7 @@ Resources:
             Repository: "govuk-one-login/devplatform-service-catalog-poc"
         Type: CODESTAR
 
+
   SCCProduct7:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
