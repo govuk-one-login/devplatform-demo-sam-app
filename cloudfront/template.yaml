@@ -83,7 +83,7 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           FunctionAssociations:
             - EventType: viewer-request
-              FunctionARN: !GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
+              FunctionARN: !ImportValue CloudfrontTICFFunctionArn
             #- EventType: viewer-request
             #  FunctionARN: !GetAtt RedirectToBustCacheFunction.FunctionMetadata.FunctionARN
         ViewerCertificate:
@@ -107,25 +107,25 @@ Resources:
   #    #  FunctionARN: !Sub "RedirectToBustCache-${Environment}-${AWS::StackName}"
   #    Name: "RedirectToBustCache"
 
-  FraudHeadersFunction:
-    Type: AWS::CloudFront::Function
-    Properties:
-      AutoPublish: true
-      FunctionCode: |
-        function handler(event) {
-          var request = event.request;
-          var headers = request.headers;
-
-          headers['fraud'] = { value: 'some_base64' }
-          return request;
-        }
-
-      FunctionConfig:
-        Comment: inject content type headers
-        Runtime: cloudfront-js-1.0
-      #FunctionMetadata:
-      #  FunctionARN: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
-      Name: !Sub "FraudHeaders-${Environment}-${AWS::StackName}"
+  #FraudHeadersFunction:
+  #  Type: AWS::CloudFront::Function
+  #  Properties:
+  #    AutoPublish: true
+  #    FunctionCode: |
+  #      function handler(event) {
+  #        var request = event.request;
+  #        var headers = request.headers;
+#
+  #        headers['fraud'] = { value: 'some_base64' }
+  #        return request;
+  #      }
+#
+  #    FunctionConfig:
+  #      Comment: inject content type headers
+  #      Runtime: cloudfront-js-1.0
+  #    #FunctionMetadata:
+  #    #  FunctionARN: !Sub "AssetsCDNHeaders-${Environment}-${AWS::StackName}"
+  #    Name: !Sub "FraudHeaders-${Environment}-${AWS::StackName}"
 
 Outputs:
   CloudfrontDistDomain:

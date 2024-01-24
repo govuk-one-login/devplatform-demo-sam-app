@@ -6,7 +6,7 @@ on:
     branches:
       - bau-cloudfront-estimate
     paths:
-      - 'cloudfront/**'
+      - 'cloudfront/template.yaml'
       - '.github/workflows/cloudfront-estimate-dist-post-merge-actions.yml'
 
 defaults:
