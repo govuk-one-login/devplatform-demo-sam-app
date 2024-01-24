@@ -44,7 +44,7 @@ Resources:
       Name: !Sub "FraudHeadersFunction-${Environment}"
 
 Outputs:
-  CloudfrontTICFFuncName:
+  CloudfrontTICFFuncArn:
     Description: Cloudfront TICF Function Arn
     Value: !GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
     Export:
