@@ -216,12 +216,12 @@ Resources:
           Info:
             LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/alerting-integration/template.yaml"
 
-  #  testing the codestar connection with more rights1.
+  #  testing the codestar connection with more rights1
   SCCProduct6:
     Type: AWS::ServiceCatalog::CloudFormationProduct
     Properties:
-      Name: "atest-code-star1"
-      Description: "codestar"
+      Name: "permissions boundary 1"
+      Description: "permissions boundary 1 using codestar"
       Owner: "Product x owner"
       SourceConnection:
         ConnectionParameters:
@@ -291,6 +291,13 @@ Resources:
     Properties:
       PortfolioId: !Ref SCPortfoliocri
       ProductId: !Ref SCCProduct7
+
+  SCPortfolioProductAssociation8:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct6
 
   # SCCustomTagOptionsAssociation:
   #   Type: AWS::ServiceCatalog::TagOptionAssociation
