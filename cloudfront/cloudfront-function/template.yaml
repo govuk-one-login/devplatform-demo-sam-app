@@ -43,3 +43,10 @@ Resources:
         Runtime: cloudfront-js-2.0
       Name: !Sub "FraudHeadersFunction-${Environment}"
 
+Outputs:
+  CloudfrontTICFFuncName:
+    Description: Cloudfront TICF Function Arn
+    Value: !GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
+    Export:
+      Name: CloudfrontTICFFunctionArn
+
