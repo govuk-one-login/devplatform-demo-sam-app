@@ -352,6 +352,7 @@ Resources:
         RequestParameters:
           integration.request.path.proxy: "method.request.path.proxy"
           integration.request.header.x-forwarded-for: "method.request.header.x-forwarded-for"
+          integration.request.header.txma-audit-encoded: "method.request.header.txma-audit-encoded"
         IntegrationHttpMethod: GET
         Uri: !Sub
           - "http://${LBDNS}/{proxy}"
