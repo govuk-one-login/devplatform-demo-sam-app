@@ -15,10 +15,10 @@ Resources:
     Properties:
       AutoPublish: true
       FunctionCode: |
-        function handler(event) {
-          let request = event.request;
-          let headers = request.headers;
-          let txmaHeader = {};
+        async function handler(event) {
+          const request = event.request;
+          const headers = request.headers;
+          const txmaHeader = {};
 
           txmaHeader.timestamp = Date.now();
           if("cloudfront-viewer-address" in headers){
@@ -34,7 +34,7 @@ Resources:
             txmaHeader.acceptLanguage = headers['accept-language'];
           }
 
-          headers['txma-audit-encoded'] = { value: btoa(txmaHeader) };
+          headers['txma-audit-encoded'] = {value: btoa(JSON.stringify(txmaHeader)) };
           return request;
         }
       FunctionConfig:
