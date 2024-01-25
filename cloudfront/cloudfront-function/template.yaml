@@ -35,10 +35,8 @@ Resources:
           }
 
           headers['txma-audit-encoded'] = { value: btoa(txmaHeader) };
-          console.log('encoded header:' + headers['txma-audit-encoded']);
           return request;
         }
-
       FunctionConfig:
         Comment: Add TICF fraud headers
         Runtime: cloudfront-js-2.0
