@@ -16,25 +16,26 @@ Resources:
       AutoPublish: true
       FunctionCode: |
         function handler(event) {
-          var request = event.request;
-          var headers = request.headers;
+          let request = event.request;
+          let headers = request.headers;
+          let txmaHeader = {};
 
-          var txma-header  = {};
-          txma-header.timestamp = Date.now();
+          txmaHeader.timestamp = Date.now();
           if("cloudfront-viewer-address" in headers){
-            txma-header.ip-address-port = headers['cloudfront-viewer-address'];
+            txmaHeader.ipAddressPort = headers['cloudfront-viewer-address'];
           }
           if("cloudfront-viewer-country" in headers){
-            txma-header.country-code = headers['cloudfront-viewer-country'];
+            txmaHeader.countryCode = headers['cloudfront-viewer-country'];
           }
           if("user-agent" in headers){
-            txma-header.user-agent = headers['user-agent'];
+            txmaHeader.userAgent = headers['user-agent'];
           }
           if("accept-encoding" in headers){
-            txma-header.accept-language = headers['accept-language'];
+            txmaHeader.acceptLanguage = headers['accept-language'];
           }
 
-          headers['txma-audit-encoded'] = { value: btoa(txma-header) };
+          headers['txma-audit-encoded'] = { value: btoa(txmaHeader) };
+          console.log('encoded header:' + headers['txma-audit-encoded']);
           return request;
         }
 
