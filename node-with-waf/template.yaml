@@ -343,6 +343,7 @@ Resources:
       RequestParameters:
         method.request.path.proxy: false
         method.request.header.x-forwarded-for: false
+        method.request.header.txma-audit-encoded: true
       Integration:
         Type: HTTP_PROXY
         ConnectionType: VPC_LINK
