@@ -69,6 +69,7 @@ Resources:
                 - TLSv1.2
         Enabled: 'true'
         Comment: CloudfrontToRestAPI
+        PriceClass: PriceClass_100
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
