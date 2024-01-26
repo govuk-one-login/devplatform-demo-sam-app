@@ -9,7 +9,7 @@ const server = http.createServer(function (request, response) {
     if(request.headers.hasOwnProperty('txma-audit-encoded')) {
         txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
     }
-    response.end(requestHeaders + ',{ txmaAuditDecoded: "' + txmaAuditDecoded + '"}');
+    response.end(requestHeaders + ',{"txmaAuditDecoded":' + txmaAuditDecoded + '}');
 });
 
 server.listen(port, hostname, ()=> {
