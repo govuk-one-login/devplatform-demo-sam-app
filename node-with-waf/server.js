@@ -5,7 +5,10 @@ const server = http.createServer(function (request, response) {
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json" );
     const requestHeaders = JSON.stringify(request.headers);
-    const txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
+    let txmaAuditDecoded = '';
+    if(request.headers.hasOwnProperty('txma-audit-encoded')) {
+        txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
+    }
     response.end(requestHeaders + ',{ txmaAuditDecoded: "' + txmaAuditDecoded + '"}');
 });
 
