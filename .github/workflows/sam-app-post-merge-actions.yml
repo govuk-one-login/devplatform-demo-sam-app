@@ -24,10 +24,10 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'adopt'
           cache: gradle
 
@@ -82,15 +82,18 @@ jobs:
           ECR_REPOSITORY_STAGING: ${{ secrets.SAM_APP_ECR_REPOSITORY_STAGING }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:latest
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
 
       - name: Deploy SAM app
-        uses: govuk-one-login/devplatform-upload-action@v3.4
+        uses: govuk-one-login/devplatform-upload-action@v3.5
         with:
             artifact-bucket-name: ${{ secrets.SAM_APP_ARTIFACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
