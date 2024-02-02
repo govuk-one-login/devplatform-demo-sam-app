@@ -58,10 +58,10 @@ Conditions:
 
 Mappings:
   APIDomainNames:
-    # build:
-    #   DomainName: "demoapp.build.platform.sandpit.account.gov.uk"
-    staging:
-      DomainName: "demoapp.staging.platform.sandpit.account.gov.uk"
+    build:
+      DomainName: "demoapp.build.platform.sandpit.account.gov.uk"
+    # staging:
+      # DomainName: "demoapp.staging.platform.sandpit.account.gov.uk"
     integration:
       DomainName: "demoapp.integration.platform.sandpit.account.gov.uk"
     production:
