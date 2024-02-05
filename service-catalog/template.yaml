@@ -34,7 +34,7 @@ Parameters:
     Type:           String
     Default:        "template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com"
 
-# # Enviornment type
+# # Environment type
 #   Env:
 #     Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
 #     Type:           String
@@ -110,22 +110,22 @@ Resources:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
       ProviderName: "Base AWS account"
-      Description: "base aws account"
-      DisplayName: "base aws account"
+      Description:  "Base AWS account"
+      DisplayName:  "Base AWS account"
 
   SCPortfolioFrontend:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
       ProviderName: "Frontend team"
-      Description: "Frontend team"
-      DisplayName: "Frontend team"
+      Description:  "Frontend team"
+      DisplayName:  "Frontend team"
 
   SCPortfoliocri:
     Type: AWS::ServiceCatalog::Portfolio
     Properties:
       ProviderName: "CRI team"
-      Description: "CRI team"
-      DisplayName: "CRI team"
+      Description:  "CRI team"
+      DisplayName:  "CRI team"
 
   SCPProductTagOptions:
     Type: AWS::ServiceCatalog::TagOption
@@ -160,6 +160,9 @@ Resources:
       #     Value: !Sub "${AppName}"
       #   - Key: App
       #     Value: !Sub "${AppName}"
+      #######################################################################################
+      # This method gets files from the S3 bucket and gets a specific VERSION of that file
+      #######################################################################################
       ProvisioningArtifactParameters:
         - Name: v1
           Description: "ProvisioningArtifactDescriptionParameter"
@@ -223,6 +226,9 @@ Resources:
       Name: "permissions boundary 1"
       Description: "permissions boundary 1 using codestar"
       Owner: "Product x owner"
+      #######################################################################################
+      # This method uses the Codestar connection to get temaplte directly from Github
+      #######################################################################################
       SourceConnection:
         ConnectionParameters:
           CodeStar:
