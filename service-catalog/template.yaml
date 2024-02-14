@@ -1,0 +1,318 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template creates AWS Service Catalog Portfolio and Products.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Service Catalog Product Tag Options Activation"
+        Parameters:
+          - ActivateProductTagOptions
+      - Label:
+          default: "Service Catalog Product Tag Options"
+        Parameters:
+          - ProductDept
+
+      # - Label:
+      #     default: "Service Catalog Product Tags"
+      #   Parameters:
+      #     - AppName
+      #     - Env
+      #     - Dept
+      #     - User
+      #     - Owner
+
+
+
+####################################
+# Parameters
+####################################
+Parameters:
+
+  S3BucketUrl:
+    Description:    Please specify the S3 Bucket name.
+    Type:           String
+    Default:        "template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com"
+
+# # Environment type
+#   Env:
+#     Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+#     Type:           String
+#     Default:        "dev"
+#     AllowedValues:
+#       - test
+#       - dev
+#       - prod
+
+# Department
+  # Name:
+  #   Description:    Please specify the Department Name Used for tagging
+  #   Type:           String
+  #   Default:        "1234"
+
+# # Department
+#   Dept:
+#     Description:    Please specify the Department. Used for tagging
+#     Type:           String
+#     Default:        "1234"
+
+# # User
+#   User:
+#     Description:    Please specify the User. Used for tagging
+#     Type:           String
+#     Default:        "User"
+
+# # Owner
+#   Owner:
+#     Description:    Please specify the Owner. Used for tagging
+#     Type:           String
+#     Default:        "Owner"
+
+# Product Enviornment type
+  # ProductEnv:
+  #   Description:    Please specify the target Environment. Used for tagging and resource names. Mandatory LOWER CASE.
+  #   Type:           String
+  #   Default:        "dev"
+  #   AllowedValues:
+  #     - test
+  #     - dev
+  #     - prod
+
+#Product Department
+  ProductDept:
+    Description:    Please specify the Department. Used for tagging
+    Type:           String
+    Default:        "1234"
+
+
+# Tag Options Activation
+  ActivateProductTagOptions:
+    Description:    Activate Custom Tag Options? Used for portfolio tagging
+    Type:           String
+    Default:        "true"
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+
+# # Application Name
+#   AppName:
+#     Description: Please specify the Application Name. Used for tagging and resource names. Mandatory LOWER CASE.
+#     Type: String
+#     Default: "app"
+
+####################################
+# Resources
+####################################
+Resources:
+
+  SCPortfolioBaseAccount:
+    Type: AWS::ServiceCatalog::Portfolio
+    Properties:
+      ProviderName: "Base AWS account"
+      Description:  "Base AWS account"
+      DisplayName:  "Base AWS account"
+
+  SCPortfolioFrontend:
+    Type: AWS::ServiceCatalog::Portfolio
+    Properties:
+      ProviderName: "Frontend team"
+      Description:  "Frontend team"
+      DisplayName:  "Frontend team"
+
+  SCPortfoliocri:
+    Type: AWS::ServiceCatalog::Portfolio
+    Properties:
+      ProviderName: "CRI team"
+      Description:  "CRI team"
+      DisplayName:  "CRI team"
+
+  SCPProductTagOptions:
+    Type: AWS::ServiceCatalog::TagOption
+    Properties:
+      Active:     !Ref ActivateProductTagOptions
+      Key:        Dept
+      Value:      !Sub '${ProductDept}'
+
+  # Share Portfolio with an AWS account
+  ServiceCatalogPortfolioShare:
+    Type: AWS::ServiceCatalog::PortfolioShare
+    Properties:
+      AccountId: "842766856468"
+      PortfolioId: !Ref SCPortfolioBaseAccount
+
+
+  # Accepts portfolio share - not sure if needed yet
+  # ServiceCatalogAcceptPortfolioShare:
+  #    Type: AWS::ServiceCatalog::AcceptedPortfolioShare
+  #    Properties:
+  #      AcceptLanguage: String
+  #      PortfolioId: String
+
+  SCCProduct1:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "vpc"
+      Description: "VPC and networking resources template"
+      Owner: "Product x owner"
+      # Tags:
+      #   - Key: Name
+      #     Value: !Sub "${AppName}"
+      #   - Key: App
+      #     Value: !Sub "${AppName}"
+      #######################################################################################
+      # This method gets files from the S3 bucket and gets a specific VERSION of that file
+      #######################################################################################
+      ProvisioningArtifactParameters:
+        - Name: v1
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=gXWk6oPRGDtPfC0muaNX_LO7edIqov7v"
+        - Name: v2
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
+        - Name: v3
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
+        - Name: v4
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/vpc/template.yaml?versionId=hWHgD.xUinDzUDTcXY5ZYZiXtmHn8EIy"
+
+  SCCProduct2:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "signer"
+      Description: "AWS Signer Signing Profile template"
+      Owner: "Product x owner"
+      # Tags:
+      #   - Key: Name
+      #     Value: !Sub "${AppName}"
+      #   - Key: App
+      #     Value: !Sub "${AppName}"
+      ProvisioningArtifactParameters:
+        - Name: "ProvisioningArtifactNameParameter"
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/signer/template.yaml"
+
+  SCCProduct3:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "alerting-integration"
+      Description: "Stack to create an SNS topic with external API subscriptions such as PagerDuty"
+      Owner: "Product x owner"
+      # SupportDescription: "Description"
+      # Distributor: "distributor"
+      # SupportEmail: "email@exmaple.com"
+      # SupportUrl: "https://bbc.co.uk"
+      # Tags:
+      #   - Key: Name
+      #     Value: !Sub "${AppName}"
+      #   - Key: App
+      #     Value: !Sub "${AppName}"
+      ProvisioningArtifactParameters:
+        - Name: "ProvisioningArtifactNameParameter"
+          Description: "ProvisioningArtifactDescriptionParameter"
+          Info:
+            LoadTemplateFromURL: !Sub "https://${S3BucketUrl}/alerting-integration/template.yaml"
+
+  #  testing the codestar connection with more rights1
+  SCCProduct6:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "permissions boundary 1"
+      Description: "permissions boundary 1 using codestar"
+      Owner: "Product x owner"
+      #######################################################################################
+      # This method uses the Codestar connection to get temaplte directly from Github
+      #######################################################################################
+      SourceConnection:
+        ConnectionParameters:
+          CodeStar:
+            ArtifactPath: "products/permissions-boundary/template.yaml"
+            Branch: "permissions-boundary"
+            ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
+            Repository: "govuk-one-login/devplatform-service-catalog-poc"
+        Type: CODESTAR
+
+
+
+  SCCProduct7:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "permissions-boundary-cri"
+      Description: "codestar"
+      Owner: "CRI"
+      SourceConnection:
+        ConnectionParameters:
+          CodeStar:
+            ArtifactPath: "products/permissions-boundary2/template.yaml"
+            Branch: "permissions-boundary"
+            ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
+            Repository: "govuk-one-login/devplatform-service-catalog-poc"
+        Type: CODESTAR
+
+  SCCProduct8:
+    Type: AWS::ServiceCatalog::CloudFormationProduct
+    Properties:
+      Name: "permissions-boundary-kiwi"
+      Description: "codestar"
+      Owner: "KIWI"
+      SourceConnection:
+        ConnectionParameters:
+          CodeStar:
+            ArtifactPath: "products/permissions-boundary2/template.yaml"
+            Branch: "permissions-boundary"
+            ConnectionArn: "arn:aws:codestar-connections:eu-west-2:637423182621:connection/bd58700d-8b6b-42eb-b88f-852e31c9273b"
+            Repository: "govuk-one-login/devplatform-service-catalog-poc"
+        Type: CODESTAR
+
+  SCPortfolioProductAssociation1:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct1
+
+  SCPortfolioProductAssociation2:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct2
+
+  SCPortfolioProductAssociation3:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct3
+
+  SCPortfolioProductAssociation7:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfoliocri
+      ProductId: !Ref SCCProduct7
+
+  SCPortfolioProductAssociation8:
+    Type: AWS::ServiceCatalog::PortfolioProductAssociation
+    # DependsOn: ServiceCatalogCloudFormationProduct
+    Properties:
+      PortfolioId: !Ref SCPortfolioBaseAccount
+      ProductId: !Ref SCCProduct6
+
+  # SCCustomTagOptionsAssociation:
+  #   Type: AWS::ServiceCatalog::TagOptionAssociation
+  #   Properties:
+  #     TagOptionId: !Ref ServiceCatalogProductTagOptions
+  #     ResourceId: !Ref ServiceCatalogCloudFormationProduct
+
+
+####################################
+# Outputs
+####################################
+# Outputs:
