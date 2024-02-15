@@ -27,6 +27,19 @@ Parameters:
       - "production"
 
 Conditions:
+  IsNonDevEnvironment:
+    Fn::Not:
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref Environment
+          - "dev"
+        - Fn::Equals:
+          - !Ref Environment
+          - "demo"
+        - Fn::Equals:
+          - !Ref Environment
+          - "local"
+
   UsePermissionsBoundary:
     Fn::Not:
       - Fn::Equals:
@@ -153,6 +166,7 @@ Resources:
   # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
   CSLSFirehoseSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
+    Condition: IsNonDevEnvironment
     Properties:
       DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
       FilterPattern: ""
