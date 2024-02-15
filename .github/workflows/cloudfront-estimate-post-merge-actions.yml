@@ -1,0 +1,32 @@
+name: Cloudfront Estimate build and deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - bau-cloudfront-estimate
+    paths:
+      - 'node-with-waf/**'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./node-with-waf
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: cloudfront-estimate
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Upload to ECR and tag
+        uses: govuk-one-login/devplatform-upload-action-ecr@1.1.1
+        with:
+          role-to-assume-arn: ${{ secrets.CLOUDFRONT_ESTIMATE_GH_ROLE }}
+          container-sign-kms-key-arn: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
+          working-directory: node-with-waf
+          ecr-repo-name: ${{ secrets.CLOUDFRONT_ESTIMATE_ECR_REPO }}
+          artifact-bucket-name: ${{ secrets.CLOUDFRONT_ESTIMATE_S3_BUCKET }}

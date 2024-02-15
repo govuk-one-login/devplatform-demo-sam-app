@@ -8,6 +8,7 @@ Parameters:
     Description: "The name of the environment to deploy to"
     Type: "String"
     AllowedValues:
+      - dev
       - build
       - staging
       - production
@@ -20,6 +21,8 @@ Conditions:
 
 Mappings:
   EnvironmentSettings:
+    dev:
+      DomainName: dev.platform.sandpit.account.gov.uk
     build:
       DomainName: build.platform.sandpit.account.gov.uk
     staging:
@@ -72,6 +75,20 @@ Resources:
         - ns-362.awsdns-45.com.
         - ns-1274.awsdns-31.org.
         - ns-688.awsdns-22.net.
+      TTL: 3600
+
+  PlatformDevDelegation:
+    Type: AWS::Route53::RecordSet
+    Condition: ProductionEnvironment
+    Properties:
+      Name: dev.platform.sandpit.account.gov.uk
+      Type: NS
+      HostedZoneId: !Ref PlatformHostedZone
+      ResourceRecords:
+        - ns-896.awsdns-48.net.
+        - ns-1920.awsdns-48.co.uk.
+        - ns-1027.awsdns-00.org.
+        - ns-42.awsdns-05.com.
       TTL: 3600
 
   ZoneRootCertificate:

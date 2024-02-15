@@ -1,6 +1,9 @@
 # Platform Hosted Zone
 
 This stack supports sam-app by creating the below zones:
+- `dev.platform.sandpit.account.gov.uk`
+    - Deployed into di-devplatform-development
+    - Delegation is managed within this stack
 
 - `build.platform.sandpit.account.gov.uk`
     - Deployed in di-devplatform-build-demo
