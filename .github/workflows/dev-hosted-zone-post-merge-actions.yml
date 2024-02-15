@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - bau-cloudfront-estimate
+      - main
     paths:
       - 'platform-hosted-zone/**'
       - '.github/workflows/dev-hosted-zone-post-merge-actions.yml'

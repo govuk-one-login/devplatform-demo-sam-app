@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - bau-cloudfront-estimate
+      - main
     paths:
       - 'cloudfront/template.yaml'
       - '.github/workflows/cloudfront-estimate-dist-post-merge-actions.yml'
