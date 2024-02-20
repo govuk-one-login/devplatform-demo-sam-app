@@ -829,6 +829,106 @@ Resources:
           Value: !Sub "${AWS::StackName}-KmsKey"
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+  
+  FISExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: fis.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSFaultInjectionSimulatorECSAccess"
+      Policies:
+        - PolicyName: CreateLogGroup
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ssm:SendCommand"
+                  - "ssm:ListCommands"
+                  - "ssm:CancelCommand"
+                Resource: "*"
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-FISExecutionRole"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+  
+  ManagedInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      Policies:
+        - PolicyName: ManagedInstanceStuff
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:DeleteActivation
+                  - ssm:DeregisterManagedInstance
+                Resource: "*"
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-FISExecutionRole"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+
+  FISExperiment:
+    Type: 'AWS::FIS::ExperimentTemplate'
+    Properties:
+      Description: 'Create CPU stress'
+      Actions:
+        StressTest:
+          Description: Add stress to generate scaling events
+          ActionId: 'aws:ecs:task-cpu-stress'
+          Parameters:
+            duration: 'PT1M'
+            percent: 75
+          Targets: 
+            Tasks: ECSService
+      Targets:
+        ECSService:
+          ResourceType: 'aws:ecs:task'
+          Parameters:
+            cluster: !Ref FargateCluster
+            service: !GetAtt ContainerService.Name
+          SelectionMode: "ALL"
+      StopConditions:
+        - Source: 'none'
+      RoleArn: !GetAtt FISExecutionRole.Arn
+      Tags:
+        Name: !Sub "${AWS::StackName}-FISExperiment"
+        Service: ci/cd
+        Source: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
 Outputs:
   ApiGatewayEndpoint:
