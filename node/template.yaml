@@ -141,9 +141,9 @@ Resources:
             - !GetAtt ContainerServiceSecurityGroup.GroupId
           Subnets:
             - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdA"
+                !Sub "${VpcStackName}-ProtectedSubnetIdA"
             - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdB"
+                !Sub "${VpcStackName}-ProtectedSubnetIdB"
       PropagateTags: SERVICE
       TaskDefinition: !If
         - UseECSCanaryDeploymentStack
