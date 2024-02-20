@@ -214,6 +214,12 @@ Resources:
           IpProtocol: tcp
           FromPort: 8000
           ToPort: 8000
+      SecurityGroupEgress:
+        - Description: Allow traffic to the internet
+          IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+          FromPort: 443
+          ToPort: 443
       VpcId:
         Fn::ImportValue:
           !Sub "${VpcStackName}-VpcId"
@@ -265,7 +271,7 @@ Resources:
             - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
               - ':DT_CONNECTION_POINT::'
         - Name: amazon-ssm-agent
-          Image: 842766856468.dkr.ecr.eu-west-2.amazonaws.com/amazon-ssm-agent:latest
+          Image: public.ecr.aws/amazon-ssm-agent/amazon-ssm-agent:latest
           Essential: false
           LogConfiguration:
             LogDriver: awslogs
@@ -281,7 +287,7 @@ Resources:
             ]
           Environment:
             - Name: MANAGED_INSTANCE_ROLE_NAME
-              Value: !Ref FISExecutionRole
+              Value: !Ref ManagedInstanceRole
       Cpu: 1024
       Memory: 2048
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
@@ -897,10 +903,9 @@ Resources:
             Action:
               - sts:AssumeRole
       ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
         - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
       Policies:
-        - PolicyName: ManagedInstanceStuff
+        - PolicyName: SSMTask
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -908,6 +913,44 @@ Resources:
                 Action:
                   - ssm:DeleteActivation
                   - ssm:DeregisterManagedInstance
+                Resource: "*"
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-FISExecutionRole"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+
+  
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: SSMTask
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:CreateActivation
+                  - ssm:AddTagsToResource
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
                 Resource: "*"
       PermissionsBoundary: !If
         - UsePermissionsBoundary
