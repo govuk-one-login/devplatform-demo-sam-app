@@ -80,3 +80,12 @@ output "cloudfront-function-pipeline_stack_outputs" {
 output "cloudfront-function-pipeline_stack_tags" {
   value = module.cloudfront-function-pipeline.stack_tags
 }
+output "cf-func-test-pipeline_stack_id" {
+  value = module.cf-func-test-pipeline.stack_id
+}
+output "cf-func-test-pipeline_stack_outputs" {
+  value = module.cf-func-test-pipeline.stack_outputs
+}
+output "cf-func-test-pipeline_stack_tags" {
+  value = module.cf-func-test-pipeline.stack_tags
+}
