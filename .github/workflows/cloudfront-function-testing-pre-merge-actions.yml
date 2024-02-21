@@ -1,13 +1,16 @@
 name: Cloudfront Function Test before merge
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+ 
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - 'cloudfront/cloudfront-function/**'
-      - '.github/workflows/cloudfront-estimate-function-post-merge-actions.yml'
+      - '.github/workflows/cloudfront-function-testing-pre-merge-actions.yml'
 
 defaults:
   run:
@@ -17,7 +20,7 @@ defaults:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: cloudfront-estimate
+    environment: cloudfront-test
     timeout-minutes: 60
     permissions:
       id-token: write
