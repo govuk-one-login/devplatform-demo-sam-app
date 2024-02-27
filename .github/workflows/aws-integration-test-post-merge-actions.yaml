@@ -20,6 +20,7 @@ jobs:
       run:
         working-directory: ./aws-integration-test/aws-integration
     steps:
+      - run:  bash df -h
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -41,7 +42,7 @@ jobs:
       - name: Cache Image Layers
         uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
-
+      - run:  bash df -h
       - name: Build, tag, and push testing image to Amazon ECR
         env:
           CONTAINER_SIGN_KMS_KEY: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
