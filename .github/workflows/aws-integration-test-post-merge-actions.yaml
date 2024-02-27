@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Disk Space
         run: |
           echo "Free space:"
           df -h
@@ -57,6 +57,11 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+      - name: Disk Space
+        run: |
+          echo "Free space:"
+          df -h
+  
   deploy-test-stack:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -70,6 +75,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Disk Space
+        run: |
+          echo "Free space:"
+          df -h
 
       - name: Install Python
         uses: actions/setup-python@v5
@@ -99,6 +109,11 @@ jobs:
       - name: SAM validate
         run: sam validate
 
+      - name: Disk Space
+        run: |
+          echo "Free space:"
+          df -h
+          
       - name: SAM build and test
         run: ./build.sh
 
