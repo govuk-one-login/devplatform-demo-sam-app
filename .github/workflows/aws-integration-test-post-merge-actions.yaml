@@ -45,6 +45,12 @@ jobs:
       - name: Cache Image Layers
         uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
+
+      - name: Disk Space
+        run: |
+          echo "Free space:"
+          df -h
+          
       - name: Build, tag, and push testing image to Amazon ECR
         env:
           CONTAINER_SIGN_KMS_KEY: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
