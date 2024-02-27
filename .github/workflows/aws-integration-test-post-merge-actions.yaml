@@ -19,7 +19,7 @@ jobs:
       run:
         working-directory: ./aws-integration-test/aws-integration
     steps:
-      - run:  bash df -h
+      - run:  df -h
       - name: Checkout repo
         uses: actions/checkout@v4
 
