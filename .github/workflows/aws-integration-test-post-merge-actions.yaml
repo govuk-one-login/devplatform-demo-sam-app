@@ -19,12 +19,13 @@ jobs:
       run:
         working-directory: ./aws-integration-test/aws-integration
     steps:
-      - name: Build
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+     - name: Build
         run: |
           echo "Free space:"
           df -h
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v4.0.2
