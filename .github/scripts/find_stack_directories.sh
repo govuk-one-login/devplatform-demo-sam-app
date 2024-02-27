@@ -2,4 +2,4 @@
 
 set -eu
 
-find . -type d -maxdepth 1 -regex '^\./[^.]*' ! -name 'scripts' ! -name 'tf-app'
+find . -type d -maxdepth 1 -regex '^\./[^.]*' ! -name 'scripts' ! -name 'tf-app' ! - name 'terraform'

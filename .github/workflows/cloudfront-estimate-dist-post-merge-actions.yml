@@ -1,0 +1,56 @@
+name: Cloudfront Dist Estimate build and deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cloudfront/template.yaml'
+      - '.github/workflows/cloudfront-estimate-dist-post-merge-actions.yml'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./cloudfront
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: cloudfront-estimate
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Set up SAM cli
+        uses: aws-actions/setup-sam@v2
+
+      - name: Set up AWS creds
+        uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          role-to-assume: ${{ secrets.CLOUDFRONT_DIST_GH_ACTIONS_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: SAM validate
+        run: sam validate
+
+      - name: SAM build and test
+        run: sam build
+
+      - name: Deploy SAM app
+        uses: govuk-one-login/devplatform-upload-action@v3.4
+        with:
+          artifact-bucket-name: ${{ secrets.CLOUDFRONT_DIST_ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: ./cloudfront/.aws-sam/build
