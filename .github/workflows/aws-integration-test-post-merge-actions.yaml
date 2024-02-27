@@ -1,8 +1,9 @@
 name: AWS Integration Test Deploy
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
 
 defaults:
   run:
