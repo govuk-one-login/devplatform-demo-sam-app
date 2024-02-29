@@ -43,9 +43,10 @@ jobs:
         with:
           cosign-release: 'v1.9.0'
 
-      - name: Cache Image Layers
-        uses: jpribyl/action-docker-layer-caching@v0.1.1
-        continue-on-error: true
+      #  Disabling this caching mechanism to see why its filling up disk
+      # - name: Cache Image Layers
+      #   uses: jpribyl/action-docker-layer-caching@v0.1.1
+      #   continue-on-error: true
 
       - name: Disk Space Usage
         run: |
