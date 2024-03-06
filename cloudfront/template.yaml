@@ -12,7 +12,7 @@ Parameters:
 Mappings:
   EnvironmentConfiguration:
     "dev":
-      CloudfrontCertificate: "arn:aws:acm:us-east-1:842766856468:certificate/ece18c99-4a54-42c2-8da6-5e0acd244f60" # we have to make this manually as it lives in us-east-1
+      CloudfrontCertificate: "arn:aws:acm:us-east-1:842766856468:certificate/9f90373b-46f9-4808-918c-16ae49943e7b"
 
 Resources:
 
