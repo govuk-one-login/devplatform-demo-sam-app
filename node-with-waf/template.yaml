@@ -288,12 +288,32 @@ Resources:
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
+  AppOriginDomainNameRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Join
+        - ''
+        - - origin
+          - .
+          - !Sub ${AWS::StackName}
+          - .
+          - !Ref Environment
+          - .platform.sandpit.account.gov.uk
+      Type: A
+      HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      AliasTarget:
+        DNSName: !Ref RestApiGatewayDomainName
+        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        EvaluateTargetHealth: false
+
   RestApiGatewayDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Join
         - ''
-        - - !Sub ${AWS::StackName}
+        - - old
+          - .
+          - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
@@ -314,7 +334,7 @@ Resources:
         - - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
-          - .platform.sandpit.account.gov.uk
+          - origin.platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
