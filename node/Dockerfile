@@ -32,6 +32,8 @@ ENV DT_LOGLEVELCON INFO
 ENV PORT 8000
 EXPOSE $PORT
 
+HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1  
+
 ENTRYPOINT ["tini", "--"]
 
 CMD ["npm", "start"]
