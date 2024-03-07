@@ -118,7 +118,3 @@ router.use("/oauth2", commonExpress.routes.oauth2);
 router.use("/toy", require("./app/toy"));
 
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
-
-router.get("/health", (req, res) => {
-  res.send({ available: true });
-});
