@@ -333,6 +333,22 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
+        DNSName: !Ref RestApiGatewayDomainName
+        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        EvaluateTargetHealth: false
+
+  CloudFrontDomainNameRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Join
+        - ''
+        - - !Sub ${AWS::StackName}
+          - .
+          - !Ref Environment
+          - .platform.sandpit.account.gov.uk
+      Type: A
+      HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      AliasTarget:
         DNSName:
           Fn::ImportValue:
             !Sub "CloudfrontDistDomain-${Environment}"
