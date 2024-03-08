@@ -429,7 +429,7 @@ Resources:
           - .
           - !Ref Environment
           - platform.sandpit.account.gov.uk
-      RegionalCertificateArn: !Ref RestApiGatewayOriginCertificate
+      RegionalCertificateArn: !Ref RestApiGatewayOldCertificate
       EndpointConfiguration:
         Types:
           - REGIONAL
