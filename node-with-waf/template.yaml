@@ -285,6 +285,21 @@ Resources:
               - !Ref Environment
               - .platform.sandpit.account.gov.uk
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
+      SubjectAlternativeNames:
+        - !Join
+          - ''
+          - - old.
+            - !Sub ${AWS::StackName}
+            - .
+            - !Ref Environment
+            - .platform.sandpit.account.gov.uk
+        - !Join
+          - ''
+          - - origin.
+            - !Sub ${AWS::StackName}
+            - .
+            - !Ref Environment
+            - .platform.sandpit.account.gov.uk
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
@@ -293,8 +308,7 @@ Resources:
     Properties:
       Name: !Join
         - ''
-        - - origin
-          - .
+        - - origin.
           - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
@@ -311,8 +325,7 @@ Resources:
     Properties:
       Name: !Join
         - ''
-        - - old
-          - .
+        - - old.
           - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
