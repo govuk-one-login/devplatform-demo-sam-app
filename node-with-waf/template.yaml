@@ -338,6 +338,7 @@ Resources:
         EvaluateTargetHealth: false
 
   CloudFrontDomainNameRecordSet:
+    DependsOn: RestApiGatewayDomainNameRecordSet
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Join
