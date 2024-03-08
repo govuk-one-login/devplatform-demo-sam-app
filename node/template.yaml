@@ -225,7 +225,7 @@ Resources:
               awslogs-create-group: "true"
               awslogs-stream-prefix: "ecs"
           HealthCheck:
-            Command:  [ "CMD", "curl --fail http://localhost:8000/healthcheck || exit 1" ]
+            Command:  [ "CMD-SHELL", "curl --fail http://localhost:8000/healthcheck || exit 1" ]
           Secrets:
           - Name: DT_TENANT
             ValueFrom: !Join
