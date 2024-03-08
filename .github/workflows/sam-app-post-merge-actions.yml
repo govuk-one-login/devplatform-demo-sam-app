@@ -32,7 +32,7 @@ jobs:
           cache: gradle
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -54,7 +54,7 @@ jobs:
         uses: aws-actions/setup-sam@v2
 
       - name: Set up AWS creds
-        uses: aws-actions/configure-aws-credentials@v4.0.1
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: ${{ secrets.SAM_APP_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
@@ -82,11 +82,14 @@ jobs:
           ECR_REPOSITORY_STAGING: ${{ secrets.SAM_APP_ECR_REPOSITORY_STAGING }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY_BUILD:latest $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:latest
           cosign sign --key awskms:///${CONTAINER_SIGN_KMS_KEY} $ECR_REGISTRY/$ECR_REPOSITORY_STAGING:$IMAGE_TAG
 
       - name: Deploy SAM app

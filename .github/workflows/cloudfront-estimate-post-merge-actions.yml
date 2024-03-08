@@ -5,8 +5,10 @@ on:
   push:
     branches:
       - main
+      - bau-cloudfront-estimate
     paths:
       - 'node-with-waf/**'
+      - '.github/workflows/cloudfront-estimate-post-merge-actions.yml'
 
 defaults:
   run:
@@ -23,7 +25,7 @@ jobs:
       contents: read
     steps:
       - name: Upload to ECR and tag
-        uses: govuk-one-login/devplatform-upload-action-ecr@1.1.1
+        uses: govuk-one-login/devplatform-upload-action-ecr@1.2.1
         with:
           role-to-assume-arn: ${{ secrets.CLOUDFRONT_ESTIMATE_GH_ROLE }}
           container-sign-kms-key-arn: ${{ secrets.CONTAINER_SIGN_KMS_KEY }}
