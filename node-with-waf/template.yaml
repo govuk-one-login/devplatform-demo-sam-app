@@ -345,8 +345,8 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Ref RestApiGatewayDomainName
-        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        DNSName: !Ref RestApiGatewayOriginDomainName
+        HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
   RestApiGatewayDomainNameRecordSet:
@@ -362,12 +362,11 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Ref RestApiGatewayDomainName
-        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        DNSName: !Ref RestApiGatewayOldDomainName
+        HostedZoneId: !GetAtt RestApiGatewayOldDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
   CloudFrontDomainNameRecordSet:
-    DependsOn: RestApiGatewayDomainNameRecordSet
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Join
