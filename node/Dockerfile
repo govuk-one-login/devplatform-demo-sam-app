@@ -14,6 +14,7 @@ FROM node:18.12.1-alpine3.16@sha256:67373bd5d90ea600cb5f0fa58d7a5a4e6ebf50b6e05c
 
 RUN ["apk", "--no-cache", "upgrade"]
 RUN ["apk", "add", "--no-cache", "tini"]
+RUN ["apk", "add", "--no-cache", "curl"]
 
 WORKDIR /app
 
