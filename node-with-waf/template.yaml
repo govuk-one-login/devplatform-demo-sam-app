@@ -395,7 +395,7 @@ Resources:
         - - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
-          - platform.sandpit.account.gov.uk
+          - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
@@ -411,7 +411,7 @@ Resources:
           - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
-          - platform.sandpit.account.gov.uk
+          - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayOriginCertificate
       EndpointConfiguration:
         Types:
@@ -427,7 +427,7 @@ Resources:
           - !Sub ${AWS::StackName}
           - .
           - !Ref Environment
-          - platform.sandpit.account.gov.uk
+          - .platform.sandpit.account.gov.uk
       RegionalCertificateArn: !Ref RestApiGatewayOldCertificate
       EndpointConfiguration:
         Types:
