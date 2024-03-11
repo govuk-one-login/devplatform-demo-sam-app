@@ -345,7 +345,7 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Ref RestApiGatewayOriginDomainName
+        DNSName: !GetAtt RestApiGatewayOriginDomainName.RegionalDomainName
         HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
@@ -362,7 +362,7 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Ref RestApiGatewayOldDomainName
+        DNSName: !GetAtt RestApiGatewayOldDomainName.RegionalDomainName
         HostedZoneId: !GetAtt RestApiGatewayOldDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
@@ -378,7 +378,7 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !Ref RestApiGatewayDomainName
+        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
         HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
         #DNSName:
