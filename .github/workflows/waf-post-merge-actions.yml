@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - bau-cloudfront-estimate
     paths:
       - 'node-with-waf/WAFv2/**'
       - '.github/workflows/waf-post-merge-actions.yml'
