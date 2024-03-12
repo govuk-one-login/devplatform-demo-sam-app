@@ -378,14 +378,12 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
-        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
-        EvaluateTargetHealth: false
-        #DNSName:
-        #  Fn::ImportValue:
-        #    !Sub "CloudfrontDistDomain-${Environment}"
-        #HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+        #DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
+        #HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
         #EvaluateTargetHealth: false
+        DNSName: 'd2o2zuxb4vdo1a.cloudfront.net'
+        HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+        EvaluateTargetHealth: false
 
   RestApiGatewayDomainName:
     Type: AWS::ApiGateway::DomainName
