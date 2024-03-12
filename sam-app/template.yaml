@@ -30,6 +30,11 @@ Parameters:
     Description: "The name of the environment to deploy to"
     Type: "String"
 
+  NotificationTopicArn:
+    Description: "The ARN of the SNS topic used for notifications"
+    Type: "String"
+    Default: "none"
+
 Conditions:
   IsNonDevEnvironment:
     Fn::Not:
@@ -55,6 +60,12 @@ Conditions:
       - Fn::Equals:
           - !Ref PermissionsBoundary
           - "none"
+
+  UseAlarmActions:
+    Fn::Not:
+      - Fn::Equals:
+        - !Ref NotificationTopicArn
+        - "none"
 
 Mappings:
   APIDomainNames:
@@ -226,8 +237,11 @@ Resources:
         Alarms:
           - !Ref HelloWorldFunctionTooManyRequestsAlarm
           - !Ref HelloWorldLambdaErrors
-          - !Ref HelloWorldLambda4XXAlarm
-          - !Ref HelloWorldLambda5XXAlarm
+          # Anomaly alarms need to be active in an account prior to being added as a deployment alarm.
+          # Otherwise there is a risk of false positives
+          - !Ref HelloWorldFunctionInvocationAnomalyAlarm
+          - !Ref HelloWorldLambda4XXAnomalyAlarm
+          - !Ref HelloWorldLambdaErrorAnomalyAlarm
         Hooks:
           PreTraffic: !Ref PreTrafficHook
           PostTraffic: !Ref PostTrafficHook
@@ -637,6 +651,138 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
 
+  #
+  # Anomaly detection
+  #
+
+  HelloWorldLambdaErrorAnomalyDetector:
+    Type: AWS::CloudWatch::AnomalyDetector
+    Properties:
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Stat: Sum
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref HelloWorldFunction
+
+  HelloWorldLambdaInvocationsAnomalyDetector:
+    Type: AWS::CloudWatch::AnomalyDetector
+    Properties:
+      MetricName: Invocations
+      Namespace: AWS/Lambda
+      Stat: Sum
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref HelloWorldFunction
+
+  HelloWorldLambda4XXErrorAnomalyDetector:
+    Type: AWS::CloudWatch::AnomalyDetector
+    Properties:
+      MetricName: 4XXError
+      Namespace: AWS/ApiGateway
+      Stat: Sum
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref HelloWorldFunction
+
+  HelloWorldLambdaErrorAnomalyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-HelloWorldLambdaErrorsAnomalies"
+      AlarmDescription: >
+        Alarm to detect Lambda error anomalies
+      AlarmActions: !If
+        - UseAlarmActions
+        - - !Ref NotificationTopicArn
+        - []
+      ComparisonOperator: GreaterThanUpperThreshold
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      ThresholdMetricId: ad1
+      TreatMissingData: notBreaching
+      Metrics:
+      - Id: ad1
+        ReturnData: True
+        Expression: ANOMALY_DETECTION_BAND(m1, 2)
+      - Id: m1
+        ReturnData: True
+        MetricStat:
+          Metric:
+            Namespace: AWS/Lambda
+            MetricName: Errors
+            Dimensions:
+              - Name: FunctionName
+                Value: !Ref HelloWorldFunction
+          Period: 60
+          Stat: Sum
+
+
+  HelloWorldLambda4XXAnomalyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-HelloWorldLambda4XXAnomalyAlarm"
+      AlarmDescription: >
+        Test alarm to trigger if a 4XX status code is received.
+      AlarmActions: !If
+        - UseAlarmActions
+        - - !Ref NotificationTopicArn
+        - []
+      EvaluationPeriods: 5
+      DatapointsToAlarm: 5
+      ComparisonOperator: GreaterThanUpperThreshold
+      ThresholdMetricId: ad2
+      TreatMissingData: notBreaching
+      Metrics:
+      - Id: ad2
+        ReturnData: True
+        Expression: ANOMALY_DETECTION_BAND(m2, 2)
+      - Id: m2
+        ReturnData: True
+        MetricStat:
+          Metric:
+            Namespace: AWS/ApiGateway
+            MetricName: 4XXError
+            Dimensions:
+              - Name: FunctionName
+                Value: !Ref HelloWorldFunction
+          Period: 60
+          Stat: Sum
+
+  HelloWorldFunctionInvocationAnomalyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-HelloWorldFunctionInvocationAnomalyAlarm"
+      AlarmDescription: >
+        Test alarm to trigger if the lambda receives many requests.
+      AlarmActions: !If
+        - UseAlarmActions
+        - - !Ref NotificationTopicArn
+        - []
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      ComparisonOperator: GreaterThanUpperThreshold
+      TreatMissingData: notBreaching
+      ThresholdMetricId: ad3
+      Metrics:
+      - Id: ad3
+        ReturnData: True
+        Expression: ANOMALY_DETECTION_BAND(m3, 2)
+      - Id: m3
+        ReturnData: True
+        MetricStat:
+          Metric:
+            Namespace: AWS/Lambda
+            MetricName: Invocations
+            Dimensions:
+              - Name: FunctionName
+                Value: !Ref HelloWorldFunction
+          Period: 300
+          Stat: Sum
+
+  #
+  # Cloudwatch Alarms
+  #
+
   HelloWorldFunctionTooManyRequestsAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -713,6 +859,9 @@ Resources:
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
 
+  #
+  # Certificates & Certificate Record
+  #
   HelloWorldCertificateRecord:
     Type: AWS::Route53::RecordSet
     Condition: IsNonDevEnvironment
@@ -730,9 +879,6 @@ Resources:
         DNSName: !GetAtt HelloWorldRestAPIDomainName.RegionalDomainName
         HostedZoneId: !GetAtt HelloWorldRestAPIDomainName.RegionalHostedZoneId
 
-  #
-  # Certificates
-  #
   ApiGatewayCertificate:
     Type: AWS::CertificateManager::Certificate
     Condition: IsNonDevEnvironment
