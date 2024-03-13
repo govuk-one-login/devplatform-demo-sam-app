@@ -323,8 +323,8 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
-        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
+        DNSName: !GetAtt RestApiGatewayOriginDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
   #RestApiGatewayDomainNameRecordSet:
