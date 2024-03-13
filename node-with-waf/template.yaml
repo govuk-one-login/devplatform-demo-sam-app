@@ -277,6 +277,14 @@ Resources:
           - .
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
+      SubjectAlternativeNames:
+        - !Join
+          - ''
+          - - origin.
+            - !Sub ${AWS::StackName}
+            - .
+            - !Ref Environment
+            - .platform.sandpit.account.gov.uk
       DomainValidationOptions:
         - DomainName: !Join
             - ''
@@ -388,7 +396,7 @@ Resources:
           - .
           - !Ref Environment
           - .platform.sandpit.account.gov.uk
-      RegionalCertificateArn: !Ref RestApiGatewayOriginCertificate
+      RegionalCertificateArn: !Ref RestApiGatewayCertificate
       EndpointConfiguration:
         Types:
           - REGIONAL
