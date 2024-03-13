@@ -288,49 +288,27 @@ Resources:
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
-  RestApiGatewayOldCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !Join
-        - ''
-        - - old.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      DomainValidationOptions:
-        - DomainName: !Join
-            - ''
-            - - old.
-              - !Sub ${AWS::StackName}
-              - .
-              - !Ref Environment
-              - .platform.sandpit.account.gov.uk
-          HostedZoneId: !ImportValue PlatformSandpitHostedZone
-      ValidationMethod: DNS
-      KeyAlgorithm: RSA_2048
-
-  RestApiGatewayOriginCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !Join
-        - ''
-        - - origin.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      DomainValidationOptions:
-        - DomainName: !Join
-            - ''
-            - - origin.
-              - !Sub ${AWS::StackName}
-              - .
-              - !Ref Environment
-              - .platform.sandpit.account.gov.uk
-          HostedZoneId: !ImportValue PlatformSandpitHostedZone
-      ValidationMethod: DNS
-      KeyAlgorithm: RSA_2048
+  #RestApiGatewayOriginCertificate:
+  #  Type: AWS::CertificateManager::Certificate
+  #  Properties:
+  #    DomainName: !Join
+  #      - ''
+  #      - - origin.
+  #        - !Sub ${AWS::StackName}
+  #        - .
+  #        - !Ref Environment
+  #        - .platform.sandpit.account.gov.uk
+  #    DomainValidationOptions:
+  #      - DomainName: !Join
+  #          - ''
+  #          - - origin.
+  #            - !Sub ${AWS::StackName}
+  #            - .
+  #            - !Ref Environment
+  #            - .platform.sandpit.account.gov.uk
+  #        HostedZoneId: !ImportValue PlatformSandpitHostedZone
+  #    ValidationMethod: DNS
+  #    KeyAlgorithm: RSA_2048
 
   AppOriginDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
@@ -345,26 +323,26 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: !GetAtt RestApiGatewayOriginDomainName.RegionalDomainName
-        HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
+        DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
-  RestApiGatewayDomainNameRecordSet:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      Name: !Join
-        - ''
-        - - old.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      Type: A
-      HostedZoneId: !ImportValue PlatformSandpitHostedZone
-      AliasTarget:
-        DNSName: !GetAtt RestApiGatewayOldDomainName.RegionalDomainName
-        HostedZoneId: !GetAtt RestApiGatewayOldDomainName.RegionalHostedZoneId
-        EvaluateTargetHealth: false
+  #RestApiGatewayDomainNameRecordSet:
+  #  Type: AWS::Route53::RecordSet
+  #  Properties:
+  #    Name: !Join
+  #      - ''
+  #      - - old.
+  #        - !Sub ${AWS::StackName}
+  #        - .
+  #        - !Ref Environment
+  #        - .platform.sandpit.account.gov.uk
+  #    Type: A
+  #    HostedZoneId: !ImportValue PlatformSandpitHostedZone
+  #    AliasTarget:
+  #      DNSName: !GetAtt RestApiGatewayOldDomainName.RegionalDomainName
+  #      HostedZoneId: !GetAtt RestApiGatewayOldDomainName.RegionalHostedZoneId
+  #      EvaluateTargetHealth: false
 
   CloudFrontDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
@@ -400,37 +378,37 @@ Resources:
           - REGIONAL
       SecurityPolicy: TLS_1_2
 
-  RestApiGatewayOriginDomainName:
-    Type: AWS::ApiGateway::DomainName
-    Properties:
-      DomainName: !Join
-        - ''
-        - - origin.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      RegionalCertificateArn: !Ref RestApiGatewayOriginCertificate
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      SecurityPolicy: TLS_1_2
+  #RestApiGatewayOriginDomainName:
+  #  Type: AWS::ApiGateway::DomainName
+  #  Properties:
+  #    DomainName: !Join
+  #      - ''
+  #      - - origin.
+  #        - !Sub ${AWS::StackName}
+  #        - .
+  #        - !Ref Environment
+  #        - .platform.sandpit.account.gov.uk
+  #    RegionalCertificateArn: !Ref RestApiGatewayOriginCertificate
+  #    EndpointConfiguration:
+  #      Types:
+  #        - REGIONAL
+  #    SecurityPolicy: TLS_1_2
 
-  RestApiGatewayOldDomainName:
-    Type: AWS::ApiGateway::DomainName
-    Properties:
-      DomainName: !Join
-        - ''
-        - - old.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      RegionalCertificateArn: !Ref RestApiGatewayOldCertificate
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      SecurityPolicy: TLS_1_2
+  #RestApiGatewayOldDomainName:
+  #  Type: AWS::ApiGateway::DomainName
+  #  Properties:
+  #    DomainName: !Join
+  #      - ''
+  #      - - old.
+  #        - !Sub ${AWS::StackName}
+  #        - .
+  #        - !Ref Environment
+  #        - .platform.sandpit.account.gov.uk
+  #    RegionalCertificateArn: !Ref RestApiGatewayOldCertificate
+  #    EndpointConfiguration:
+  #      Types:
+  #        - REGIONAL
+  #    SecurityPolicy: TLS_1_2
 
   ApiGatewayMappingV2:
     Type: AWS::ApiGatewayV2::ApiMapping
@@ -439,19 +417,19 @@ Resources:
       ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
 
-  OriginApiGatewayMappingV2:
-    Type: AWS::ApiGatewayV2::ApiMapping
-    Properties:
-      DomainName: !Ref RestApiGatewayOriginDomainName
-      ApiId: !Ref RestApiGateway
-      Stage: !Ref ApiGatewayStage
+  #OriginApiGatewayMappingV2:
+  #  Type: AWS::ApiGatewayV2::ApiMapping
+  #  Properties:
+  #    DomainName: !Ref RestApiGatewayOriginDomainName
+  #    ApiId: !Ref RestApiGateway
+  #    Stage: !Ref ApiGatewayStage
 
-  OldApiGatewayMappingV2:
-    Type: AWS::ApiGatewayV2::ApiMapping
-    Properties:
-      DomainName: !Ref RestApiGatewayOldDomainName
-      ApiId: !Ref RestApiGateway
-      Stage: !Ref ApiGatewayStage
+  #OldApiGatewayMappingV2:
+  #  Type: AWS::ApiGatewayV2::ApiMapping
+  #  Properties:
+  #    DomainName: !Ref RestApiGatewayOldDomainName
+  #    ApiId: !Ref RestApiGateway
+  #    Stage: !Ref ApiGatewayStage
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
@@ -597,7 +575,7 @@ Resources:
       Protocol: HTTP
       ProtocolVersion: HTTP1
       Matcher:
-        HttpCode: "200-499"
+        HttpCode: "200"
       TargetType: ip
       VpcId:
         Fn::ImportValue:
@@ -916,13 +894,13 @@ Resources:
           Value: govuk-one-login/devplatform-demo-sam-app/node-with-waf/template.yaml
 
 
-  #WAFv2ACLAssociation:
-  #  Type: AWS::WAFv2::WebACLAssociation
-  #  Properties:
-  #    ResourceArn: !Sub
-  #      - "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApiGateway}/stages/${ApiStage}"
-  #      - ApiStage: !Ref ApiGatewayStage #This is the hack to allow the API Gateway stage to be created before the association occurs.
-  #    WebACLArn: !ImportValue 'WAFv2ACLArn'
+  WAFv2ACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub
+        - "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApiGateway}/stages/${ApiStage}"
+        - ApiStage: !Ref ApiGatewayStage #This is the hack to allow the API Gateway stage to be created before the association occurs.
+      WebACLArn: !ImportValue 'WAFv2ACLArn'
 
   #WAFv2ACLLoadBalancerAssociation:
   #  Type: AWS::WAFv2::WebACLAssociation
