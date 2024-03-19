@@ -169,15 +169,19 @@ const logStats = () => {
 };
 
 setInterval(() => {
-  console.log({
-    ...logStats(),
-    event: "monitoring",
-  });
+  console.log(
+    JSON.stringify({
+      ...logStats(),
+      event: "monitoring",
+    })
+  );
 }, 20000);
 
 process.on("SIGTERM", () => {
-  console.log({
-    ...logStats(),
-    event: "shutdown-initiated",
-  });
+  console.log(
+    JSON.stringify({
+      ...logStats(),
+      event: "shutdown-initiated",
+    })
+  );
 });
