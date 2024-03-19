@@ -181,7 +181,16 @@ process.on("SIGTERM", () => {
   console.log(
     JSON.stringify({
       ...logStats(),
-      event: "shutdown-initiated",
+      event: "sigterm-shutdown",
+    })
+  );
+});
+
+process.on("SIGINT", () => {
+  console.log(
+    JSON.stringify({
+      ...logStats(),
+      event: "sigint-shutdown",
     })
   );
 });
