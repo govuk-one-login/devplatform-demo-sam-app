@@ -87,7 +87,7 @@ const { app, router } = setup({
       requestsInProgress += 1;
       requests.push({ timestamp: Date.now() });
       const start = Date.now();
-      res.on("finish", () => {
+      res.on("close", () => {
         requestsInProgress -= 1;
         const duration = Date.now() - start;
         responseTimes.push({
@@ -141,7 +141,7 @@ router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
 
 // --------- test logging
 
-const getAverageResponseTime = (seconds = 20) => {
+const getAverageResponseTime = (seconds = 10) => {
   const start = new Date(Date.now() - seconds * 1000);
   responseTimes = responseTimes.filter(({ timestamp }) => timestamp >= start);
   return (
@@ -151,7 +151,7 @@ const getAverageResponseTime = (seconds = 20) => {
   );
 };
 
-const getRequests = (seconds = 20) => {
+const getRequests = (seconds = 10) => {
   const start = new Date(Date.now() - seconds * 1000);
   requests = requests.filter(({ timestamp }) => timestamp >= start);
   return requests.length;
@@ -166,8 +166,8 @@ const logStats = () => {
         (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
         100
       ).toFixed(2) + "%",
-    newRequestsLast20Seconds: getRequests(),
-    averageResponseTimeLast20Seconds: `${getAverageResponseTime()}ms`,
+    newRequestsLast10Seconds: getRequests(),
+    averageResponseTimeLast10Seconds: `${getAverageResponseTime()}ms`,
     requestsInProgress,
   };
 };
@@ -179,7 +179,7 @@ const interval = setInterval(() => {
       event: "monitoring",
     })
   );
-}, 20000);
+}, 10000);
 
 process.on("SIGTERM", () => {
   clearInterval(interval);
