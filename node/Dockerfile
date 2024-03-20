@@ -37,4 +37,4 @@ HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1
 
 ENTRYPOINT ["tini", "--"]
 
-CMD ["npm", "start"]
+CMD ["node", "src/app.js"]

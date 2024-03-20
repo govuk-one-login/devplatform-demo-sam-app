@@ -168,7 +168,7 @@ const logStats = () => {
   };
 };
 
-setInterval(() => {
+const interval = setInterval(() => {
   console.log(
     JSON.stringify({
       ...logStats(),
@@ -178,19 +178,34 @@ setInterval(() => {
 }, 20000);
 
 process.on("SIGTERM", () => {
+  clearInterval(interval);
   console.log(
     JSON.stringify({
       ...logStats(),
       event: "sigterm-shutdown",
     })
   );
+  process.exit();
 });
 
 process.on("SIGINT", () => {
+  clearInterval(interval);
   console.log(
     JSON.stringify({
       ...logStats(),
       event: "sigint-shutdown",
     })
   );
+  process.exit();
+});
+
+process.on("exit", function (code) {
+  clearInterval(interval);
+  console.log(
+    JSON.stringify({
+      ...logStats(),
+      event: "kill-shutdown",
+    })
+  );
+  // process.exit();
 });
