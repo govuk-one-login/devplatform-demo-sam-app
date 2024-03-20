@@ -85,13 +85,14 @@ const { app, router } = setup({
   },
   middlewareSetupFn: (app) => {
     app.use((req, res, next) => {
+      requestsInProgress += 1;
       req.setTimeout(29000, () => {
         timedOutRequests += 1;
+        requestsInProgress -= 1;
       });
-      requestsInProgress += 1;
       requests.push({ timestamp: Date.now() });
       const start = Date.now();
-      res.on("close", () => {
+      res.on("finish", () => {
         requestsInProgress -= 1;
         const duration = Date.now() - start;
         responseTimes.push({
@@ -99,7 +100,6 @@ const { app, router } = setup({
           duration,
         });
       });
-      res.on("finish", () => {});
       next();
     });
 
