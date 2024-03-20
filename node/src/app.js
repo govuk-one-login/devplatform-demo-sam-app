@@ -166,8 +166,9 @@ const logStats = () => {
         (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
         100
       ).toFixed(2) + "%",
-    requestsStartedLast20Seconds: getRequests(),
+    newRequestsLast20Seconds: getRequests(),
     averageResponseTimeLast20Seconds: `${getAverageResponseTime()}ms`,
+    requestsInProgress,
   };
 };
 
