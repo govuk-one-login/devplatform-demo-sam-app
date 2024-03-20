@@ -56,6 +56,7 @@ const helmetConfig = require("ipv-cri-common-express/src/lib/helmet");
 
 let requests = [];
 let responseTimes = [];
+let requestsInProgress = 0;
 
 const { app, router } = setup({
   config: { APP_ROOT: __dirname },
@@ -83,9 +84,11 @@ const { app, router } = setup({
   },
   middlewareSetupFn: (app) => {
     app.use((req, res, next) => {
+      requestsInProgress += 1;
       requests.push({ timestamp: Date.now() });
       const start = Date.now();
       res.on("finish", () => {
+        requestsInProgress -= 1;
         const duration = Date.now() - start;
         responseTimes.push({
           timestamp: Date.now(),
@@ -163,7 +166,7 @@ const logStats = () => {
         (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) *
         100
       ).toFixed(2) + "%",
-    requestsLast20Seconds: getRequests(),
+    requestsStartedLast20Seconds: getRequests(),
     averageResponseTimeLast20Seconds: `${getAverageResponseTime()}ms`,
   };
 };
