@@ -296,28 +296,6 @@ Resources:
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
-  RestApiGatewayOriginCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: !Join
-        - ''
-        - - origin.
-          - !Sub ${AWS::StackName}
-          - .
-          - !Ref Environment
-          - .platform.sandpit.account.gov.uk
-      DomainValidationOptions:
-        - DomainName: !Join
-            - ''
-            - - origin.
-              - !Sub ${AWS::StackName}
-              - .
-              - !Ref Environment
-              - .platform.sandpit.account.gov.uk
-          HostedZoneId: !ImportValue PlatformSandpitHostedZone
-      ValidationMethod: DNS
-      KeyAlgorithm: RSA_2048
-
   AppOriginDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -335,23 +313,6 @@ Resources:
         HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
-  #RestApiGatewayDomainNameRecordSet:
-  #  Type: AWS::Route53::RecordSet
-  #  Properties:
-  #    Name: !Join
-  #      - ''
-  #      - - old.
-  #        - !Sub ${AWS::StackName}
-  #        - .
-  #        - !Ref Environment
-  #        - .platform.sandpit.account.gov.uk
-  #    Type: A
-  #    HostedZoneId: !ImportValue PlatformSandpitHostedZone
-  #    AliasTarget:
-  #      DNSName: !GetAtt RestApiGatewayOldDomainName.RegionalDomainName
-  #      HostedZoneId: !GetAtt RestApiGatewayOldDomainName.RegionalHostedZoneId
-  #      EvaluateTargetHealth: false
-
   CloudFrontDomainNameRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -364,9 +325,6 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        #DNSName: !GetAtt RestApiGatewayDomainName.RegionalDomainName
-        #HostedZoneId: !GetAtt RestApiGatewayDomainName.RegionalHostedZoneId
-        #EvaluateTargetHealth: false
         DNSName: 'd2o2zuxb4vdo1a.cloudfront.net'
         HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: false
@@ -402,22 +360,6 @@ Resources:
           - REGIONAL
       SecurityPolicy: TLS_1_2
 
-  #RestApiGatewayOldDomainName:
-  #  Type: AWS::ApiGateway::DomainName
-  #  Properties:
-  #    DomainName: !Join
-  #      - ''
-  #      - - old.
-  #        - !Sub ${AWS::StackName}
-  #        - .
-  #        - !Ref Environment
-  #        - .platform.sandpit.account.gov.uk
-  #    RegionalCertificateArn: !Ref RestApiGatewayOldCertificate
-  #    EndpointConfiguration:
-  #      Types:
-  #        - REGIONAL
-  #    SecurityPolicy: TLS_1_2
-
   ApiGatewayMappingV2:
     Type: AWS::ApiGatewayV2::ApiMapping
     Properties:
@@ -431,13 +373,6 @@ Resources:
       DomainName: !Ref RestApiGatewayOriginDomainName
       ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
-
-  #OldApiGatewayMappingV2:
-  #  Type: AWS::ApiGatewayV2::ApiMapping
-  #  Properties:
-  #    DomainName: !Ref RestApiGatewayOldDomainName
-  #    ApiId: !Ref RestApiGateway
-  #    Stage: !Ref ApiGatewayStage
 
   RestApiGatewayMethod:
     Type: AWS::ApiGateway::Method
@@ -910,11 +845,11 @@ Resources:
         - ApiStage: !Ref ApiGatewayStage #This is the hack to allow the API Gateway stage to be created before the association occurs.
       WebACLArn: !ImportValue 'WAFv2ACLArn'
 
-  #WAFv2ACLLoadBalancerAssociation:
-  #  Type: AWS::WAFv2::WebACLAssociation
-  #  Properties:
-  #    ResourceArn: !Ref ApplicationLoadBalancer
-  #    WebACLArn: !ImportValue 'WAFv2ACLArn'
+  WAFv2ACLLoadBalancerAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Ref ApplicationLoadBalancer
+      WebACLArn: !ImportValue 'WAFv2ACLArn'
 
 Outputs:
   ApiGatewayEndpoint:
