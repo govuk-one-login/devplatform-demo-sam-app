@@ -65,7 +65,7 @@ Resources:
             MetricName: XFFRateLimitWafRule
             SampledRequestsEnabled: true
         - Name: RateLimitOnMissingXFFHeader
-          Priority: 0
+          Priority: 1
           Action:
             Block: { }
           VisibilityConfig:
@@ -99,7 +99,7 @@ Resources:
       Scope: REGIONAL
       Rules:
         - Name: XFFHeaderRateLimitRuleGroup
-          Priority: 1
+          Priority: 7
           Statement:
             RuleGroupReferenceStatement:
               Arn: !GetAtt WAFv2RuleGroup.Arn
