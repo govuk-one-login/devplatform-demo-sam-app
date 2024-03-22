@@ -37,6 +37,60 @@ Mappings:
       CSLSEGRESS: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
 
 Resources:
+  WAFv2RuleGroup:
+    Type: AWS::WAFv2::RuleGroup
+    Properties:
+      Capacity: 5000
+      Description: SetRateLimitOnXFFHeader
+      Scope: REGIONAL
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: XFFRateLimitWafRuleGroup
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: RateLimitOnXFFHeader
+          Action:
+            Block: {}
+          Priority: 0
+          Statement:
+            RateBasedStatement:
+              AggregateKeyType: FORWARDED_IP
+              EvaluationWindowSec: 300
+              ForwardedIPConfig:
+                FallbackBehavior: MATCH
+                HeaderName: X-Forwarded-For
+              Limit: 100
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: XFFRateLimitWafRule
+            SampledRequestsEnabled: true
+        - Name: RateLimitOnMissingXFFHeader
+          Priority: 0
+          Action:
+            Block: { }
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitOnMissingXFFHeader
+          Statement:
+            RateBasedStatement:
+              Limit: 100
+              AggregateKeyType: CONSTANT
+              EvaluationWindowSec: 300
+              ScopeDownStatement:
+                NotStatement:
+                  Statement:
+                    SizeConstraintStatement:
+                      FieldToMatch:
+                        SingleHeader:
+                          Name: x-forwarded-for
+                      ComparisonOperator: GT
+                      Size: 0
+                      TextTransformations:
+                        - Priority: 0
+                          Type: NONE
+
+
   WAFv2ACL:
     Type: AWS::WAFv2::WebACL
     Properties:
@@ -44,6 +98,15 @@ Resources:
         Allow: {}
       Scope: REGIONAL
       Rules:
+        - Name: XFFHeaderRateLimitRuleGroup
+          Priority: 1
+          Statement:
+            RuleGroupReferenceStatement:
+              Arn: !GetAtt WAFv2RuleGroup.Arn
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: TRUE
+            MetricName: !Sub "${AWS::StackName}-XFFHeaderRateLimit-hits"
+            SampledRequestsEnabled: FALSE
         # Optional rule set to restrict to GDS IP addresses.
         # See WAFv2GDSIPSet resource further on.
         - Name: GDSIPs
@@ -182,8 +245,6 @@ Resources:
             SampledRequestsEnabled: true
             CloudWatchMetricsEnabled: true
             MetricName: !Sub '${AWS::StackName}-${Environment}-SQLinjection-ruleset-metric'
-
-
 
         - Name: RateBased-CountIpRule # WCU = 30 (estimated)
           Priority: 6
