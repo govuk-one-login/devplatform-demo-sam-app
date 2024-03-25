@@ -500,7 +500,7 @@ Resources:
             MetricName: HTTPCode_ELB_5XX_Count
             Dimensions:
               - Name: LoadBalancer
-                Value: !Ref ApplicationLoadBalancer
+                Value: !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
           Period: 60
           Stat: Sum
       - Id: m2
@@ -511,7 +511,7 @@ Resources:
             MetricName: RequestCount
             Dimensions:
             - Name: LoadBalancer
-              Value: !Ref ApplicationLoadBalancer
+              Value: !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
           Period: 60
           Stat: Sum       
 
