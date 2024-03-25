@@ -52,6 +52,7 @@ const sessionConfig = {
 };
 
 const helmetConfig = require("ipv-cri-common-express/src/lib/helmet");
+const { monitorMiddleware } = require("./lib/monitor");
 
 const { app, router } = setup({
   config: { APP_ROOT: __dirname },
@@ -78,6 +79,7 @@ const { app, router } = setup({
     cookie: { name: "lng" },
   },
   middlewareSetupFn: (app) => {
+    app.use(monitorMiddleware);
     app.use(setHeaders);
   },
   dev: true,
