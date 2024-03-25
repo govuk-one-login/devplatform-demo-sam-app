@@ -184,6 +184,8 @@ Resources:
               Value: !Ref ApiGateway
           Statistic: Maximum
         TargetValue: 1500
+        ScaleInCooldown: 180
+        ScaleOutCooldown: 60
 
           
 
