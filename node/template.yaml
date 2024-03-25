@@ -167,30 +167,30 @@ Resources:
       TargetTrackingScalingPolicyConfiguration:
         # Example of how to setup for targetTracking against a PredefinedMetric
         #
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ALBRequestCountPerTarget
-          ResourceLabel: !Join 
-            - '/'
-            - -  !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
-              - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
-        TargetValue: 2000
-        ScaleInCooldown: 180
-        ScaleOutCooldown: 120
+        # PredefinedMetricSpecification:
+        #   PredefinedMetricType: ALBRequestCountPerTarget
+        #   ResourceLabel: !Join 
+        #     - '/'
+        #     - -  !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
+        #       - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
+        # TargetValue: 2000
+        # ScaleInCooldown: 180
+        # ScaleOutCooldown: 120
         
         ## Example setup for using  CustomizedMetrics
         #
-        # CustomizedMetricSpecification:
-        #   Namespace: AWS/ApiGateway
-        #   MetricName: IntegrationLatency
-        #   Dimensions:
-        #     - Name: ApiId
-        #       Value: !Ref ApiGateway
-        #     - Name: Stage
-        #       Value: !Ref ApiDefaultStage
-        #   Statistic: Maximum
-        # TargetValue: 1500
-        # ScaleInCooldown: 180
-        # ScaleOutCooldown: 60
+        CustomizedMetricSpecification:
+          Namespace: AWS/ApiGateway
+          MetricName: IntegrationLatency
+          Dimensions:
+            - Name: ApiId
+              Value: !Ref ApiGateway
+            - Name: Stage
+              Value: !Ref ApiDefaultStage
+          Statistic: Maximum
+        TargetValue: 1500
+        ScaleInCooldown: 180
+        ScaleOutCooldown: 60
 
           
 
