@@ -167,7 +167,10 @@ Resources:
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: ALBRequestCountPerTarget
-          ResourceLabel: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
+          ResourceLabel: !Join 
+            - '/'
+            - -  !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
+              - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
         TargetValue: 400
 
   ContainerServiceSecurityGroup:
