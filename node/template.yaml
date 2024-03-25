@@ -175,13 +175,14 @@ Resources:
         #       - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
         # TargetValue: 1200
         CustomizedMetricSpecification:
-          Namespace: AWS/APIGateway
+          Namespace: AWS/ApiGateway
           MetricName: IntegrationLatency
           Dimensions:
-            - Name: Stage
-              Value: !Ref ApiDefaultStage
             - Name: ApiId
               Value: !Ref ApiGateway
+            - Name: Stage
+              Value: !Ref ApiDefaultStage
+            
           Statistic: Maximum
         TargetValue: 1500
         ScaleInCooldown: 180
