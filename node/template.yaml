@@ -140,7 +140,7 @@ Resources:
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
-      MaxCapacity: 3
+      MaxCapacity: 10
       MinCapacity: 1
       ResourceId: !Join
         - '/'
@@ -166,8 +166,9 @@ Resources:
       ServiceNamespace: ecs
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
-          PredefinedMetricTgiype: ECSServiceAverageCPUUtilization
-        TargetValue: 70
+          PredefinedMetricType: ALBRequestCountPerTarget
+          ResourceLabel: !Ref ApplicationLoadBalancerTargetGroup
+        TargetValue: 400
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -470,7 +471,7 @@ Resources:
 
   ## ECS Alarms
 
-   ELB5XX10PERCENTAlarm:
+  ELB5XX10PERCENTAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: >
