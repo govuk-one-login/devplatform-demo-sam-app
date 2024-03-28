@@ -63,6 +63,7 @@ const { app, router } = setup({
   helmet: helmetConfig,
   redis: SESSION_TABLE_NAME ? false : commonExpress.lib.redis(),
   urls: {
+    healthcheck: null,
     public: "/public",
   },
   publicDirs: ["../dist/public"],
@@ -84,6 +85,8 @@ const { app, router } = setup({
   },
   dev: true,
 });
+
+router.get("/healthcheck", require("./lib/healthcheck").middleware());
 
 setI18n({
   router,
