@@ -123,3 +123,8 @@ router.use("/oauth2", commonExpress.routes.oauth2);
 router.use("/toy", require("./app/toy"));
 
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
+
+
+const server = app.listen(8000)
+server.keepAliveTimeout = 65000; // Ensure all inactive connections are terminated by the ALB, by setting this a few seconds higher than the ALB idle timeout
+server.headersTimeout = 66000; // Ensure the headersTimeout is set higher than the keepAliveTimeout due to this nodejs regression bug: https://github.com/nodejs/node/issues/27363
