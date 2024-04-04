@@ -26,7 +26,7 @@ const {
   SESSION_TTL,
 } = require("./lib/config");
 
-const { setup } = require("hmpo-app");
+const { setup } = require("./shims/hmpo-app");
 
 const loggerConfig = {
   console: true,
