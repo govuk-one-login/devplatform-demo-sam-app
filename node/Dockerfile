@@ -1,4 +1,4 @@
-FROM node:18.12.1@sha256:e9ad817b0d42b4d177a4bef8a0aff97c352468a008c3fdb2b4a82533425480df AS builder
+FROM node:18.20.1@sha256:9f8f424027560a652e243fb8e3d03780397d00a3790cc5d4db74bfbfbdb69a05 AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npm run build
 
 RUN npm prune
 
-FROM node:18.12.1-alpine3.16@sha256:67373bd5d90ea600cb5f0fa58d7a5a4e6ebf50b6e05c50c1d1cc22df5134db43 AS final
+FROM node:18.20.1-alpine3.19@sha256:cbd31807a8b4621a9dea342a03f14e8c53f5ca78a395f426bb5bd0e7f071c47c AS final
 
 RUN ["apk", "--no-cache", "upgrade"]
 RUN ["apk", "add", "--no-cache", "tini"]
@@ -34,7 +34,7 @@ ENV NODE_ENV "production"
 ENV PORT 8000
 EXPOSE $PORT
 
-HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1  
+HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1
 
 ENTRYPOINT ["tini", "--"]
 
