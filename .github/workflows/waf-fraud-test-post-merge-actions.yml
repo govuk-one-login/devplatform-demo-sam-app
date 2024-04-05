@@ -1,4 +1,4 @@
-name: WAF for demo build and deploy
+name: WAF for fraud function test build and deploy
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - 'node-with-waf/WAFv2/**'
-      - '.github/workflows/waf-post-merge-actions.yml'
+      - '.github/workflows/waf-fraud-test-post-merge-actions.yml'
 
 defaults:
   run:
@@ -17,7 +17,6 @@ defaults:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: cloudfront-estimate
     timeout-minutes: 60
     permissions:
       id-token: write
@@ -39,7 +38,7 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.WAF_GH_ACTIONS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.WAF_FRAUD_TEST_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
 
       - name: SAM validate
@@ -51,6 +50,6 @@ jobs:
       - name: Deploy SAM app
         uses: govuk-one-login/devplatform-upload-action@v3.5
         with:
-          artifact-bucket-name: ${{ secrets.WAF_ARTIFACT_BUCKET_NAME }}
-          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          artifact-bucket-name: ${{ secrets.WAF_FRAUD_TEST_ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_FRAUD_TEST_NAME }}
           working-directory: ./node-with-waf/WAFv2/.aws-sam/build
