@@ -3,12 +3,6 @@ Description: >
   Demo CloudFront Distribution.
   Managed by dev-platform
 
-Parameters:
-  Environment:
-    Description: The name of the environment to deploy to.
-    Type: String
-    AllowedPattern: ((production)|(integration)|(staging)|(build)|(dev))
-
 Resources:
   FraudHeadersFunction:
     Type: AWS::CloudFront::Function
@@ -21,6 +15,9 @@ Resources:
           const txmaHeader = {};
 
           txmaHeader.timestamp = Date.now();
+          if("cloudfront-viewer-ja3-fingerprint" in headers){
+            txmaHeader.ja3Fingerprint = headers['cloudfront-viewer-ja3-fingerprint'];
+          }
           if("cloudfront-viewer-address" in headers){
             txmaHeader.ipAddressPort = headers['cloudfront-viewer-address'];
           }
@@ -40,12 +37,12 @@ Resources:
       FunctionConfig:
         Comment: Add TICF fraud headers
         Runtime: cloudfront-js-2.0
-      Name: !Sub "FraudHeadersFunction-${Environment}"
+      Name: "TiCFFraudHeadersFunction"
 
 Outputs:
   CloudfrontTICFFuncArn:
     Description: Cloudfront TICF Function Arn
-    Value: !GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
+    Value: Fn::GetAtt GetAtt FraudHeadersFunction.FunctionMetadata.FunctionARN
     Export:
-      Name: CloudfrontTICFFunctionArn
+      Name: CloudFrontTICFFunctionArn
 
