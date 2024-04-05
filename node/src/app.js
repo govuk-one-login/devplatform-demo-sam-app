@@ -26,7 +26,7 @@ const {
   SESSION_TTL,
 } = require("./lib/config");
 
-const { setup } = require("hmpo-app");
+const { setup } = require("./shims/hmpo-app");
 
 const loggerConfig = {
   console: true,
@@ -52,6 +52,7 @@ const sessionConfig = {
 };
 
 const helmetConfig = require("ipv-cri-common-express/src/lib/helmet");
+const { monitorMiddleware } = require("./lib/monitor");
 
 const { app, router } = setup({
   config: { APP_ROOT: __dirname },
@@ -62,6 +63,7 @@ const { app, router } = setup({
   helmet: helmetConfig,
   redis: SESSION_TABLE_NAME ? false : commonExpress.lib.redis(),
   urls: {
+    healthcheck: null,
     public: "/public",
   },
   publicDirs: ["../dist/public"],
@@ -78,10 +80,13 @@ const { app, router } = setup({
     cookie: { name: "lng" },
   },
   middlewareSetupFn: (app) => {
+    app.use(monitorMiddleware);
     app.use(setHeaders);
   },
   dev: true,
 });
+
+router.get("/healthcheck", require("./lib/healthcheck").middleware());
 
 setI18n({
   router,

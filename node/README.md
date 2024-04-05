@@ -8,6 +8,8 @@ This project contains source code and supporting files for a fargate application
 The application uses several AWS resources, including an API Gateway API. These resources are defined in the `template.yaml` file in this project.
 You can update the template to add AWS resources through the same deployment process that updates your application code.
 
+This application also includes an example of a frontend ECS canary deployment solution, for more information and an implamentaion guide please visit: [ECS - Canary Deployments Migration Guidance](https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3821732161/ECS+-+Canary+Deployments+Migration+Guidance)
+
 ## Deploy the sample application via Github Actions
 
 You can run the Github action with your BRANCH. The action is called "Node deploy using Environment secrets"
