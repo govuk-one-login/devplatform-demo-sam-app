@@ -33,6 +33,7 @@ jobs:
 
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v4
+
         with:
           role-to-assume: ${{ secrets.PARAMETERS_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2

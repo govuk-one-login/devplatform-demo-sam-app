@@ -5,8 +5,10 @@ on:
   push:
     branches:
       - main
+      - bau-cloudfront-estimate
     paths:
       - 'node-with-waf/**'
+      - '.github/workflows/cloudfront-estimate-post-merge-actions.yml'
 
 defaults:
   run:
