@@ -44,6 +44,17 @@ Conditions:
           - !Ref PipelineStackName
           - "none"
 
+  IsFraudTest:
+    Fn::Equals:
+      - !Ref AWS::AccountId
+      - '851725359076'
+
+  NotFraudTest:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref AWS::AccountId
+          - '851725359076'
+
 Mappings:
   # see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
   ElasticLoadBalancerAccountIds:
@@ -269,6 +280,7 @@ Resources:
 
 
   RestApiGatewayCertificate:
+    Condition: NotFraudTest
     Type: AWS::CertificateManager::Certificate
     Properties:
       DomainName: !Join
@@ -296,7 +308,21 @@ Resources:
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
+  FraudTestRestApiGatewayCertificate:
+    Condition: IsFraudTest
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: fraud-function.platform.build.account.gov.uk
+      SubjectAlternativeNames:
+        - origin.fraud-function.platform.sandpit.account.gov.uk
+      DomainValidationOptions:
+        - DomainName: fraud-function.platform.sandpit.account.gov.uk
+          HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
+      ValidationMethod: DNS
+      KeyAlgorithm: RSA_2048
+
   AppOriginDomainNameRecordSet:
+    Condition: NotFraudTest
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Join
@@ -313,7 +339,20 @@ Resources:
         HostedZoneId: !GetAtt RestApiGatewayOriginDomainName.RegionalHostedZoneId
         EvaluateTargetHealth: false
 
+  FraudTestAppOriginDomainNameRecordSet:
+    Condition: IsFraudTest
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: fraud-function.platform.sandpit.account.gov.uk
+      Type: A
+      HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
+      AliasTarget:
+        DNSName: !GetAtt FraudTestRestApiGatewayOriginDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt FraudTestRestApiGatewayOriginDomainName.RegionalHostedZoneId
+        EvaluateTargetHealth: false
+
   CloudFrontDomainNameRecordSet:
+    Condition: NotFraudTest
     Type: AWS::Route53::RecordSet
     Properties:
       Name: !Join
@@ -329,7 +368,20 @@ Resources:
         HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: false
 
+  #FraudTestCloudFrontDomainNameRecordSet:
+  #  Condition: IsFraudTest
+  #  Type: AWS::Route53::RecordSet
+  #  Properties:
+  #    Name: fraud-function.platform.sandpit.account.gov.uk
+  #    Type: A
+  #    HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
+  #    AliasTarget:
+  #      DNSName: 'd2o2zuxb4vdo1a.cloudfront.net' #DONT KNOW THIS YES
+  #      HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+  #      EvaluateTargetHealth: false
+
   RestApiGatewayDomainName:
+    Condition: NotFraudTest
     Type: AWS::ApiGateway::DomainName
     Properties:
       DomainName: !Join
@@ -344,7 +396,19 @@ Resources:
           - REGIONAL
       SecurityPolicy: TLS_1_2
 
+  FraudTestRestApiGatewayDomainName:
+    Condition: IsFraudTest
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: fraud-function.platform.sandpit.account.gov.uk
+      RegionalCertificateArn: !Ref FraudTestRestApiGatewayCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
   RestApiGatewayOriginDomainName:
+    Condition: NotFraudTest
     Type: AWS::ApiGateway::DomainName
     Properties:
       DomainName: !Join
@@ -360,17 +424,46 @@ Resources:
           - REGIONAL
       SecurityPolicy: TLS_1_2
 
+  FraudTestRestApiGatewayOriginDomainName:
+    Condition: IsFraudTest
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: origin.fraud-function.platform.sandpit.account.gov.uk
+      RegionalCertificateArn: !Ref FraudTestRestApiGatewayCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
   ApiGatewayMappingV2:
+    Condition: NotFraudTest
     Type: AWS::ApiGatewayV2::ApiMapping
     Properties:
       DomainName: !Ref RestApiGatewayDomainName
       ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
 
+  FraudTestApiGatewayMappingV2:
+    Condition: IsFraudTest
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      DomainName: !Ref FraudTestRestApiGatewayDomainName
+      ApiId: !Ref RestApiGateway
+      Stage: !Ref ApiGatewayStage
+
   OriginApiGatewayMappingV2:
+    Condition: NotFraudTest
     Type: AWS::ApiGatewayV2::ApiMapping
     Properties:
       DomainName: !Ref RestApiGatewayOriginDomainName
+      ApiId: !Ref RestApiGateway
+      Stage: !Ref ApiGatewayStage
+
+  FraudTestOriginApiGatewayMappingV2:
+    Condition: IsFraudTest
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      DomainName: !Ref FraudTestRestApiGatewayOriginDomainName
       ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
 
