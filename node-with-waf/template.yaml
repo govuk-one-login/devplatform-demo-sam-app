@@ -400,7 +400,7 @@ Resources:
     Condition: IsFraudTest
     Type: AWS::ApiGateway::DomainName
     Properties:
-      DomainName: fraud-function.platform.sandpit.account.gov.uk
+      DomainName: fraud-function.platform.build.account.gov.uk
       RegionalCertificateArn: !Ref FraudTestRestApiGatewayCertificate
       EndpointConfiguration:
         Types:
