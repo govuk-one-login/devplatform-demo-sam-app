@@ -479,8 +479,8 @@ Resources:
       ResourceId: !Ref RestProxyResource
       RestApiId: !Ref RestApiGateway
       AuthorizationType: NONE
-      #RequestParameters:
-      #  method.request.path.proxy: false
+      RequestParameters:
+        method.request.path.proxy: false
       #  method.request.header.x-forwarded-for: false
       #  method.request.header.txma-audit-encoded: true
       Integration:
@@ -489,8 +489,8 @@ Resources:
         ConnectionId:
           Fn::ImportValue:
             !Sub "${VpcStackName}-ApiGatewayVpcLinkId"
-        #RequestParameters:
-        #  integration.request.path.proxy: "method.request.path.proxy"
+        RequestParameters:
+          integration.request.path.proxy: "method.request.path.proxy"
         #  integration.request.header.x-forwarded-for: "method.request.header.x-forwarded-for"
         #  integration.request.header.txma-audit-encoded: "method.request.header.txma-audit-encoded"
         IntegrationHttpMethod: GET
