@@ -343,7 +343,7 @@ Resources:
     Condition: IsFraudTest
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: fraud-function.platform.build.account.gov.uk
+      Name: origin.fraud-function.platform.build.account.gov.uk
       Type: A
       HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
       AliasTarget:
@@ -368,17 +368,17 @@ Resources:
         HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: false
 
-  #FraudTestCloudFrontDomainNameRecordSet:
-  #  Condition: IsFraudTest
-  #  Type: AWS::Route53::RecordSet
-  #  Properties:
-  #    Name: fraud-function.platform.sandpit.account.gov.uk
-  #    Type: A
-  #    HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
-  #    AliasTarget:
-  #      DNSName: 'd2o2zuxb4vdo1a.cloudfront.net' #DONT KNOW THIS YES
-  #      HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
-  #      EvaluateTargetHealth: false
+  FraudTestCloudFrontDomainNameRecordSet:
+    Condition: IsFraudTest
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: fraud-function.platform.build.account.gov.uk
+      Type: A
+      HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
+      AliasTarget:
+        DNSName: 'dbgo3e3gff18u.cloudfront.net' #FROM DISTRIBUTION STACK
+        HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
+        EvaluateTargetHealth: false
 
   RestApiGatewayDomainName:
     Condition: NotFraudTest
