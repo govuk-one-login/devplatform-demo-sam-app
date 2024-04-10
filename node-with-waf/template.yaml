@@ -372,7 +372,7 @@ Resources:
     Condition: IsFraudTest
     Type: AWS::Route53::RecordSet
     Properties:
-      Name: fraud-function.platform.sandpit.account.gov.uk
+      Name: fraud-function.platform.build.account.gov.uk
       Type: A
       HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
       AliasTarget:
