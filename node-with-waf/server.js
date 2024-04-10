@@ -4,9 +4,9 @@ const port = 8000;
 const server = http.createServer(function (request, response) {
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json" );
-    if(request.headers.hasOwnProperty('txma-audit-encoded')) {
-        request.headers.txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
-    }
+    //if(request.headers.hasOwnProperty('txma-audit-encoded')) {
+        //request.headers.txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
+    //}
     const requestHeaders = JSON.stringify(request.headers);
     response.end(requestHeaders);
 });
