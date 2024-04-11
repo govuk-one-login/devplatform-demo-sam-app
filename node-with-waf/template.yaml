@@ -270,7 +270,9 @@ Resources:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApiGateway
-      StageName: !Sub "${AWS::StackName}-RestApiGatewayStage"
+      StageName: !Sub
+        - "${AWS::StackName}-RestApiGatewayStage-${StackId}"
+        - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
       StageDescription:
         CacheClusterEnabled: false
         # CacheClusterSize: 0.5
