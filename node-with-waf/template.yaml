@@ -519,9 +519,9 @@ Resources:
             comment: "API caching is not the programme approved way"
     Properties:
       DeploymentId: !Ref ApiGatewayDeployment
-      StageName: !Sub
-        - "${AWS::StackName}-RestApiGatewayStage-${StackId}"
-        - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
+      #StageName: !Sub
+      #  - "${AWS::StackName}-RestApiGatewayStage-${StackId}"
+      #  - StackId: !Select [2, !Split ['/', !Ref AWS::StackId]]
       RestApiId: !Ref RestApiGateway
       AccessLogSetting:
         DestinationArn: !GetAtt ApiGatewayAccessLogGroup.Arn
@@ -529,11 +529,11 @@ Resources:
       CacheClusterEnabled: false
       # CacheClusterSize: 0.5
       TracingEnabled: true
-      MethodSettings:
-        - ResourcePath: /
-          HttpMethod: GET
-          MetricsEnabled: 'true'
-          DataTraceEnabled: 'false'
+      #MethodSettings:
+      #  - ResourcePath: /
+      #    HttpMethod: GET
+      #    MetricsEnabled: 'true'
+      #    DataTraceEnabled: 'false'
 
   NetworkLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
