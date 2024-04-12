@@ -42,7 +42,7 @@ Resources:
     Properties:
       DefaultAction:
         Allow: {}
-      Scope: REGIONAL
+      Scope: CLOUDFRONT
       Rules:
         - Name: AWS-CRS
           Priority: 0

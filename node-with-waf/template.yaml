@@ -931,21 +931,6 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node-with-waf/template.yaml
 
-
-  WAFv2ACLAssociation:
-    Type: AWS::WAFv2::WebACLAssociation
-    Properties:
-      ResourceArn: !Sub
-        - "arn:aws:apigateway:${AWS::Region}::/restapis/${RestApiGateway}/stages/${ApiStage}"
-        - ApiStage: !Ref ApiGatewayStage #This is the hack to allow the API Gateway stage to be created before the association occurs.
-      WebACLArn: !ImportValue 'WAFv2ACLArn'
-
-  WAFv2ACLLoadBalancerAssociation:
-    Type: AWS::WAFv2::WebACLAssociation
-    Properties:
-      ResourceArn: !Ref ApplicationLoadBalancer
-      WebACLArn: !ImportValue 'WAFv2ACLArn'
-
 Outputs:
   ApiGatewayEndpoint:
     Description: The base ID for this application.
