@@ -198,7 +198,7 @@ Resources:
     Type: 'AWS::Logs::LogGroup'
     Properties:
       LogGroupName: !Sub 'aws-waf-logs-${AWS::StackName}-${Environment}-cloudWatchLog'
-      RetentionInDays: 180
+      RetentionInDays: 30
       KmsKeyId: !If
         - IsProdLikeEnvironment
         - !GetAtt WAFLoggingKmsKey.Arn

@@ -15,7 +15,7 @@ data "aws_cloudformation_stack" "aws-signer" {
 #    VpcStackName               = "vpc-node-app"
 #    IncludePromotion           = "No"
 #    # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-#    LogRetentionDays           = 7
+#    LogRetentionDays           = 30
 #    SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
 #    SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
 #    OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -38,7 +38,7 @@ data "aws_cloudformation_stack" "aws-signer" {
 #    VpcStackName               = "vpc-node-app"
 #    IncludePromotion           = "No"
 #    # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-#    LogRetentionDays           = 7
+#    LogRetentionDays           = 30
 #    SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
 #    SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
 #    OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -78,7 +78,7 @@ module "cloudfront-estimate-pipeline" {
     VpcStackName               = "vpc-node-app"
     IncludePromotion           = "No"
     # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-    LogRetentionDays           = 7
+    LogRetentionDays           = 30
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -101,7 +101,7 @@ module "dev-dns-pipeline" {
     VpcStackName               = "vpc-node-app"
     IncludePromotion           = "No"
     # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-    LogRetentionDays           = 7
+    LogRetentionDays           = 30
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -124,7 +124,7 @@ module "waf-pipeline" {
     VpcStackName               = "vpc-node-app"
     IncludePromotion           = "No"
     # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-    LogRetentionDays           = 7
+    LogRetentionDays           = 30
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -147,7 +147,7 @@ module "cloudfront-pipeline" {
     VpcStackName               = "vpc-node-app"
     IncludePromotion           = "No"
     # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-    LogRetentionDays           = 7
+    LogRetentionDays           = 30
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"
@@ -170,7 +170,7 @@ module "cloudfront-function-pipeline" {
     VpcStackName               = "vpc-node-app"
     IncludePromotion           = "No"
     # AWSOrganizationId          = data.aws_organizations_organization.gds.id
-    LogRetentionDays           = 7
+    LogRetentionDays           = 30
     SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
     SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
     OneLoginRepositoryName     = "devplatform-demo-sam-app"

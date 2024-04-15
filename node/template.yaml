@@ -731,7 +731,7 @@ Resources:
     Properties:
       KmsKeyId: !GetAtt KmsKey.Arn
       LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}-elasticache-replication-group-logs"
-      RetentionInDays: 1
+      RetentionInDays: 30
       Tags:
         - Key: Name
           Value: ApplicationElastiCacheCluster
@@ -802,7 +802,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}"
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt KmsKey.Arn
       Tags:
         - Key: Name

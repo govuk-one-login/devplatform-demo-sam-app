@@ -95,7 +95,7 @@ Resources:
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
       Tags:
         - Key: Product
