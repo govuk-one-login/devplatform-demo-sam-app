@@ -232,6 +232,8 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      RuntimePlatform:
+        CpuArchitecture: ARM64
       ContainerDefinitions:
         - Name: !Sub "${AWS::StackName}-node-server"
           Image: "CONTAINER-IMAGE-PLACEHOLDER"
