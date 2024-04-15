@@ -204,7 +204,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/ecs/${AWS::StackName}/server"
-      RetentionInDays: 1
+      RetentionInDays: 30
       KmsKeyId: !GetAtt LoggingKmsKey.Arn
 
   TaskExecutionRole:
@@ -475,7 +475,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/vendedlogs/${AWS::StackName}"
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt LoggingKmsKey.Arn
       Tags:
         - Key: Name

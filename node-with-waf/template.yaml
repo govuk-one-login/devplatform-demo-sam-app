@@ -733,7 +733,7 @@ Resources:
     Properties:
       KmsKeyId: !GetAtt KmsKey.Arn
       LogGroupName: node-with-waf-elasticache-replication-group-logs
-      RetentionInDays: 1
+      RetentionInDays: 30
       Tags:
         - Key: Name
           Value: ApplicationElastiCacheCluster
@@ -804,7 +804,7 @@ Resources:
   ApiGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt KmsKey.Arn
       Tags:
         - Key: Name
