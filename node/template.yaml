@@ -673,7 +673,6 @@ Resources:
         ECSClusterName: !Ref FargateCluster
         ECSServiceName: !GetAtt ContainerService.Name
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
-        LoadBalancerFullName: !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
@@ -688,6 +687,10 @@ Resources:
           - UseCodeSigning
           - !Ref CodeSigningConfigArn
           - "none"
+        CloudWatchAlarms: !Sub
+          - "${ELB5XXAlarm},${ELB4XXAnomalyAlarm}"
+          - ELB5XXAlarm: !Ref ELB5XXAlarm
+            ELB4XXAnomalyAlarm: !Ref ELB4XXAnomalyAlarm
 
   #
   #  ElastiCache
