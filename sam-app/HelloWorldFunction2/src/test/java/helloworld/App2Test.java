@@ -16,7 +16,7 @@ public class App2Test {
     String content = result.getBody();
     assertNotNull(content);
     assertTrue(content.contains("\"message\""));
-    assertTrue(content.contains("\"hello world\""));
+    assertTrue(content.contains("\"hello-world\""));
     assertTrue(content.contains("\"location\""));
   }
 }
