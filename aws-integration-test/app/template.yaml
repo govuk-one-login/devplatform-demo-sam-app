@@ -148,7 +148,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${EventHandlerLambda}"
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt LogsKey.Arn
       Tags:
         - Key: "Name"
@@ -333,7 +333,7 @@ Resources:
     Condition: UseTestRole
     Properties:
       LogGroupName: !Sub "/aws/lambda/${RecordProducerLambda}"
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt LogsKey.Arn
       Tags:
         - Key: "Name"
