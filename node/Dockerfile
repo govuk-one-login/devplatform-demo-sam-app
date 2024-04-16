@@ -10,32 +10,32 @@ RUN npm run build
 
 RUN npm prune
 
-# FROM node:18.20.2-alpine3.19@sha256:3bb0be4d2b8ff82fb25014db75686c1946bf4c51bd37a7e1208a7fc656988eba AS final
+FROM node:18.20.2-alpine3.19@sha256:3bb0be4d2b8ff82fb25014db75686c1946bf4c51bd37a7e1208a7fc656988eba AS final
 
-# RUN ["apk", "--no-cache", "upgrade"]
-# RUN ["apk", "add", "--no-cache", "tini"]
-# RUN ["apk", "add", "--no-cache", "curl"]
+RUN ["apk", "--no-cache", "upgrade"]
+RUN ["apk", "add", "--no-cache", "tini"]
+RUN ["apk", "add", "--no-cache", "curl"]
 
-# WORKDIR /app
+WORKDIR /app
 
-# # Copy in compile assets and deps from build container
-# COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/dist ./dist
-# COPY --from=builder /app/package.json ./
-# COPY --from=builder /app/package-lock.json ./
-# COPY --from=builder /app/src ./src
+# Copy in compile assets and deps from build container
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/src ./src
 
-# # Add in dynatrace layer
-# COPY --from=khw46367.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs / /
-# ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/arm64/liboneagentproc.so
-# ENV DT_LOGLEVELCON INFO
+# Add in dynatrace layer
+COPY --from=khw46367.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs / /
+ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/lib64/liboneagentproc.so
+ENV DT_LOGLEVELCON INFO
 
-# ENV NODE_ENV "production"
-# ENV PORT 8000
-# EXPOSE $PORT
+ENV NODE_ENV "production"
+ENV PORT 8000
+EXPOSE $PORT
 
-# HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1
 
-# ENTRYPOINT ["tini", "--"]
+ENTRYPOINT ["tini", "--"]
 
-# CMD ["node", "src/app.js"]
+CMD ["node", "src/app.js"]
