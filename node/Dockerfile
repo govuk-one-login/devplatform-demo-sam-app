@@ -1,11 +1,14 @@
 FROM node:18.20.2 AS builder
+ARG TARGETPLATFORM
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY linux /app/installer/linux
 COPY /src ./src
 
-RUN npm ci
+RUN "/app/installer/$TARGETPLATFORM.sh"
+RUN npm install
 RUN npm run build
 
 RUN npm prune
