@@ -149,7 +149,7 @@ Resources:
         - UseECSCanaryDeploymentStack
         - !Ref AWS::NoValue
         - !Ref TaskDefinition
-      # TaskDefinition: !Ref TaskDefinition
+      TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
@@ -691,6 +691,7 @@ Resources:
           - "${ELB5XXAlarm},${ELB4XXAnomalyAlarm}"
           - ELB5XXAlarm: !Ref ELB5XXAlarm
             ELB4XXAnomalyAlarm: !Ref ELB4XXAnomalyAlarm
+        InitialECSCanaryStack: "No"
 
   #
   # Logging
