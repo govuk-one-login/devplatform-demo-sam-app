@@ -1,4 +1,4 @@
-FROM node:18.20.2@sha256:726dd917226a1bb5cc431e61d2e068a2275056fbf890dddf26b4458a420da371 AS builder
+FROM node:18.20.2 AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npm run build
 
 RUN npm prune
 
-FROM node:18.20.2-alpine3.19@sha256:3bb0be4d2b8ff82fb25014db75686c1946bf4c51bd37a7e1208a7fc656988eba AS final
+FROM node:18.20.2-alpine3.19 AS final
 
 RUN ["apk", "--no-cache", "upgrade"]
 RUN ["apk", "add", "--no-cache", "tini"]
