@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY /src ./src
 
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 RUN npm prune
