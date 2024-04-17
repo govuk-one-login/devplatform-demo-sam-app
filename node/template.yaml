@@ -15,10 +15,10 @@ Parameters:
     Description: Asserts that lambdas are signed when deployed.
     Default: none
 
-  # PermissionsBoundary:
-  #   Description: "The ARN of the permissions boundary to apply when creating IAM roles"
-  #   Type: String
-  #   Default: "none"
+  PermissionsBoundary:
+    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Type: String
+    Default: "none"
 
   DeploymentStrategy:
     Description: "Predefined deployment configuration for ECS application"
@@ -65,11 +65,11 @@ Conditions:
           - !Ref CodeSigningConfigArn
           - "none"
 
-  # UsePermissionsBoundary:
-  #   Fn::Not:
-  #     - Fn::Equals:
-  #         - !Ref PermissionsBoundary
-  #         - "none"
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
 
   UseECSCanaryDeploymentStack:
     Fn::Not:
@@ -149,7 +149,7 @@ Resources:
         - UseECSCanaryDeploymentStack
         - !Ref AWS::NoValue
         - !Ref TaskDefinition
-      TaskDefinition: !Ref TaskDefinition
+      # TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
@@ -316,10 +316,10 @@ Resources:
                   - kms:Decrypt
                 Resource:
                   - arn:aws:kms:eu-west-2:216552277552:key/*
-      # PermissionsBoundary: !If
-      #   - UsePermissionsBoundary
-      #   - !Ref PermissionsBoundary
-      #   - !Ref AWS::NoValue
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskExecutionRole"
@@ -679,10 +679,8 @@ Resources:
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
-        # PermissionsBoundary: !If
-        #   - UsePermissionsBoundary
-        #   - !Ref PermissionsBoundary
-        #   - "none"
+        PermissionsBoundary: 
+          Fn::ImportValue: !Sub "${AWS::StackName}-ECSCanaryPermissionsBoundaryArn"
         CodeSigningConfigArn: !If
           - UseCodeSigning
           - !Ref CodeSigningConfigArn
