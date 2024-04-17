@@ -27,7 +27,7 @@ COPY --from=builder /app/src ./src
 
 # Add in dynatrace layer
 COPY --from=khw46367.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs / /
-ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/lib64/liboneagentproc.so
+ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/arm64/liboneagentproc.so
 ENV DT_LOGLEVELCON INFO
 
 ENV NODE_ENV "production"
