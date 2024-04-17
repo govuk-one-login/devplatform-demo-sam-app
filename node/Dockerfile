@@ -1,4 +1,4 @@
-FROM node:18.20.2 AS builder
+FROM node:21.7.3 AS builder
 ARG TARGETPLATFORM
 
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN npm run build
 
 RUN npm prune
 
-FROM node:18.20.2-alpine3.19 AS final
+FROM node:21.7.3-alpine3.19 AS final
 
 RUN ["apk", "--no-cache", "upgrade"]
 RUN ["apk", "add", "--no-cache", "tini"]
