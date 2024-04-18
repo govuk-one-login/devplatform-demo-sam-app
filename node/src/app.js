@@ -121,5 +121,5 @@ router.use(setAxiosDefaults);
 router.use("/oauth2", commonExpress.routes.oauth2);
 
 router.use("/toy", require("./app/toy"));
-
+console.log("Hello")
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
