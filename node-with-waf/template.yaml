@@ -967,7 +967,7 @@ Outputs:
       - restapi_id: !Ref RestApiGateway
         stage_name: !Ref ApiGatewayStage
     Export:
-      Name: !Sub "DefaultApiURL-${Environment}"
+      Name: !Sub "DefaultApiURL_WAF-${Environment}"
 
   DefaultApiDomain:
     Description: API DomainName
@@ -975,7 +975,7 @@ Outputs:
       - "${restapi_id}.execute-api.${AWS::Region}.amazonaws.com"
       - restapi_id: !Ref RestApiGateway
     Export:
-      Name: !Sub "DefaultApiDomainName-${Environment}"
+      Name: !Sub "DefaultApiDomainName_WAF-${Environment}"
 
   DefaultApiStage:
     Description: API Path
@@ -983,5 +983,5 @@ Outputs:
       - "/${stage_name}"
       - stage_name: !Ref ApiGatewayStage
     Export:
-      Name: !Sub "DefaultApiStage-${Environment}"
+      Name: !Sub "DefaultApiStage_WAF-${Environment}"
 
