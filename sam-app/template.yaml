@@ -711,8 +711,12 @@ Resources:
             Namespace: AWS/Lambda
             MetricName: Errors
             Dimensions:
+              - Name: Resource
+                Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
               - Name: FunctionName
                 Value: !Ref HelloWorldFunction
+              - Name: ExecutedVersion
+                Value: !GetAtt HelloWorldFunction.Version.Version
           Period: 60
           Stat: Sum
 
@@ -743,8 +747,12 @@ Resources:
             Namespace: AWS/ApiGateway
             MetricName: 4XXError
             Dimensions:
+              - Name: Resource
+                Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
               - Name: FunctionName
                 Value: !Ref HelloWorldFunction
+              - Name: ExecutedVersion
+                Value: !GetAtt HelloWorldFunction.Version.Version
           Period: 60
           Stat: Sum
 
@@ -774,8 +782,12 @@ Resources:
             Namespace: AWS/Lambda
             MetricName: Invocations
             Dimensions:
+              - Name: Resource
+                Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
               - Name: FunctionName
                 Value: !Ref HelloWorldFunction
+              - Name: ExecutedVersion
+                Value: !GetAtt HelloWorldFunction.Version.Version
           Period: 300
           Stat: Sum
 
@@ -793,8 +805,12 @@ Resources:
       Namespace: AWS/Lambda
       Statistic: Sum
       Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
         - Name: FunctionName
           Value: !Ref HelloWorldFunction
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorldFunction.Version.Version
       Period: 300
       EvaluationPeriods: 1
       DatapointsToAlarm: 1
@@ -812,8 +828,12 @@ Resources:
       Namespace: AWS/Lambda
       Statistic: Sum
       Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
         - Name: FunctionName
           Value: !Ref HelloWorldFunction
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorldFunction.Version.Version
       Period: 300
       EvaluationPeriods: 3
       DatapointsToAlarm: 3
@@ -831,8 +851,12 @@ Resources:
       Namespace: AWS/ApiGateway
       Statistic: Sum
       Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
         - Name: FunctionName
           Value: !Ref HelloWorldFunction
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorldFunction.Version.Version
       Period: 60
       EvaluationPeriods: 5
       DatapointsToAlarm: 5
@@ -850,8 +874,12 @@ Resources:
       Namespace: AWS/ApiGateway
       Statistic: Sum
       Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorldFunction}:HelloWorldFunction"
         - Name: FunctionName
           Value: !Ref HelloWorldFunction
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorldFunction.Version.Version
       Period: 60
       EvaluationPeriods: 5
       DatapointsToAlarm: 5
