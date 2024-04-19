@@ -10,7 +10,6 @@ defaults:
   run:
     shell: bash
     working-directory: ./node-with-waf
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
