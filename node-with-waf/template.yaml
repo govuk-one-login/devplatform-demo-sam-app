@@ -544,7 +544,7 @@ Resources:
       LoadBalancerArn:
         Fn::ImportValue:
           !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
-      Port: 80
+      Port: 8080
       Protocol: TCP
 
   NetworkLoadBalancerTargetGroup:
@@ -552,7 +552,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: !Sub "${AWS::StackName}-NLBTarGrp"
-      Port: 80
+      Port: 8080
       Protocol: TCP
       Targets:
         - Id: !Ref ApplicationLoadBalancer
