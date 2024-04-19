@@ -20,6 +20,12 @@ variable "allowed_accounts" {
     default = ""
 }
 
+variable "container_signer_kms_key_arn" {
+    type = string
+    description = "This is the ARN of the KMS key that signs container images built by GitHub Actions"
+    default = "none"
+}
+
 variable "signing_profile_arn" {
     type = string
     description = "The ARN of the signing profile to use for signing artifacts"
@@ -65,5 +71,23 @@ variable "demo_sam_app_artifact_source_bucket_event_trigger_role_arn" {
 variable "demo_sam_app_lambda_canary_deployment" {
     type = string
     description = "Canary strategy to be used with your Lambda applications"
+    default = "None"
+}
+
+variable "node_app_artifact_source_bucket_arn" {
+    type = string
+    description = "The ARN of the bucket to use as a pipeline source"
+    default = "none"
+}
+
+variable "node_app_artifact_source_bucket_event_trigger_role_arn" {
+    type = string
+    description = "The ARN of the IAM role assumed by upstream environment CloudWatch events, notifying any changes to the ArtifactSource bucket"
+    default = "none"
+}
+
+variable "node_app_ecs_canary_deployment" {
+    type = string
+    description = "Canary strategy to be used with your ECS application."
     default = "None"
 }
