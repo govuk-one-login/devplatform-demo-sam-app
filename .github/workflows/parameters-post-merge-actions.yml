@@ -23,13 +23,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.8"
 
       - name: Set up SAM cli
         uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true  # this caches installation but is only available on Linux x86-64 runners
 
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v4
