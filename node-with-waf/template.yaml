@@ -983,5 +983,5 @@ Outputs:
       - "/${stage_name}"
       - stage_name: !Ref ApiGatewayStage
     Export:
-      Name: !Sub "DefaultApiStage-${AWS::StackName}"
+      Name: !Sub "DefaultApiStage_WAF-${AWS::StackName}"
 
