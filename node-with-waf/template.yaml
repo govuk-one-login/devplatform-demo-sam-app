@@ -542,10 +542,9 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref NetworkLoadBalancerTargetGroup
       LoadBalancerArn:
-        !Ref ApplicationLoadBalancer
-        # Fn::ImportValue:
-        #   !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
-      Port: 80
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
+      Port: 81
       Protocol: TCP
 
   NetworkLoadBalancerTargetGroup:
