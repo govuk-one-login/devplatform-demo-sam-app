@@ -695,7 +695,6 @@ Resources:
 
   #
   #  ElastiCache
-  #
 
   # ApplicationCacheSubnetGroup:
   #   Type: AWS::ElastiCache::SubnetGroup
