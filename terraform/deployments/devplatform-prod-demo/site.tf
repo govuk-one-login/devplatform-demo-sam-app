@@ -25,3 +25,23 @@ module "logging_bucket" {
   bucket_name    = "devplatform-prod-demo-access-logs"
   enable_tls     = true
 }
+
+data "terraform_remote_state" "build" {
+  backend = "s3"
+
+  config = {
+    bucket = "devplatform-build-demo-tfstate"
+    key    = "account.tfstate"
+    region = "eu-west-2"
+  }
+}
+
+data "terraform_remote_state" "staging" {
+  backend = "s3"
+
+  config = {
+    bucket = "devplatform-staging-demo-tfstate"
+    key    = "account.tfstate"
+    region = "eu-west-2"
+  }
+}
