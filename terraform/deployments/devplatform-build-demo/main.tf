@@ -4,7 +4,35 @@ module "base-stacks" {
     allowed_accounts = "223594937353,092449966640"
 }
 
+module "vpc" {
+    source     = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/vpc?ref=on-failure-null-option"
+    stack_name = "vpc-node-app"
+    parameters = {
+        CidrBlock                         = "10.0.0.0/16"
+        AvailabilityZoneCount             = "2"
+        AccessLogsCustomBucketNameEnabled = "Yes"
+        DynatraceApiEnabled               = "Yes"
+        ECRApiEnabled                     = "Yes"
+        KMSApiEnabled                     = "Yes"
+        LogsApiEnabled                    = "Yes"
+        NlbCrossZoneEnabled               = "Yes"
+        SSMParametersStoreEnabled         = "Yes"
+        SecretsManagerApiEnabled          = "Yes" # pragma: allowlist secret
+        VpcLinkEnabled                    = "Yes"
+    }
+    on_failure = ""
+
+    tags_custom = {
+        System = "DevPlatform"
+    }
+}
+
 module "pipelines" {
+    depends_on = [
+        module.base-stacks,
+        module.vpc
+    ]
+
     source                                 = "../../modules/pipelines"
     environment                            = "build"
     allowed_accounts                       = "223594937353"

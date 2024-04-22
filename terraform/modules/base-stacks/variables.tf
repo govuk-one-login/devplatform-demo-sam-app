@@ -6,4 +6,5 @@ variable "environment" {
 variable "allowed_accounts" {
     type = string
     description = "Comma seperated list of accounts that can read the KMS Key"
+    default = ""
 }
