@@ -1,3 +1,9 @@
+module "base-stacks" {
+    source           = "../../modules/base-stacks"
+    environment      = "build"
+    allowed_accounts = "223594937353,092449966640"
+}
+
 module "pipelines" {
     source                                 = "../../modules/pipelines"
     environment                            = "build"

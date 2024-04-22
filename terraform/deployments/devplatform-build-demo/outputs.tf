@@ -1,3 +1,15 @@
+output "container_signer_kms_key_arn" {
+    value = module.base-stacks.container-signer_stack_outputs["ContainerSignerKmsKeyArn"]
+}
+
+output "signing_profile_arn" {
+    value = module.base-stacks.aws-signer_stack_outputs["SigningProfileArn"]
+}
+
+output "signing_profile_version_arn" {
+    value = module.base-stacks.aws-signer_stack_outputs["SigningProfileVersionArn"]
+}
+
 output "demo-sam-app-github_role_arn" {
     value = module.pipelines.demo-sam-app-github_role_arn
 }
