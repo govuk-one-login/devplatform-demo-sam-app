@@ -542,8 +542,9 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref NetworkLoadBalancerTargetGroup
       LoadBalancerArn:
-        Fn::ImportValue:
-          !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
+        !Ref ApplicationLoadBalancer
+        # Fn::ImportValue:
+        #   !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
       Port: 80
       Protocol: TCP
 
@@ -597,7 +598,7 @@ Resources:
         #  Value: "true"
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-ALB"
+          Value: !Sub "${AWS::StackName}-ApplicationLoadBalancer"
         - Key: Service
           Value: ci/cd
         - Key: Source
