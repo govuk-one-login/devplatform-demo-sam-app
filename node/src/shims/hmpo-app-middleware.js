@@ -191,6 +191,7 @@ const middleware = {
               console.log("Success", JSON.stringify(data));
             }
           });
+          console.log("Got this far, sucker!")
         }
         catch (error) {
           console.log(error);
