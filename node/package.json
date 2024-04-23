@@ -40,6 +40,7 @@
     "uglify-js": "3.17.4"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.556.0",
     "aws-sdk": "2.1502.0",
     "axios": "^1.6.2",
     "cfenv": "1.2.4",
