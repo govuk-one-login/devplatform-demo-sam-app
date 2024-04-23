@@ -1,16 +1,16 @@
 const nodeOS = require("os");
 
-const posix = require("posix");
-const limits = [
-  "core",
-  "cpu",
-  "data",
-  "fsize",
-  "nofile",
-  "nproc",
-  "stack",
-  "as",
-];
+// const posix = require("posix");
+// const limits = [
+//   "core",
+//   "cpu",
+//   "data",
+//   "fsize",
+//   "nofile",
+//   "nproc",
+//   "stack",
+//   "as",
+// ];
 
 const middleware = () => (req, res, next) => {
   let id = nodeOS.hostname();
@@ -21,10 +21,10 @@ const middleware = () => (req, res, next) => {
 
   let status = {
     endpoint: "/healthcheck",
-    posixLimits: limits.map((limit) => ({
-      id: limit,
-      value: posix.getrlimit(limit),
-    })),
+    // posixLimits: limits.map((limit) => ({
+    //   id: limit,
+    //   value: posix.getrlimit(limit),
+    // })),
     id: id,
     status: "OK",
     timestamp: Date.now(),

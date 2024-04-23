@@ -82,8 +82,9 @@ const { app, router } = setup({
     cookie: { name: "lng" },
   },
   middlewareSetupFn: (app) => {
-    app.use(monitorMiddleware);
+    //app.use(monitorMiddleware);
     app.use(setHeaders);
+    app.set("view engine", "njk");
   },
   dev: true,
 });
@@ -98,7 +99,7 @@ setI18n({
   },
 });
 
-app.set("view engine", "njk");
+
 
 setAPIConfig({
   app,
@@ -125,3 +126,6 @@ router.use("/oauth2", commonExpress.routes.oauth2);
 router.use("/toy", require("./app/toy"));
 
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
+
+
+module.exports = app
