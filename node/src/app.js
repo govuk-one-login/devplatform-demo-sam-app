@@ -5,6 +5,10 @@ const path = require("path");
 const session = require("express-session");
 const AWS = require("aws-sdk");
 const DynamoDBStore = require("connect-dynamodb")(session);
+// Create CloudWatch service object
+const cloudwatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
+const os = require("os");
+const containerName = os.hostname() 
 
 const commonExpress = require("ipv-cri-common-express");
 
@@ -123,3 +127,47 @@ router.use("/oauth2", commonExpress.routes.oauth2);
 router.use("/toy", require("./app/toy"));
 
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
+
+
+const server = app.listen(8000)
+server.keepAliveTimeout = 65000; // Ensure all inactive connections are terminated by the ALB, by setting this a few seconds higher than the ALB idle timeout
+server.headersTimeout = 66000; // Ensure the headersTimeout is set higher than the keepAliveTimeout due to this nodejs regression bug: https://github.com/nodejs/node/issues/27363
+
+// Push count every seconds
+schedule.scheduleJob('* * * * * *', () => {
+  return server.getConnections((error, count) => {
+      if (error) {
+          console.error('Error while trying to get server connections', error);
+          return;
+      }
+      
+      console.log(`Current opened connections count: ${count}`);
+      
+      const params = {
+          MetricData: [
+              {
+                  MetricName: 'HTTPConnections',
+                  Dimensions: [
+                      {
+                          Name: 'PerNodeId',
+                          Value: `${containerName}` 
+                          // Set here any dynamic and unique ID 
+                          // than can identify easily your running
+                          // node app, like its container ID
+                      },
+                  ],
+                  Unit: 'Count',
+                  Value: count
+              },
+          ],
+          Namespace: 'FEC/NodeApp'
+      };
+      //Make sure to set the IAM policy to allow pushing metrics
+      cloudwatch.putMetricData(params, (err) => {
+          if (err) {
+              console.error('Error while trying to push http connections metrics', err);
+          }
+      });
+      
+  });
+});
