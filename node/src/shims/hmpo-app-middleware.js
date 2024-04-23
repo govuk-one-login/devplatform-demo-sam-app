@@ -183,13 +183,18 @@ const middleware = {
 
         console.log(JSON.stringify(params));
         //Make sure to set the IAM policy to allow pushing metrics
-        cw.putMetricData(params, function (err, data) {
-          if (err) {
-            console.log("Error", err);
-          } else {
-            console.log("Success", JSON.stringify(data));
-          }
-        });
+        try {
+          cw.putMetricData(params, function (err, data) {
+            if (err) {
+              console.log("Error", err);
+            } else {
+              console.log("Success", JSON.stringify(data));
+            }
+          });
+        }
+        catch (error) {
+          console.log(error);
+        }
       });
     });
   },
