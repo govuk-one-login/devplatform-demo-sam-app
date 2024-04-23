@@ -4,9 +4,10 @@ module "base-stacks" {
 }
 
 module "vpc" {
-    source     = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/vpc?ref=on-failure-null-option"
-    stack_name = "vpc-node-app"
-    parameters = {
+    source       = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/vpc?ref=on-failure-null-option"
+    template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.amazonaws.com/vpc/template.yaml"
+    stack_name   = "vpc-node-app"
+    parameters   = {
         CidrBlock                         = "10.0.0.0/16"
         AvailabilityZoneCount             = "2"
         AccessLogsCustomBucketNameEnabled = "Yes"
@@ -19,10 +20,10 @@ module "vpc" {
         SecretsManagerApiEnabled          = "Yes" # pragma: allowlist secret
         VpcLinkEnabled                    = "Yes"
     }
-    on_failure = ""
+    on_failure   = ""
 
-    tags_custom = {
-        System = "DevPlatform"
+    tags_custom  = {
+        System   = "DevPlatform"
     }
 }
 
