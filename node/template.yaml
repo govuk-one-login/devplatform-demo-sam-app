@@ -317,6 +317,17 @@ Resources:
                   - kms:Decrypt
                 Resource:
                   - arn:aws:kms:eu-west-2:216552277552:key/*
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-TaskExecutionRole"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
