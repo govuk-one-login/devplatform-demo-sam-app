@@ -248,6 +248,7 @@ Resources:
   #
   # API Gateway
   #
+
   RestApiGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -606,7 +607,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckPort: 8000
-      HealthCheckProtocol: HTTPf
+      HealthCheckProtocol: HTTP
       HealthCheckPath: /test
       Port: 8000
       Protocol: HTTP
