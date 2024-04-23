@@ -271,6 +271,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
+      TaskRoleArn: !GetAtt TaskExecutionRole.Arn
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskDefinition"
