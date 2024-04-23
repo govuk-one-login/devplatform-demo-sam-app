@@ -55,6 +55,7 @@
     "hmpo-i18n": "6.0.1",
     "hmpo-logger": "7.0.1",
     "ipv-cri-common-express": "github:govuk-one-login/ipv-cri-common-express#v3.4.0",
+    "node-schedule": "^2.1.1",
     "nunjucks": "3.2.4",
     "posix": "^4.2.0"
   }
