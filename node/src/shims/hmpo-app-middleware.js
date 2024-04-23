@@ -11,8 +11,15 @@ const requiredArgument = (argName) => {
 
 // Create CloudWatch service object
 const cloudwatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
-const os = require("os");
-const containerName = os.hostname() 
+const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
+let containerName;
+
+fetch(metadata_uri)
+  .then(res => res.json())
+  .then(json => {
+    console.log(json);
+    containerName = json.TaskARN.split("/").slice(-1)
+  });
 const schedule = require('node-schedule');
 
 const middleware = {
