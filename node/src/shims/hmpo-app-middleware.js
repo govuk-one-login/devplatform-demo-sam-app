@@ -173,6 +173,8 @@ const middleware = {
           ],
           Namespace: "FEC/NodeApp",
         };
+
+        console.log(params);
         //Make sure to set the IAM policy to allow pushing metrics
         cloudwatch.putMetricData(params, (err) => {
           if (err) {
