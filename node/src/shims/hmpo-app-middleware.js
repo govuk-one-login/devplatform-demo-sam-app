@@ -10,7 +10,7 @@ const requiredArgument = (argName) => {
 };
 
 // Create CloudWatch service object
-const cloudwatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
+const cw = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
 const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
 let containerName;
 
@@ -183,14 +183,12 @@ const middleware = {
 
         console.log(JSON.stringify(params));
         //Make sure to set the IAM policy to allow pushing metrics
-        cloudwatch.putMetricData(params, (err, data) => {
+        cw.putMetricData(params, function (err, data) {
           if (err) {
-            console.error(
-              "Error while trying to push http connections metrics",
-              err
-            );
+            console.log("Error", err);
+          } else {
+            console.log("Success", JSON.stringify(data));
           }
-          console.log(data);
         });
       });
     });
