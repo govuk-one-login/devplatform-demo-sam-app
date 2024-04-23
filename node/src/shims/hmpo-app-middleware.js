@@ -14,7 +14,7 @@ const cloudwatch = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
 const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
 let containerName;
 
-fetch(metadata_uri)
+fetch(`${metadata_uri}/task`)
   .then(res => res.json())
   .then(json => {
     console.log(json);
