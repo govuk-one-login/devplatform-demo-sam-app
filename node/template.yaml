@@ -271,7 +271,7 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      TaskRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskDefinition"
@@ -317,6 +317,22 @@ Resources:
                   - kms:Decrypt
                 Resource:
                   - arn:aws:kms:eu-west-2:216552277552:key/*
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: PutMetricToCloudWatch
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
               - Effect: Allow
                 Action: 
                   - cloudwatch:PutMetricData
