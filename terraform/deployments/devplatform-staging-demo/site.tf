@@ -3,9 +3,10 @@ terraform {
 
   # Comment out when bootstrapping
   backend "s3" {
-    bucket = "devplatform-staging-demo-tfstate"
-    key    = "account.tfstate"
-    region = "eu-west-2"
+    bucket         = "devplatform-staging-demo-tfstate"
+    dynamodb_table = "devplatform-staging-demo-tfstate-lock-dynamodb"
+    key            = "account.tfstate"
+    region         = "eu-west-2"
   }
 }
 
@@ -14,10 +15,12 @@ provider "aws" {
 }
 
 module "state_bucket" {
-  source         = "git@github.com:govuk-one-login/ipv-terraform-modules//common/state-bucket-logging-tls?ref=state-bucket-org-access"
-  bucket_name    = "devplatform-staging-demo-tfstate"
-  logging_bucket = "devplatform-staging-demo-access-logs"
-  enable_tls     = true
+  source                       = "git@github.com:govuk-one-login/ipv-terraform-modules//common/state-bucket-logging-tls?ref=state-bucket-org-access"
+  bucket_name                  = "devplatform-staging-demo-tfstate"
+  logging_bucket               = "devplatform-staging-demo-access-logs"
+  enable_tls                   = true
+  enable_state_lock_dynamodb   = true
+  enable_org_level_read_access = true
 }
 
 module "logging_bucket" {
