@@ -1,25 +1,24 @@
 const path = require("path");
 const express = require("express");
 const logger = require("hmpo-app/lib/logger");
-const AWS = require("aws-sdk");
-// Set the region
-AWS.config.update({ region: "eu-west-2" });
+
+const { CloudWatchClient, PutMetricDataCommand } = require("@aws-sdk/client-cloudwatch"); // CommonJS import
 
 const requiredArgument = (argName) => {
   throw new Error(`Argument '${argName}' must be specified`);
 };
 
 // Create CloudWatch service object
-const cw = new AWS.CloudWatch({ apiVersion: "2010-08-01" });
+const client = new CloudWatchClient();
 const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
-let containerName;
+let containerName = 'AndyRafalTest'
 
-fetch(`${metadata_uri}/task`)
-  .then(res => res.json())
-  .then(json => {
-    console.log(json);
-    containerName = json.TaskARN.split("/").slice(-1)
-  });
+// fetch(`${metadata_uri}/task`)
+//   .then(res => res.json())
+//   .then(json => {
+//     console.log(json);
+//     containerName = json.TaskARN.split("/").slice(-1)
+//   });
 const schedule = require('node-schedule');
 
 const middleware = {
@@ -153,7 +152,7 @@ const middleware = {
 
     // Push count every seconds
     schedule.scheduleJob("* * * * * *", () => {
-      return server.getConnections((error, count) => {
+      return server.getConnections(async (error, count) => {
         if (error) {
           console.error("Error while trying to get server connections", error);
           return;
@@ -180,22 +179,9 @@ const middleware = {
           ],
           Namespace: "FEC/NodeApp",
         };
-
-        console.log(JSON.stringify(params));
-        //Make sure to set the IAM policy to allow pushing metrics
-        try {
-          cw.putMetricData(params, function (err, data) {
-            if (err) {
-              console.log("Error", err);
-            } else {
-              console.log("Success", JSON.stringify(data));
-            }
-          });
-          console.log("Got this far, sucker!")
-        }
-        catch (error) {
-          console.log(error);
-        }
+        const command = new PutMetricDataCommand(params);
+        await client.send(command);
+        
       });
     });
   },
