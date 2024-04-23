@@ -176,13 +176,14 @@ const middleware = {
 
         console.log(params);
         //Make sure to set the IAM policy to allow pushing metrics
-        cloudwatch.putMetricData(params, (err) => {
+        cloudwatch.putMetricData(params, (err, data) => {
           if (err) {
             console.error(
               "Error while trying to push http connections metrics",
               err
             );
           }
+          console.log(data);
         });
       });
     });
