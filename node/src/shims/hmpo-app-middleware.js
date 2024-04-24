@@ -159,7 +159,7 @@ const middleware = {
         }
 
         console.log(`Current opened connections count: ${count}`);
-        if (process.env.PUSH_METRICS) {
+        if (process.env.PUSH_METRICS == true) {
         const params = {
           MetricData: [
             {
