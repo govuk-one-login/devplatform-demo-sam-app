@@ -191,6 +191,9 @@ Resources:
           MetricName: HttpConnections
           Statistic: Average
           Namespace: FEC/NodeApp
+          Dimensions:
+            - Name: AppName
+              Value: node
         TargetValue: 30
 
   ContainerServiceSecurityGroup:

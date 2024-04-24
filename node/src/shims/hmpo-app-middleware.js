@@ -11,14 +11,14 @@ const requiredArgument = (argName) => {
 // Create CloudWatch service object
 const client = new CloudWatchClient();
 const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
-let containerName = 'nicktest'
+let containerName;
 
-// fetch(`${metadata_uri}/task`)
-//   .then(res => res.json())
-//   .then(json => {
-//     console.log(json);
-//     containerName = json.TaskARN.split("/").slice(-1)
-//   });
+fetch(`${metadata_uri}/task`)
+  .then(res => res.json())
+  .then(json => {
+    console.log(json);
+    containerName = json.TaskARN.split("/").slice(-1)
+  });
 const schedule = require('node-schedule');
 
 const middleware = {
@@ -188,6 +188,10 @@ const middleware = {
                   // than can identify easily your running
                   // node app, like its container ID
                 },
+                { 
+                  Name: "AppName",
+                  Value: "node"
+                }
               ],
               Unit: "Count",
               Value: responseTime,
