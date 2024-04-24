@@ -162,7 +162,7 @@ Resources:
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
-      MaxCapacity: 3
+      MaxCapacity: 20
       MinCapacity: 1
       ResourceId: !Join
         - '/'
@@ -256,7 +256,7 @@ Resources:
         Cooldown: 30
         MinAdjustmentMagnitude: 2
         StepAdjustments:
-          - MetricIntervalUpperBound: 800
+          - MetricIntervalLowerBound: 800
             ScalingAdjustment: -100
 
   ContainerStepScaleInAlarm:
