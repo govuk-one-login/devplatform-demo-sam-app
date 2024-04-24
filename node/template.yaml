@@ -222,7 +222,6 @@ Resources:
             ScalingAdjustment: 500
 
   ContainerStepScaleOutAlarm:
-    DependsOn: ContainerStepScaleOutPolicy
     Type: AWS::CloudWatch::Alarm
     Properties:
       ActionsEnabled: true
@@ -261,7 +260,6 @@ Resources:
             ScalingAdjustment: -1
 
   ContainerStepScaleInAlarm:
-    DependsOn: ContainerStepScaleInPolicy
     Type: AWS::CloudWatch::Alarm
     Properties:
       ActionsEnabled: true
@@ -355,7 +353,9 @@ Resources:
             - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
               - ':DT_CONNECTION_POINT::'
       Cpu: 1024
-      Memory: 2048
+      Memory: 4096
+      RuntimePlatform: 
+        CpuArchitecture: "ARM64"
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       Family: !Sub "${AWS::StackName}-server"
       NetworkMode: awsvpc
