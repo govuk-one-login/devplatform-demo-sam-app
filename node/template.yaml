@@ -173,12 +173,33 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
-  ContainerAutoScalingPolicy:
+  # ContainerAutoScalingPolicy:
+  #   DependsOn: ContainerAutoScalingTarget
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   Properties:
+  #     PolicyName: containerAutoScalingPolicy
+  #     PolicyType: TargetTrackingScaling
+  #     ResourceId: !Join
+  #       - '/'
+  #       - - "service"
+  #         - !Ref FargateCluster
+  #         - !GetAtt ContainerService.Name
+  #     ScalableDimension: ecs:service:DesiredCount
+  #     ServiceNamespace: ecs
+  #     TargetTrackingScalingPolicyConfiguration:
+  #       CustomizedMetricSpecification:
+  #         MetricName: ResponseTime
+  #         Statistic: Average
+  #         Namespace: FEC/NodeApp
+  #       TargetValue: 500
+
+
+  ContainerStepScaleOutPolicy:
     DependsOn: ContainerAutoScalingTarget
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
-      PolicyName: containerAutoScalingPolicy
-      PolicyType: TargetTrackingScaling
+      PolicyName: ContainerStepScaleOutPolicy
+      PolicyType: StepScaling
       ResourceId: !Join
         - '/'
         - - "service"
@@ -186,15 +207,37 @@ Resources:
           - !GetAtt ContainerService.Name
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
-      TargetTrackingScalingPolicyConfiguration:
-        CustomizedMetricSpecification:
-          MetricName: HttpConnections
-          Statistic: Average
-          Namespace: FEC/NodeApp
-          Dimensions:
-            - Name: AppName
-              Value: node
-        TargetValue: 30
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 30
+        MinAdjustmentMagnitude: 2
+        MetricAggregationType: Average
+        StepAdjustments:
+          - MetricIntervalLowerBound: 800 
+            MetricIntervalUpperBound: 1000
+            ScalingAdjustment: 200
+          - MetricIntervalLowerBound: 1000
+            MetricIntervalUpperBound: 1200
+            ScalingAdjustment: 300
+          - MetricIntervalLowerBound: 1200
+            ScalingAdjustment: 500
+  ContainerStepScaleOutAlarm:
+    DependsOn: ContainerStepScaleOutPolicy
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ContainerStepScaleOutPolicy
+      AlarmDescription: "ContainerStepScaleOutPolicyResponseTimeSlow"
+      ComparisonOperator: "GreaterThanThreshold"
+      DatapointsToAlarm: 1
+      Unit: "Count"
+      EvaluationPeriods: 2
+      MetricName: "ResponseTime"
+      Namespace: "FEC/NodeApp"
+      Statistic: "Average"
+      Period: 10
+      Threshold: 800
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
