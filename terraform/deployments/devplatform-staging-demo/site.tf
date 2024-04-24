@@ -20,7 +20,7 @@ module "state_bucket" {
   logging_bucket               = "devplatform-staging-demo-access-logs"
   enable_tls                   = true
   enable_state_lock_dynamodb   = true
-  enable_org_level_read_access = true
+  allowed_accounts             = "092449966640" # cross-account read access enabled only from di-devplatform-prod-demo
 }
 
 module "logging_bucket" {
