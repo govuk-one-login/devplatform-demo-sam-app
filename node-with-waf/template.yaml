@@ -327,6 +327,8 @@ Resources:
       DomainValidationOptions:
         - DomainName: fraud-function.platform.build.account.gov.uk
           HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
+        - DomainName: origin.fraud-function.platform.build.account.gov.uk
+          HostedZoneId: !ImportValue FraudFunctionPlatformBuildHostedZone
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
