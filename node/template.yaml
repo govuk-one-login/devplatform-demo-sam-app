@@ -187,9 +187,11 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
       TargetTrackingScalingPolicyConfiguration:
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ECSServiceAverageCPUUtilization
-        TargetValue: 70
+        CustomizedMetricSpecification:
+          MetricName: HttpConnections
+          Statistic: Average
+          Namespace: FEC/NodeApp
+        TargetValue: 30
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup

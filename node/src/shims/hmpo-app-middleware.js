@@ -1,7 +1,7 @@
 const path = require("path");
 const express = require("express");
 const logger = require("hmpo-app/lib/logger");
-
+const { getAverageResponseTime } = require('../lib/monitor')
 const { CloudWatchClient, PutMetricDataCommand } = require("@aws-sdk/client-cloudwatch"); // CommonJS import
 
 const requiredArgument = (argName) => {
@@ -11,14 +11,14 @@ const requiredArgument = (argName) => {
 // Create CloudWatch service object
 const client = new CloudWatchClient();
 const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
-let containerName;
+let containerName = 'nicktest'
 
-fetch(`${metadata_uri}/task`)
-  .then(res => res.json())
-  .then(json => {
-    console.log(json);
-    containerName = json.TaskARN.split("/").slice(-1)
-  });
+// fetch(`${metadata_uri}/task`)
+//   .then(res => res.json())
+//   .then(json => {
+//     console.log(json);
+//     containerName = json.TaskARN.split("/").slice(-1)
+//   });
 const schedule = require('node-schedule');
 
 const middleware = {
@@ -159,6 +159,8 @@ const middleware = {
         }
 
         console.log(`Current opened connections count: ${count}`);
+        let responseTimeActual = getAverageResponseTime()
+        let responseTime = isNaN(responseTimeActual) ? 0 : responseTimeActual;
 
         const params = {
           MetricData: [
@@ -176,9 +178,24 @@ const middleware = {
               Unit: "Count",
               Value: count,
             },
+            {
+              MetricName: "ResponseTime",
+              Dimensions: [
+                {
+                  Name: "PerNodeId",
+                  Value: `${containerName}`,
+                  // Set here any dynamic and unique ID
+                  // than can identify easily your running
+                  // node app, like its container ID
+                },
+              ],
+              Unit: "Count",
+              Value: responseTime,
+            },
           ],
           Namespace: "FEC/NodeApp",
         };
+        console.log(JSON.stringify(params))
         const command = new PutMetricDataCommand(params);
         await client.send(command);
         
