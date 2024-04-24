@@ -254,7 +254,6 @@ Resources:
       StepScalingPolicyConfiguration:
         AdjustmentType: ChangeInCapacity
         Cooldown: 30
-        MinAdjustmentMagnitude: 2
         StepAdjustments:
           - MetricIntervalUpperBound: 0
             ScalingAdjustment: -1
