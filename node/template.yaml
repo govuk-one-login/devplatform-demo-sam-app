@@ -353,8 +353,8 @@ Resources:
               - ':DT_CONNECTION_POINT::'
       Cpu: 1024
       Memory: 4096
-      RuntimePlatform: 
-        CpuArchitecture: "ARM64"
+      # RuntimePlatform: 
+      #   CpuArchitecture: "ARM64"
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       Family: !Sub "${AWS::StackName}-server"
       NetworkMode: awsvpc
