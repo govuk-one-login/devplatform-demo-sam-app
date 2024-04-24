@@ -174,7 +174,16 @@ const middleware = {
                   // than can identify easily your running
                   // node app, like its container ID
                 },
+                { 
+                  Name: "AppName",
+                  Value: "node"
+                }
               ],
+              Unit: "Count",
+              Value: count,
+            },
+            {
+              MetricName: "HTTPConnections",
               Unit: "Count",
               Value: count,
             },
@@ -193,6 +202,11 @@ const middleware = {
                   Value: "node"
                 }
               ],
+              Unit: "Count",
+              Value: responseTime,
+            },
+            {
+              MetricName: "ResponseTime",
               Unit: "Count",
               Value: responseTime,
             },
