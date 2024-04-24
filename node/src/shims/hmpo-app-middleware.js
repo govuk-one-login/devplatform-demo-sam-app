@@ -151,7 +151,7 @@ const middleware = {
     server.headersTimeout = 66000;
 
     // Push count every seconds
-    schedule.scheduleJob("* * * * * *", () => {
+    schedule.scheduleJob("* * * * * 10", () => {
       return server.getConnections(async (error, count) => {
         if (error) {
           console.error("Error while trying to get server connections", error);
