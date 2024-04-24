@@ -247,7 +247,6 @@ Resources:
 
   #
   # API Gateway
-  #
 
   RestApiGateway:
     Type: AWS::ApiGateway::RestApi
