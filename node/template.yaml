@@ -212,14 +212,15 @@ Resources:
         Cooldown: 30
         MinAdjustmentMagnitude: 2
         StepAdjustments:
-          - MetricIntervalLowerBound: 800 
-            MetricIntervalUpperBound: 1000
+          - MetricIntervalLowerBound: 0 
+            MetricIntervalUpperBound: 200
             ScalingAdjustment: 200
-          - MetricIntervalLowerBound: 1000
-            MetricIntervalUpperBound: 1200
+          - MetricIntervalLowerBound: 200
+            MetricIntervalUpperBound: 500
             ScalingAdjustment: 300
-          - MetricIntervalLowerBound: 1200
+          - MetricIntervalLowerBound: 500
             ScalingAdjustment: 500
+
   ContainerStepScaleOutAlarm:
     DependsOn: ContainerStepScaleOutPolicy
     Type: AWS::CloudWatch::Alarm
@@ -256,7 +257,7 @@ Resources:
         Cooldown: 30
         MinAdjustmentMagnitude: 2
         StepAdjustments:
-          - MetricIntervalLowerBound: 800
+          - MetricIntervalLowerBound: 0
             ScalingAdjustment: -100
 
   ContainerStepScaleInAlarm:
