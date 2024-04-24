@@ -253,12 +253,12 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
       StepScalingPolicyConfiguration:
-        AdjustmentType: PercentChangeInCapacity
+        AdjustmentType: ChangeInCapacity
         Cooldown: 30
         MinAdjustmentMagnitude: 2
         StepAdjustments:
           - MetricIntervalUpperBound: 0
-            ScalingAdjustment: -10
+            ScalingAdjustment: -1
 
   ContainerStepScaleInAlarm:
     DependsOn: ContainerStepScaleInPolicy
