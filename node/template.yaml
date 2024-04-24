@@ -143,17 +143,15 @@ Resources:
       Handler: serverless.handler
       Runtime: nodejs20.x
       MemorySize: 512
-      ReservedConcurrentExecutions: 800
+      ReservedConcurrentExecutions: 50
+      Role: !GetAtt TaskRole.Arn
       Architectures:
         - arm64
       Environment:
         Variables:
           SESSION_TABLE: !Ref SessionTable
           ENVIRONMENT: !Sub ${Environment}
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName:
-              !Ref SessionTable
+          PUSH_METRICS: true # To allow the push-metrics middleware
       Events:
         FunctionProxy:
           Type: Api
@@ -167,6 +165,8 @@ Resources:
             RestApiId: !Ref ExpressApi
             Path: "/"
             Method: ANY
+    # If you wanted to run this using the dockerfile instead, however it would need modifying to use
+    # the lambda handler as the CMD.
     #    PackageType: Image
     # Metadata:
     #   DockerTag: testfe
@@ -431,9 +431,17 @@ Resources:
               Service: ecs-tasks.amazonaws.com
             Action:
               - sts:AssumeRole
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
       Policies:
+        - PolicyName: DynamoDBSessionTable
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 
+                - dynamodb:*
+                Resource:
+                - !GetAtt SessionTable.Arn
+
         - PolicyName: PutMetricToCloudWatch
           PolicyDocument:
             Version: 2012-10-17

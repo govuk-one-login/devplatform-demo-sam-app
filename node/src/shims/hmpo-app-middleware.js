@@ -151,7 +151,7 @@ const middleware = {
     server.headersTimeout = 66000;
 
     // Push count every seconds
-    schedule.scheduleJob("* * * * * *", () => {
+    schedule.scheduleJob("* * * * * 5", () => {
       return server.getConnections(async (error, count) => {
         if (error) {
           console.error("Error while trying to get server connections", error);
@@ -159,7 +159,7 @@ const middleware = {
         }
 
         console.log(`Current opened connections count: ${count}`);
-
+        if (process.env.PUSH_METRICS) {
         const params = {
           MetricData: [
             {
@@ -181,7 +181,7 @@ const middleware = {
         };
         const command = new PutMetricDataCommand(params);
         await client.send(command);
-        
+      }
       });
     });
   },
