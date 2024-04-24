@@ -306,6 +306,14 @@ Resources:
               - !Ref Environment
               - .platform.sandpit.account.gov.uk
           HostedZoneId: !ImportValue PlatformSandpitHostedZone
+        - DomainName: !Join
+            - ''
+            - - origin.
+              - !Sub ${AWS::StackName}
+              - .
+              - !Ref Environment
+              - .platform.sandpit.account.gov.uk
+          HostedZoneId: !ImportValue PlatformSandpitHostedZone
       ValidationMethod: DNS
       KeyAlgorithm: RSA_2048
 
