@@ -209,7 +209,7 @@ Resources:
       ServiceNamespace: ecs
       StepScalingPolicyConfiguration:
         AdjustmentType: PercentChangeInCapacity
-        Cooldown: 30
+        Cooldown: 60 # To give time for the containers to spin up
         MinAdjustmentMagnitude: 2
         StepAdjustments:
           - MetricIntervalLowerBound: 0 
@@ -257,7 +257,7 @@ Resources:
         Cooldown: 30
         MinAdjustmentMagnitude: 2
         StepAdjustments:
-          - MetricIntervalLowerBound: 0
+          - MetricIntervalUpperBound: 0
             ScalingAdjustment: -100
 
   ContainerStepScaleInAlarm:
@@ -276,7 +276,7 @@ Resources:
       Namespace: "FEC/NodeApp"
       Statistic: "Maximum"
       Period: 10
-      Threshold: 800
+      Threshold: 600
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
