@@ -9,7 +9,7 @@ module "demo-sam-app" {
     IncludePromotion                        = var.include_promotion
     AllowedAccounts                         = var.allowed_accounts
     LogRetentionDays                        = 7
-    ContainerSignerKmsKeyArn                = "none"
+    ContainerSignerKmsKeyArn                = local.container_signer_kms_key_arn
     SigningProfileArn                       = local.signing_profile_arn
     SigningProfileVersionArn                = local.signing_profile_version_arn
     OneLoginRepositoryName                  = var.one_login_repository_name
