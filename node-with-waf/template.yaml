@@ -553,7 +553,7 @@ Resources:
       LoadBalancerArn:
         Fn::ImportValue:
           !Sub "${VpcStackName}-ApiGatewayVpcLinkTargetNLB"
-      Port: 81
+      Port: 80
       Protocol: TCP
 
   NetworkLoadBalancerTargetGroup:
