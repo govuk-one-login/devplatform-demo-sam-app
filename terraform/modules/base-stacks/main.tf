@@ -1,5 +1,5 @@
 module "aws-signer" {
-    count        = var.environment == "build" || var.environment == "dev" ? 1 : 0
+    count        = contains(["dev", "build"], var.environment) ? 1 : 0
     source       = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/aws-signer?ref=on-failure-null-option"
     template_url = var.aws-signer-template_url
     stack_name   = "signer"
@@ -15,7 +15,7 @@ module "aws-signer" {
 }
 
 module "container-signer" {
-    count        = var.environment == "build" || var.environment == "dev" ? 1 : 0
+    count        = contains(["dev", "build"], var.environment) ? 1 : 0
     source       = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/container-signer?ref=on-failure-null-option"
     template_url = var.container-signer-template_url
     stack_name   = "container-signer"

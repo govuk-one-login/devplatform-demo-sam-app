@@ -23,7 +23,8 @@ module "demo-sam-app" {
   on_failure = ""
 
   tags_custom = {
-    System = "DevPlatform"
+    System                 = "DevPlatform"
+    Environment            = var.environment
   }
 }
 
@@ -55,6 +56,7 @@ module "node-app" {
   on_failure = ""
 
   tags_custom = {
-    System = "DevPlatform"
+    System                 = "DevPlatform"
+    Environment            = var.environment
   }
 }
