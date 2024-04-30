@@ -35,6 +35,36 @@ Parameters:
     Type: "String"
     Default: "none"
 
+  VpcStackName:
+    Description: "The name of the VPC to deploy to"
+    Type: "String"
+    Default: "none"
+
+  PrivateSubnetA:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Private Subnet A Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
+
+  PrivateSubnetB:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Private Subnet B Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
+
+  VpcId: # Deprecated in favour of !ImportValue
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
+
+  VpcLinkId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Link Id
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
+
+  VpcCidr:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Vpc Cidr
+    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcCidr"
+
 Conditions:
   IsNonDevEnvironment:
     Fn::Not:
