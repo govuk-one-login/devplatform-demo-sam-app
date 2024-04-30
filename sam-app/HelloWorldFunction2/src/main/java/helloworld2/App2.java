@@ -33,8 +33,9 @@ public class App2 implements RequestHandler<APIGatewayProxyRequestEvent, APIGate
                     .withStatusCode(200)
                     .withBody(output);
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             return response
-                    .withBody("{}")
+                    .withBody("{nointernet}")
                     .withStatusCode(500);
         }
     }

@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Sample SAM Template for demo-sam-app.
+  Sample SAM Template for demo-sam-app
   Managed by dev-platform
 
 Parameters:
@@ -36,34 +36,8 @@ Parameters:
     Default: "none"
 
   VpcStackName:
-    Description: "The name of the VPC to deploy to"
+    Description: "The VPC stack name in the account"
     Type: "String"
-    Default: "none"
-
-  PrivateSubnetA:
-    Type: AWS::SSM::Parameter::Value<String>
-    Description: Private Subnet A Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetA"     # pragma: allowlist secret
-
-  PrivateSubnetB:
-    Type: AWS::SSM::Parameter::Value<String>
-    Description: Private Subnet B Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/PrivateSubnetB"     # pragma: allowlist secret
-
-  VpcId: # Deprecated in favour of !ImportValue
-    Type: AWS::SSM::Parameter::Value<String>
-    Description: Vpc Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcId"
-
-  VpcLinkId:
-    Type: AWS::SSM::Parameter::Value<String>
-    Description: Vpc Link Id
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcLinkId"
-
-  VpcCidr:
-    Type: AWS::SSM::Parameter::Value<String>
-    Description: Vpc Cidr
-    Default: "/PLACEHOLDER_VPC_STACK_NAME/VpcCidr"
 
 Conditions:
   IsNonDevEnvironment:
@@ -159,6 +133,10 @@ Resources:
           - id: "CKV_AWS_120"
             comment: "API caching is not the GDS approved way of caching in API Gateway"
     Properties:
+      EndpointConfiguration:
+        Type: REGIONAL
+        VPCEndpointIds: 
+          - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
       StageName: Prod
       AccessLogSetting:
         Format: "$context.requestId $context.httpMethod $context.path"
@@ -216,6 +194,31 @@ Resources:
       RestApiId: !Ref HelloWorldRestApi
       Stage: !Sub "${HelloWorldRestApi.Stage}"
 
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group to access the Lambda Functions
+      SecurityGroupEgress:
+        - DestinationSecurityGroupId:
+            Fn::ImportValue:  !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
+          Description: Allow outbound HTTPS traffic to AWS Services vpc endpoint security group
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: 0.0.0.0/0
+          Description: Allow outbound HTTPS traffic to Internet
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      SecurityGroupIngress:  
+        - CidrIp:
+            Fn::ImportValue: !Sub ${VpcStackName}-VpcCidr
+          Description: Allow inbound traffic from vpc cidr to port 443
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+      VpcId: 
+        Fn::ImportValue: !Sub ${VpcStackName}-VpcId
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
@@ -240,6 +243,13 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+        SecurityGroupIds:
+          - !GetAtt LambdaSecurityGroup.GroupId
+              
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref HelloWorldTable
@@ -272,9 +282,9 @@ Resources:
           - !Ref HelloWorldFunctionInvocationAnomalyAlarm
           - !Ref HelloWorldLambda4XXAnomalyAlarm
           - !Ref HelloWorldLambdaErrorAnomalyAlarm
-        Hooks:
-          PreTraffic: !Ref PreTrafficHook
-          PostTraffic: !Ref PostTrafficHook
+        # Hooks:
+        #   PreTraffic: !Ref PreTrafficHook
+        #   PostTraffic: !Ref PostTrafficHook
         Role: !GetAtt CodeDeployServiceRole.Arn
       Tags:
         Product: GOV.UK Sign In
@@ -284,7 +294,7 @@ Resources:
         Name: HelloWorldFunction
         Source: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
-
+      
   CodeDeployServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -337,6 +347,12 @@ Resources:
             Path: /hello2
             Method: get
             RestApiId: !Ref HelloWorldRestApi
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+        SecurityGroupIds:
+          - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -392,6 +408,12 @@ Resources:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
       ReservedConcurrentExecutions: 5
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+        SecurityGroupIds:
+          - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -447,6 +469,12 @@ Resources:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
       ReservedConcurrentExecutions: 5
+      VpcConfig:
+        SubnetIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+        SecurityGroupIds:
+          - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform

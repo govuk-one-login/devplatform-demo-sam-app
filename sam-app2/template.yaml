@@ -25,6 +25,10 @@ Parameters:
       - "staging"
       - "integration"
       - "production"
+  
+  VpcStackName:
+    Description: "The VPC stack name in the account"
+    Type: "String"
 
 Conditions:
   IsNonDevEnvironment:
@@ -110,6 +114,7 @@ Globals:
 
 
 Resources:
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       # checkov:skip=CKV_AWS_116: DLQ not required
