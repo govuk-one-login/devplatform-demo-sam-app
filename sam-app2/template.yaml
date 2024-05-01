@@ -11,13 +11,13 @@ Parameters:
     Default: "none"
 
   PermissionsBoundary:
-    Description: "The ARN of the permissions boundary to apply when creating IAM roles"
+    Description: The ARN of the permissions boundary to apply when creating IAM roles
     Type: String
     Default: "none"
 
   Environment:
-    Description: "The name of the environment to deploy to"
-    Type: "String"
+    Description: The name of the environment to deploy to
+    Type: String
     Default: dev
     AllowedValues:
       - "dev"
@@ -147,7 +147,7 @@ Resources:
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      RetentionInDays: 7
+      RetentionInDays: 30
       KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
       Tags:
         - Key: Product
@@ -378,7 +378,7 @@ Resources:
                         - Fn::Split:
                             - /
                             - Ref: AWS::StackId
-      RetentionInDays: 1
+      RetentionInDays: 30
       KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
       Tags:
         - Key: Service
