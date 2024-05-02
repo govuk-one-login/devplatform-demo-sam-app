@@ -264,6 +264,18 @@ Resources:
             - ''
             - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
               - ':DT_CONNECTION_POINT::'
+        - Name: !Sub "${AWS::StackName}-aws-otel-collector"
+          Image: "public.ecr.aws/aws-observability/aws-otel-collector:v0.38.2"
+          Essential: true
+          Command:
+            - "--config=/etc/ecs/ecs-cloudwatch.yaml"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: "/ecs/server"
+              awslogs-region: "eu-west-2"
+              awslogs-create-group: "true"
+              awslogs-stream-prefix: "ecs"
       Cpu: 1024
       Memory: 2048
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn

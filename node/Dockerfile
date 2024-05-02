@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY /src ./src
 
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 RUN npm prune
@@ -38,4 +38,4 @@ HEALTHCHECK CMD curl --fail http://localhost:8000/healthcheck || exit 1
 
 ENTRYPOINT ["tini", "--"]
 
-CMD ["node", "src/app.js"]
+CMD ["node", "--require", "./src/instrumentation.js", "src/app.js"]
