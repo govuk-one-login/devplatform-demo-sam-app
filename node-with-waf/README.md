@@ -1,4 +1,4 @@
-# The node-with-waf demo app has been depreciated
+# The node-with-waf demo app has been deprecated
 
 ## node-with-waf-fargate-app
 
