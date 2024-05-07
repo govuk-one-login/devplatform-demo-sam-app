@@ -1,4 +1,6 @@
-# sam-app3
+# The sam-app3 demo app has been deprecated
+
+## sam-app3
 
 This project contains an example container application with a ECS canary deployment template.
 It uses `TimeBasedLinear` configuration to shift traffic from one version of the deployment to the other.
