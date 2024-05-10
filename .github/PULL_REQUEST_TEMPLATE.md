@@ -1,9 +1,9 @@
 ## Description
 
 ### Ticket number
-[PLAT-XXX]
-## Checklist
+[PSREDP-XXX]
 
+## Checklist
 - [ ] I have tested this and added output to Jira
 **_Comment:_**
 
