@@ -222,14 +222,11 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
-    # checkov:skip=CKV_AWS_117: Internet access not required
     Metadata:
       checkov:
         skip:
           - id: "CKV_AWS_116"
             comment: "DLQ is not appropriate for a Lambda invoked by an API"
-          - id: "CKV_AWS_117"
-            comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction
       Handler: helloworld.App::handleRequest
@@ -245,8 +242,8 @@ Resources:
           PARAM1: VALUE
       VpcConfig:
         SubnetIds:
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdB"
         SecurityGroupIds:
           - !GetAtt LambdaSecurityGroup.GroupId
               
@@ -332,14 +329,11 @@ Resources:
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ is not appropriate for a Lambda invoked by an API
-    # checkov:skip=CKV_AWS_117: Internet access not required
     Metadata:
       checkov:
         skip:
           - id: "CKV_AWS_116"
             comment: "DLQ is not appropriate for a Lambda invoked by an API"
-          - id: "CKV_AWS_117"
-            comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction2
       Handler: helloworld2.App2::handleRequest
@@ -362,8 +356,8 @@ Resources:
             RestApiId: !Ref HelloWorldRestApi
       VpcConfig:
         SubnetIds:
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdB"
         SecurityGroupIds:
           - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
@@ -423,8 +417,8 @@ Resources:
       ReservedConcurrentExecutions: 5
       VpcConfig:
         SubnetIds:
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdB"
         SecurityGroupIds:
           - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
@@ -484,8 +478,8 @@ Resources:
       ReservedConcurrentExecutions: 5
       VpcConfig:
         SubnetIds:
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdA"
-          - Fn::ImportValue: !Sub "${VpcStackName}-ProtectedSubnetIdB"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdA"
+          - Fn::ImportValue: !Sub "${VpcStackName}-PublicSubnetIdB"
         SecurityGroupIds:
           - !GetAtt LambdaSecurityGroup.GroupId
       Tags:
