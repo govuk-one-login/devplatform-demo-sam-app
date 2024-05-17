@@ -5,6 +5,10 @@ Description: >
   Managed by dev-platform
 
 Parameters:
+  VpcStackName:
+    Description: "The VPC stack name in the account"
+    Type: "String"
+
   CodeSigningConfigArn:
     Type: String
     Description: Asserts that lambdas are signed when deployed.
@@ -120,6 +124,27 @@ Resources:
       FilterPattern: ""
       LogGroupName: !Ref APIGatewayAccessLogGroup
 
+  LambdaEgressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: >-
+        Permits outbound on port 443 from within the VPC to the internet.
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow to the wider internet on port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::ImportValue: !Sub "${VpcStackName}-VpcCidr"
+          Description: Allow ingress traffic from vpc cidr to port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
     # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
@@ -210,6 +235,14 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdB"
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref HelloWorldTable
@@ -223,6 +256,7 @@ Resources:
             TopicName: !Ref HelloWorldTopic
         - SQSSendMessagePolicy:
             QueueName: !Ref HelloWorldQueue
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -300,6 +334,16 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdB"
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
