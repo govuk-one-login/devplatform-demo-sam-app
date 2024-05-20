@@ -7,7 +7,7 @@ const server = http.createServer(function (request, response) {
     //if(request.headers.hasOwnProperty('txma-audit-encoded')) {
         //request.headers.txmaAuditDecoded = atob(request['headers']['txma-audit-encoded']);
     //}
-    if(request.url == 'giveme502'){
+        if(request.url == '/giveme502'){
         response.statusCode = 502
     }
     const requestHeaders = JSON.stringify(request.headers);
