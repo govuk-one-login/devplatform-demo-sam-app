@@ -1,7 +1,13 @@
 name: Cloudfront Estimate build and deploy
+run-name: Node-with-waf deploy using Environment secrets to ${{ inputs.environment }}
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run against'
+        type: environment
+        required: true
   push:
     branches:
       - main
