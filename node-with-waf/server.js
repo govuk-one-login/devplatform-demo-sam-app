@@ -7,6 +7,12 @@ const server = http.createServer(function (request, response) {
         response.statusCode = 502;
         response.setHeader('Content-Type', 'application/json');
         response.end(JSON.stringify({ error: 'Intentional 502 error: Bad Gateway' }));
+    } else if (request.url === '/giveme504') {
+        setTimeout(() => {
+            response.statusCode = 504;
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ error: 'Intential 504 error: Gateway Timeout' }));
+        }, 30000);
     } else {
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
