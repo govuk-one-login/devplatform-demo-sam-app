@@ -11,6 +11,13 @@ The application uses several AWS resources, including an REST API Gateway.
 These resources are defined in the `template.yaml` file in this project.
 You can update the template to add AWS resources through the same deployment process that updates your application code.
 
+## Alarm errors - API Endpoints
+
+The app now has 3 accessible endpoints (502, 503, 504). These errors are monitored in Cloudwatch https://github.com/govuk-one-login/devplatform-deploy/blob/617756839f5a83270b169269f5aec155d325ac8e/cloudfront-monitoring-alarm/template.yaml
+- ```/giveme502 ``` - will result in a 'Bad Gateway' error. 
+- ```/giveme503 ``` - will render the server unavailable for 60 seconds. Because of the timeout engineers who are using the app for testing will need to wait for the 60 seconds before making any subsequent calls to the app. 
+- ```/giveme504 ``` - will result in a 'Gateway Timeout' error. The app has a delay of 30 secons which is longer than the cloudFront timeout. 
+
 ## Deploy the sample application with the CLI
 
 - Follow the steps 1-3 of [How to deploy a container to Fargate with secure pipelines][1] docs to create a VPC, a pipeline and an ECR repo.
@@ -41,3 +48,4 @@ upload_to_s3 $ARTIFACT_BUCKET
 [1]: https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3107258369/How+to+deploy+a+container+to+Fargate+with+secure+pipelines
 [2]: /scripts/deployment_helper.sh
 [3]: ./WAFv2/template.yaml
+
