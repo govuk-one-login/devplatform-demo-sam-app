@@ -2,7 +2,15 @@ const http = require('http');
 const hostname = '0.0.0.0';
 const port = 8000;
 
+let serverAvailable = true;
+
 const server = http.createServer(function (request, response) {
+    if (!serverAvailable) {
+        response.statusCode = 503;
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ error: 'Service Unavailable' }));
+        return;
+    }
     if (request.url === '/giveme502') {
         response.statusCode = 502;
         response.setHeader('Content-Type', 'application/json');
@@ -28,3 +36,7 @@ server.listen(port, hostname, () => {
 server.on('error', (error) => {
     console.error('Server error:', error);
 });
+setTimeout(() => {
+    serverAvailable = false;
+    console.log('Server is now unavailable (503)');
+}, 60000);
