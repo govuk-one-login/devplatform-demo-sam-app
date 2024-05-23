@@ -648,7 +648,7 @@ Resources:
                comment: "Internet access not required"
         Properties:
           FunctionName: "BeforeAllowTrafficLambda-PLACEHOLDER_STACK_NAME"  # pragma: allowlist secret
-          Runtime: nodejs14.x
+          Runtime: nodejs18.x
           Policies:
             - AWSLambdaBasicExecutionRole
             - Statement:
