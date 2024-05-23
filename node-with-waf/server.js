@@ -12,7 +12,7 @@ const server = http.createServer(function (request, response) {
             response.statusCode = 504;
             response.setHeader('Content-Type', 'application/json');
             response.end(JSON.stringify({ error: 'Intential 504 error: Gateway Timeout' }));
-        }, 20000);
+        }, 30000);
     } else {
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
