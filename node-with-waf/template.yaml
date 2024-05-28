@@ -375,7 +375,7 @@ Resources:
       Type: A
       HostedZoneId: !ImportValue PlatformSandpitHostedZone
       AliasTarget:
-        DNSName: 'd1yo6vdag3pa0i.cloudfront.net'
+        DNSName: 'dk18webmna4x4.cloudfront.net'
         HostedZoneId: 'Z2FDTNDATAQYW2' #Always this for cloudfront
         EvaluateTargetHealth: false
 

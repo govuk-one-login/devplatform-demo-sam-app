@@ -70,7 +70,6 @@ module "cloudfront-estimate-ecr" {
 
 module "cloudfront-estimate-pipeline" {
   source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
-  template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "cloudfront-estimate-pipeline"
   parameters = {
     SAMStackName               = "cloudfront-estimate"
@@ -93,7 +92,6 @@ module "cloudfront-estimate-pipeline" {
 
 module "dev-dns-pipeline" {
   source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
-  template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "dev-dns-pipeline"
   parameters = {
     SAMStackName               = "dev-dns"
@@ -116,7 +114,6 @@ module "dev-dns-pipeline" {
 
 module "waf-pipeline" {
   source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
-  template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "waf-pipeline"
   parameters = {
     SAMStackName               = "waf"
@@ -139,7 +136,6 @@ module "waf-pipeline" {
 
 module "cloudfront-pipeline" {
   source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
-  template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "cloudfront-pipeline"
   parameters = {
     SAMStackName               = "cloudfront"
@@ -162,7 +158,6 @@ module "cloudfront-pipeline" {
 
 module "cloudfront-function-pipeline" {
   source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
-  template_url = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
   stack_name = "cloudfront-function-pipeline"
   parameters = {
     SAMStackName               = "cloudfront-function"
@@ -181,4 +176,42 @@ module "cloudfront-function-pipeline" {
   tags_custom = {
     System = "DevPlatform"
   }
+}
+
+module "node-ww-pipeline" {
+  source     = "git@github.com:govuk-one-login/ipv-terraform-modules//secure-pipeline/deploy-pipeline"
+  stack_name = "node-ww-pipeline"
+  parameters = {
+    SAMStackName               = "node-ww"
+    Environment                = "dev"
+    VpcStackName               = "node-ww-vpc"
+    IncludePromotion           = "No"
+    # AWSOrganizationId          = data.aws_organizations_organization.gds.id
+    LogRetentionDays           = 30
+    SigningProfileArn          = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileArn"]
+    SigningProfileVersionArn   = data.aws_cloudformation_stack.aws-signer.outputs["SigningProfileVersionArn"]
+    OneLoginRepositoryName     = "devplatform-demo-sam-app"
+    SlackNotificationType      = "Failures"
+    BuildNotificationStackName = "build-notifications"
+  }
+
+  tags_custom = {
+    System = "DevPlatform"
+  }
+}
+module "node-ww-ecr" {
+  source     = "git@github.com:govuk-one-login/ipv-terraform-modules.git//secure-pipeline/container-image-repository"
+  stack_name = "node-ww-ecr"
+  parameters = {
+    PipelineStackName = "node-ww-pipeline"
+    #AWSOrganizationId = data.aws_organizations_organization.gds.id
+  }
+
+  tags_custom = {
+    System = "DevPlatform"
+  }
+
+  depends_on = [
+    module.node-ww-pipeline
+  ]
 }

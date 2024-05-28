@@ -80,3 +80,12 @@ output "cloudfront-function-pipeline_stack_outputs" {
 output "cloudfront-function-pipeline_stack_tags" {
   value = module.cloudfront-function-pipeline.stack_tags
 }
+output "node-ww-pipeline_stack_id" {
+  value = module.node-ww-pipeline.stack_id
+}
+output "node-ww-pipeline_stack_outputs" {
+  value = module.node-ww-pipeline.stack_outputs
+}
+output "node-ww-pipeline_stack_tags" {
+  value = module.node-ww-pipeline.stack_tags
+}
