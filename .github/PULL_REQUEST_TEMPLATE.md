@@ -1,7 +1,7 @@
 ## Description
 
 ### Ticket number
-[PSREDP-XXX]
+[PSREDEV-XXX]
 
 ## Checklist
 - [ ] I have tested this and added output to Jira
