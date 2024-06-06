@@ -11,4 +11,4 @@ rules:
 parserPreset:
   parserOpts:
     # sets the prefix that references-empty will look for
-    issuePrefixes: ['PLAT-']
+    issuePrefixes: ['PSREDEV-', 'PLAT-']

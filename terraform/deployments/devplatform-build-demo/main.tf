@@ -52,6 +52,8 @@ module "pipelines" {
     demo_sam_app_lambda_canary_deployment  = "Canary10Percent5Minutes"
     demo_sam_app_test_image_repository_uri = "372033887444.dkr.ecr.eu-west-2.amazonaws.com/demo-sam-app-build-test-repository-testrunnerimagerepository-6uhsbtqym38k"
 
+    demo_sam_app2_pipeline_template_url    = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
+
     node_app_pipeline_template_url         = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
     node_app_ecs_canary_deployment         = "CodeDeployDefault.ECSCanary10Percent5Minutes"
     vpc_stack_name                         = "vpc-node-app"
