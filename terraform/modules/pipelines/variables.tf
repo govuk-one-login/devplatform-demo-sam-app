@@ -79,6 +79,23 @@ variable "demo_sam_app_lambda_canary_deployment" {
     default     = "None"
 }
 
+variable "demo_sam_app2_pipeline_template_url" {
+    type        = string
+    default     = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
+}
+
+variable "demo_sam_app2_artifact_source_bucket_arn" {
+    type        = string
+    description = "The ARN of the bucket to use as a pipeline source"
+    default     = "none"
+}
+
+variable "demo_sam_app2_artifact_source_bucket_event_trigger_role_arn" {
+    type        = string
+    description = "The ARN of the IAM role assumed by upstream environment CloudWatch events, notifying any changes to the ArtifactSource bucket"
+    default     = "none"
+}
+
 variable "node_app_pipeline_template_url" {
     type        = string
     default     = "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/sam-deploy-pipeline/template.yaml"
