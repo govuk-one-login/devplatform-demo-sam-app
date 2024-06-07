@@ -4,7 +4,7 @@ module "demo-sam-app" {
   stack_name   = "demo-sam-app-pipeline"
   parameters = {
     SAMStackName                            = "demo-sam-app"
-    VpcStackName                            = "none"
+    VpcStackName                            = var.vpc_stack_name
     Environment                             = var.environment
     IncludePromotion                        = var.include_promotion
     AllowedAccounts                         = var.allowed_accounts
