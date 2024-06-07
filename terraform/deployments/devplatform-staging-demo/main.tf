@@ -14,6 +14,8 @@ module "vpc" {
         CidrBlock                         = "10.0.0.0/16"
         AvailabilityZoneCount             = "2"
         AccessLogsCustomBucketNameEnabled = "Yes"
+        AllowedDomains                    = "checkip.amazonaws.com,checkip.check-ip.aws.a2z.com,checkip.eu-west-1.prod.check-ip.aws.a2z.com"
+        AllowRules                        = "pass tls $HOME_NET any -> $EXTERNAL_NET 443 (tls.sni; dotprefix; content:\".com\"; endswith; msg:\"Pass TLS to *.com\"; flow:established; sid:2001; rev:1;)"
         CloudWatchApiEnabled              = "Yes"
         DynatraceApiEnabled               = "Yes"
         ECRApiEnabled                     = "Yes"
