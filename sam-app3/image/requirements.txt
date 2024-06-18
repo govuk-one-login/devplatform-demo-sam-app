@@ -9,6 +9,6 @@ Jinja2==3.1.4
 MarkupSafe==2.1.2
 requests==2.32.2
 typing_extensions==4.5.0
-urllib3==1.26.18
+urllib3==1.26.19
 Werkzeug==3.0.3
 zipp==3.15.0
