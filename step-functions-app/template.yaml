@@ -99,8 +99,8 @@ Globals:
 Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-      # checkov:skip=CKV_AWS_116: DLQ not required
-      # checkov:skip=CKV_AWS_117: Internet access not required
+    # checkov:skip=CKV_AWS_116: DLQ not required
+    # checkov:skip=CKV_AWS_117: Internet access not required
     Metadata:
       checkov:
         skip:
@@ -180,7 +180,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "lambda:InvokeFunction"
-                Resource: "*"
+                Resource: !GetAtt StatesExecutionRole.Arn
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
