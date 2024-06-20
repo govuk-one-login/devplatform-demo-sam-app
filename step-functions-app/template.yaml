@@ -1,0 +1,199 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Sample SAM Template for sam-app2.
+  Managed by dev-platform
+
+Parameters:
+  CodeSigningConfigArn:
+    Type: String
+    Description: Asserts that lambdas are signed when deployed.
+    Default: "none"
+
+  PermissionsBoundary:
+    Description: The ARN of the permissions boundary to apply when creating IAM roles
+    Type: String
+    Default: "none"
+
+  Environment:
+    Description: The name of the environment to deploy to
+    Type: String
+    Default: dev
+    AllowedValues:
+      - "dev"
+      - "build"
+      - "staging"
+      - "integration"
+      - "production"
+
+Conditions:
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+  UseCodeSigning:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - "none"
+
+Mappings:
+  EnvironmentConfiguration:
+    dev:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+    build:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+    staging:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+    integration:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+    production:
+      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables      # pragma: allowlist secret
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    CodeSigningConfigArn: !If
+      - UseCodeSigning
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
+    Timeout: 20
+    Environment:
+      Variables:
+        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+        DT_CONNECTION_AUTH_TOKEN:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'           # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_CONNECTION_BASE_URL:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'             # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_CLUSTER_ID:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'                      # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_LOG_COLLECTION_AUTH_TOKEN:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'       # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_TENANT:
+          !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'                          # pragma: allowlist secret
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+    # https://govukverify.atlassian.net/wiki/spaces/Architecture/pages/3521183835/ADR+0082+Run+Lambda+functions+on+arm64+processor+architecture
+    Architectures:
+      - arm64
+    Layers:
+      - !Sub
+        - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}'                             # pragma: allowlist secret
+        - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    # checkov:skip=CKV_AWS_116: DLQ not required
+    # checkov:skip=CKV_AWS_117: Internet access not required
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_116"
+            comment: "DLQ not required"
+          - id: "CKV_AWS_117"
+            comment: "Internet access not required"
+    Properties:
+      CodeUri: HelloWorldFunction
+      AutoPublishAlias: LatestVersion
+      Handler: helloworld.App::handleRequest
+      Runtime: java11
+      MemorySize: 2048
+      ReservedConcurrentExecutions: 5
+      Tags:
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
+        Service: backend
+        Name: HelloWorldFunction
+        Source: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
+        CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+
+  AutoScalingHelloWorldScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
+    DependsOn: HelloWorldFunctionAliasLatestVersion
+    Properties:
+      MaxCapacity: 3
+      MinCapacity: 1
+      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency"
+      ServiceNamespace: lambda
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'LatestVersion'
+
+  HelloWorldLambdaAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    DependsOn: AutoScalingHelloWorldScalableTarget
+    Properties:
+      PolicyName: "hello-world-lambda-autoscaling-policy"
+      PolicyType: TargetTrackingScaling
+      ResourceId: !Join
+        - ':'
+        - - 'function'
+          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+          - 'LatestVersion'
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ServiceNamespace: lambda
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+        TargetValue: 0.7
+
+##### State Machine #####
+  
+  StatesExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: !GetAtt StatesExecutionRole.Arn
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+
+  HelloWorldStateMachine:
+    Type: "AWS::StepFunctions::StateMachine"
+    Properties:
+      Definition:
+        StartAt: HelloWorld
+        States:
+          HelloWorld:
+            Type: Task
+            Resource: !GetAtt HelloWorldFunction.Arn
+            End: true
+      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
