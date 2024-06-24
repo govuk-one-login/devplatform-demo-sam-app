@@ -280,6 +280,7 @@ Resources:
           PreTraffic: !Ref PreTrafficHook
           PostTraffic: !Ref PostTrafficHook
         Role: !GetAtt CodeDeployServiceRole.Arn
+        Enabled: true
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
