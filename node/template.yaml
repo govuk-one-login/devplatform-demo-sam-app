@@ -140,8 +140,8 @@ Resources:
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
-      MaxCapacity: 4
-      MinCapacity: 1
+      MaxCapacity: 24
+      MinCapacity: 3
       ResourceId: !Join
         - '/'
         - - "service"
@@ -164,33 +164,128 @@ Resources:
           - !GetAtt ContainerService.Name
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
-      TargetTrackingScalingPolicyConfiguration:
-        # Example of how to setup for targetTracking against a PredefinedMetric
-        #
-        # PredefinedMetricSpecification:
-        #   PredefinedMetricType: ALBRequestCountPerTarget
-        #   ResourceLabel: !Join 
-        #     - '/'
-        #     - -  !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
-        #       - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
-        # TargetValue: 2000
-        # ScaleInCooldown: 180
-        # ScaleOutCooldown: 120
+      # TargetTrackingScalingPolicyConfiguration:
+      #   # Example of how to setup for targetTracking against a PredefinedMetric
+      #   #
+      #   PredefinedMetricSpecification:
+      #     PredefinedMetricType: ALBRequestCountPerTarget
+      #     ResourceLabel: !Join 
+      #       - '/'
+      #       - -  !GetAtt ApplicationLoadBalancer.LoadBalancerFullName
+      #         - !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupFullName
+      #   TargetValue: 2000
+      #   ScaleInCooldown: 180
+      #   ScaleOutCooldown: 120
         
-        ## Example setup for using  CustomizedMetrics
-        #
-        CustomizedMetricSpecification:
-          Namespace: AWS/ApiGateway
-          MetricName: IntegrationLatency
-          Dimensions:
-            - Name: ApiId
-              Value: !Ref ApiGateway
-            - Name: Stage
-              Value: !Ref ApiDefaultStage
-          Statistic: Maximum
-        TargetValue: 1500
-        ScaleInCooldown: 180
-        ScaleOutCooldown: 60
+      #   ## Example setup for using  CustomizedMetrics
+      #   #
+      #   # CustomizedMetricSpecification:
+      #   #   Namespace: AWS/ApiGateway
+      #   #   MetricName: IntegrationLatency
+      #   #   Dimensions:
+      #   #     - Name: ApiId
+      #   #       Value: !Ref ApiGateway
+      #   #     - Name: Stage
+      #   #       Value: !Ref ApiDefaultStage
+      #   #   Statistic: Maximum
+      #   # TargetValue: 1500
+      #   ScaleInCooldown: 180
+      #   ScaleOutCooldown: 60
+
+  FrontStepScaleOutPolicy:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: StepScalingOutPolicy
+      PolicyType: StepScaling
+      ResourceId: !Join
+        - '/'
+        - - "service"
+          - !Ref FargateCluster
+          - !GetAtt ContainerService.Name
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 30
+        MinAdjustmentMagnitude: 3
+        StepAdjustments:
+          - MetricIntervalUpperBound: 20
+            ScalingAdjustment: 100
+          - MetricIntervalLowerBound: 20
+            MetricIntervalUpperBound: 30
+            ScalingAdjustment: 200
+          - MetricIntervalLowerBound: 30
+            MetricIntervalUpperBound: 35
+            ScalingAdjustment: 300
+          - MetricIntervalLowerBound: 35
+            ScalingAdjustment: 500
+
+  StepScaleInPolicy:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: StepScalingInPolicy
+      PolicyType: StepScaling
+      ResourceId: !Join
+        - '/'
+        - - "service"
+          - !Ref FargateCluster
+          - !GetAtt ContainerService.Name
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 180 # 3 minutes
+        StepAdjustments:
+          - MetricIntervalUpperBound: -40
+            ScalingAdjustment: -50
+
+  StepScaleOutAlarm:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref StepScaleOutPolicy
+      AlarmDescription: "CoreFrontClusterOver60PercentCPU"
+      ComparisonOperator: "GreaterThanThreshold"
+      DatapointsToAlarm: 1
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref FargateCluster
+        - Name: ServiceName
+          Value: !GetAtt ContainerService.Name
+      Unit: "Percent"
+      EvaluationPeriods: 1
+      MetricName: "CPUUtilization"
+      Namespace: "AWS/ECS"
+      Statistic: "Maximum"
+      Period: 60
+      Threshold: 60
+
+  StepStepScaleInAlarm:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref StepScaleInPolicy
+      AlarmDescription: "CoreFrontClusterUnder60PercentCPU"
+      ComparisonOperator: "LessThanThreshold"
+      DatapointsToAlarm: 5
+      Dimensions:
+        - Name: ClusterName
+          Value: !Ref FargateCluster
+        - Name: ServiceName
+          Value: !GetAtt ContainerService.Name
+      Unit: "Percent"
+      EvaluationPeriods: 5
+      MetricName: "CPUUtilization"
+      Namespace: "AWS/ECS"
+      Statistic: "Maximum"
+      Period: 40
+      Threshold: 40
 
           
 
