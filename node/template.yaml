@@ -238,7 +238,7 @@ Resources:
         Cooldown: 180 # 3 minutes
         StepAdjustments:
           - MetricIntervalLowerBound: -40
-            MetricIntervalUpperBound: 0
+            MetricIntervalUpperBound: -35
             ScalingAdjustment: -50
           - MetricIntervalUpperBound: 0
             ScalingAdjustment: -10
