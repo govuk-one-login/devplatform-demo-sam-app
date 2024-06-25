@@ -1,0 +1,21 @@
+{
+  "name": "step-functions-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "HelloWorldTriggerFunction/trigger-function.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "@types/aws-lambda": "8.10.102",
+    "@types/aws-sdk": "2.7.0"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "@aws-sdk/client-sfn": "3.592.0",
+    "@aws-sdk/client-sqs": "3.592.0"
+  }
+}
