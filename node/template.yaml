@@ -192,7 +192,7 @@ Resources:
       #   ScaleInCooldown: 180
       #   ScaleOutCooldown: 60
 
-  FrontStepScaleOutPolicy:
+  StepScaleOutPolicy:
     DependsOn: ContainerAutoScalingTarget
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
