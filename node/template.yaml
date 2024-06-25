@@ -240,7 +240,8 @@ Resources:
           - MetricIntervalLowerBound: -40
             MetricIntervalUpperBound: -35
             ScalingAdjustment: -50
-          - MetricIntervalUpperBound: 0
+          - MetricIntervalLowerBound: -35
+            MetricIntervalUpperBound: 0
             ScalingAdjustment: -10
 
   StepScaleOutAlarm:
