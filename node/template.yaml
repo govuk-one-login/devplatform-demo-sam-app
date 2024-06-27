@@ -713,10 +713,8 @@ Resources:
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
-        PermissionsBoundary: !If
-          - UsePermissionsBoundary
-          - !Ref PermissionsBoundary
-          - "none"
+        PermissionsBoundary: 
+          Fn::ImportValue: !Sub "${AWS::StackName}-ECSCanaryPermissionsBoundaryArn"
         CodeSigningConfigArn: !If
           - UseCodeSigning
           - !Ref CodeSigningConfigArn
