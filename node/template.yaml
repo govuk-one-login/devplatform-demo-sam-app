@@ -125,30 +125,31 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref FargateCluster
-      LaunchType: FARGATE
+      # LaunchType: FARGATE
       DeploymentController:
-        Type: !If
-          - UseECSCanaryDeploymentStack
-          - CODE_DEPLOY
-          - ECS
-      LoadBalancers:
-        - ContainerName: !Sub "${AWS::StackName}-node-server"
-          ContainerPort: 8000
-          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          SecurityGroups:
-            - !GetAtt ContainerServiceSecurityGroup.GroupId
-          Subnets:
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdA"
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdB"
-      PropagateTags: SERVICE
-      TaskDefinition: !If
-        - UseECSCanaryDeploymentStack
-        - !Ref AWS::NoValue
-        - !Ref TaskDefinition
+        # Type: !If
+        #   - UseECSCanaryDeploymentStack
+        #   - CODE_DEPLOY
+        #   - ECS
+        Type: EXTERNAL
+      # LoadBalancers:
+      #   - ContainerName: !Sub "${AWS::StackName}-node-server"
+      #     ContainerPort: 8000
+      #     TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      # NetworkConfiguration:
+      #   AwsvpcConfiguration:
+      #     SecurityGroups:
+      #       - !GetAtt ContainerServiceSecurityGroup.GroupId
+      #     Subnets:
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdA"
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdB"
+      # PropagateTags: SERVICE
+      # TaskDefinition: !If
+      #   - UseECSCanaryDeploymentStack
+      #   - !Ref AWS::NoValue
+      #   - !Ref TaskDefinition
       # TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
@@ -158,6 +159,39 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
     DependsOn: ApplicationLoadBalancerListener
+  
+  BlueTaskSet:
+    Type: AWS::ECS::TaskSet
+    Properties:
+      Cluster: !Ref FargateCluster
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsVpcConfiguration:
+          SecurityGroups:
+            - !GetAtt ContainerServiceSecurityGroup.GroupId
+          Subnets:
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
+      Service: !Ref ContainerService
+      TaskDefinition: !Ref TaskDefinition
+      Scale:
+        Unit: PERCENT
+        Value: 100
+      LoadBalancers:
+        - ContainerName: !Sub "${AWS::StackName}-node-server"
+          ContainerPort: 8000
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+  
+  PrimaryTaskSet:
+    Type: AWS::ECS::PrimaryTaskSet
+    Properties:
+      Cluster: !Ref FargateCluster
+      Service: !Ref ContainerService
+      TaskSetId: !GetAtt
+        - BlueTaskSet
+        - Id
 
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
