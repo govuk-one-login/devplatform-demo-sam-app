@@ -180,7 +180,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "lambda:InvokeFunction"
-                Resource: !GetAtt StatesExecutionRole.Arn
+                Resource: !GetAtt HelloWorldFunction.Arn
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
