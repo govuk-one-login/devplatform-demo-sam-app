@@ -8,8 +8,6 @@ module.exports = {
     next: "intro",
   },
   "/intro": {
-    resetJourney: true,
-    entryPoint: true,
     next: "choose-favourite",
   },
   "/choose-favourite": {
