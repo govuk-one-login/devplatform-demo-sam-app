@@ -1,10 +1,25 @@
 const path = require("path");
 const express = require("express");
 const logger = require("hmpo-app/lib/logger");
+const { getAverageResponseTime } = require('../lib/monitor')
+const { CloudWatchClient, PutMetricDataCommand } = require("@aws-sdk/client-cloudwatch"); // CommonJS import
 
 const requiredArgument = (argName) => {
   throw new Error(`Argument '${argName}' must be specified`);
 };
+
+// Create CloudWatch service object
+const client = new CloudWatchClient();
+const metadata_uri = process.env.ECS_CONTAINER_METADATA_URI_V4;
+let containerName;
+
+fetch(`${metadata_uri}/task`)
+  .then(res => res.json())
+  .then(json => {
+    console.log(json);
+    containerName = json.TaskARN.split("/").slice(-1)
+  });
+const schedule = require('node-schedule');
 
 const middleware = {
   setup({
@@ -134,6 +149,76 @@ const middleware = {
 
     server.keepAliveTimeout = 65000;
     server.headersTimeout = 66000;
+
+    // Push count every seconds
+    schedule.scheduleJob("*/5 * * * * *", () => {
+      return server.getConnections(async (error, count) => {
+        if (error) {
+          console.error("Error while trying to get server connections", error);
+          return;
+        }
+
+        console.log(`Current opened connections count: ${count}`);
+        let responseTimeActual = getAverageResponseTime()
+        let responseTime = isNaN(responseTimeActual) ? 0 : responseTimeActual;
+
+        const params = {
+          MetricData: [
+            {
+              MetricName: "HTTPConnections",
+              Dimensions: [
+                {
+                  Name: "PerNodeId",
+                  Value: `${containerName}`,
+                  // Set here any dynamic and unique ID
+                  // than can identify easily your running
+                  // node app, like its container ID
+                },
+                { 
+                  Name: "AppName",
+                  Value: "node"
+                }
+              ],
+              Unit: "Count",
+              Value: count,
+            },
+            {
+              MetricName: "HTTPConnections",
+              Unit: "Count",
+              Value: count,
+            },
+            {
+              MetricName: "ResponseTime",
+              Dimensions: [
+                {
+                  Name: "PerNodeId",
+                  Value: `${containerName}`,
+                  // Set here any dynamic and unique ID
+                  // than can identify easily your running
+                  // node app, like its container ID
+                },
+                { 
+                  Name: "AppName",
+                  Value: "node"
+                }
+              ],
+              Unit: "Count",
+              Value: responseTime,
+            },
+            {
+              MetricName: "ResponseTime",
+              Unit: "Count",
+              Value: responseTime,
+            },
+          ],
+          Namespace: "FEC/NodeApp",
+        };
+        console.log(JSON.stringify(params))
+        const command = new PutMetricDataCommand(params);
+        await client.send(command);
+        
+      });
+    });
   },
 };
 

@@ -162,8 +162,8 @@ Resources:
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
-      MaxCapacity: 3
-      MinCapacity: 1
+      MaxCapacity: 20
+      MinCapacity: 3
       ResourceId: !Join
         - '/'
         - - "service"
@@ -173,12 +173,33 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
-  ContainerAutoScalingPolicy:
+  # ContainerAutoScalingPolicy:
+  #   DependsOn: ContainerAutoScalingTarget
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   Properties:
+  #     PolicyName: containerAutoScalingPolicy
+  #     PolicyType: TargetTrackingScaling
+  #     ResourceId: !Join
+  #       - '/'
+  #       - - "service"
+  #         - !Ref FargateCluster
+  #         - !GetAtt ContainerService.Name
+  #     ScalableDimension: ecs:service:DesiredCount
+  #     ServiceNamespace: ecs
+  #     TargetTrackingScalingPolicyConfiguration:
+  #       CustomizedMetricSpecification:
+  #         MetricName: ResponseTime
+  #         Statistic: Average
+  #         Namespace: FEC/NodeApp
+  #       TargetValue: 500
+
+
+  ContainerStepScaleOutPolicy:
     DependsOn: ContainerAutoScalingTarget
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
-      PolicyName: containerAutoScalingPolicy
-      PolicyType: TargetTrackingScaling
+      PolicyName: ContainerStepScaleOutPolicy
+      PolicyType: StepScaling
       ResourceId: !Join
         - '/'
         - - "service"
@@ -186,10 +207,73 @@ Resources:
           - !GetAtt ContainerService.Name
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
-      TargetTrackingScalingPolicyConfiguration:
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ECSServiceAverageCPUUtilization
-        TargetValue: 70
+      StepScalingPolicyConfiguration:
+        AdjustmentType: PercentChangeInCapacity
+        Cooldown: 60 # To give time for the containers to spin up
+        MinAdjustmentMagnitude: 2
+        StepAdjustments:
+          - MetricIntervalLowerBound: 0 
+            MetricIntervalUpperBound: 200
+            ScalingAdjustment: 200
+          - MetricIntervalLowerBound: 200
+            MetricIntervalUpperBound: 500
+            ScalingAdjustment: 300
+          - MetricIntervalLowerBound: 500
+            ScalingAdjustment: 500
+
+  ContainerStepScaleOutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ContainerStepScaleOutPolicy
+      AlarmDescription: "ContainerStepScaleOutPolicyResponseTimeSlow"
+      ComparisonOperator: "GreaterThanThreshold"
+      DatapointsToAlarm: 1
+      Unit: "Count"
+      EvaluationPeriods: 1
+      MetricName: "ResponseTime"
+      Namespace: "FEC/NodeApp"
+      Statistic: "Maximum"
+      Period: 10
+      Threshold: 500
+
+  ContainerStepScaleInPolicy:
+    DependsOn: ContainerAutoScalingTarget
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: ContainerStepScaleInPolicy
+      PolicyType: StepScaling
+      ResourceId: !Join
+        - '/'
+        - - "service"
+          - !Ref FargateCluster
+          - !GetAtt ContainerService.Name
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      StepScalingPolicyConfiguration:
+        AdjustmentType: ChangeInCapacity
+        Cooldown: 30
+        StepAdjustments:
+          - MetricIntervalUpperBound: 0
+            ScalingAdjustment: -1
+
+  ContainerStepScaleInAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ContainerStepScaleInPolicy
+      AlarmDescription: "ContainerStepScaleInPolicyResponseTimeSlow"
+      ComparisonOperator: "LessThanThreshold"
+      DatapointsToAlarm: 2
+      Unit: "Count"
+      EvaluationPeriods: 2
+      MetricName: "ResponseTime"
+      Namespace: "FEC/NodeApp"
+      Statistic: "Maximum"
+      Period: 10
+      Threshold: 450
 
   ContainerServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -248,6 +332,9 @@ Resources:
               awslogs-stream-prefix: "ecs"
           HealthCheck:
             Command:  [ "CMD-SHELL", "curl --fail http://localhost:8000/healthcheck || exit 1" ]
+            Interval: 5
+            Retries: 3
+            Timeout: 3
           Secrets:
           - Name: DT_TENANT
             ValueFrom: !Join
@@ -265,12 +352,15 @@ Resources:
             - - !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
               - ':DT_CONNECTION_POINT::'
       Cpu: 1024
-      Memory: 2048
+      Memory: 4096
+      # RuntimePlatform: 
+      #   CpuArchitecture: "ARM64"
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       Family: !Sub "${AWS::StackName}-server"
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
+      TaskRoleArn: !GetAtt TaskRole.Arn
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskDefinition"
@@ -316,6 +406,41 @@ Resources:
                   - kms:Decrypt
                 Resource:
                   - arn:aws:kms:eu-west-2:216552277552:key/*
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-TaskExecutionRole"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      Policies:
+        - PolicyName: PutMetricToCloudWatch
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - cloudwatch:PutMetricData
+                Resource: 
+                  - "*"
+
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
