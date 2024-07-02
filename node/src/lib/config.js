@@ -19,7 +19,7 @@ module.exports = {
       DOMAIN: process.env.ANALYTICS_DOMAIN || "localhost",
     },
   },
-  PORT: process.env.PORT || 5050,
+  PORT: 8001,
   SESSION_SECRET: process.env.SESSION_SECRET,
   SESSION_TABLE_NAME: process.env.SESSION_TABLE_NAME,
   SESSION_TTL: process.env.SESSION_TTL || 7200000, // two hours in ms
