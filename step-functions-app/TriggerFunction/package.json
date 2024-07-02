@@ -1,0 +1,20 @@
+{
+  "name": "triggerfunction",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "esbuild": "^0.23.0",
+    "@aws-sdk/client-sfn": "^3.606.0"
+  }
+}

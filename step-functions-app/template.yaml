@@ -97,6 +97,42 @@ Globals:
 
 
 Resources:
+  TriggerFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Ensure that AWS Lambda function is configured for function-level concurrent execution limit
+    #   ReservedConcurrentExecutions is already defined in Globals section which injects the lambda.
+    # checkov:skip=CKV_AWS_116:Ensure that AWS Lambda function is configured for a Dead Letter Queue (DLQ)
+    #   Lambda triggered by SQS which already has a DLQ associated with it
+    # checkov:skip=CKV_AWS_117:Ensure that AWS Lambda function is configured inside a VPC
+    #   VpcConfig is already defined in Globals section which injects the lambda.
+    # checkov:skip=CKV_AWS_173:Check encryption settings for Lambda environmental variable
+    #   Lambda env vars are encrypted at-rest and don't need to do in-transit encryption as env vars values don't contain sensitive data.
+    Properties:
+      CodeUri: TriggerFunction/
+      Environment:
+        Variables:
+          STATE_MACHINE: !Sub
+            - "${HelloWorldStateMachine}:live"
+            - HelloWorldStateMachine: !Ref HelloWorldStateMachine
+      Handler: trigger-function.triggerHandler
+      Policies:
+        - Version: '2012-10-17' 
+          Statement:
+            - Effect: Allow
+              Action:
+                - "states:StartExecution"
+              Resource:
+                - !Ref HelloWorldStateMachine
+      Runtime: nodejs20.x
+      AutoPublishAlias: live
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints:
+        - trigger-function.ts
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     # checkov:skip=CKV_AWS_116: DLQ not required
@@ -187,7 +223,7 @@ Resources:
         - !Ref AWS::NoValue
 
   HelloWorldStateMachine:
-    Type: "AWS::StepFunctions::StateMachine"
+    Type: "AWS::Serverless::StateMachine"
     Properties:
       Definition:
         StartAt: HelloWorld
@@ -196,4 +232,5 @@ Resources:
             Type: Task
             Resource: !GetAtt HelloWorldFunction.Arn
             End: true
-      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
+      Role: !GetAtt [ StatesExecutionRole, Arn ]
+      AutoPublishAlias: live
