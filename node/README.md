@@ -15,13 +15,13 @@ This application also includes an example of a frontend ECS canary deployment so
 You can run the Github action with your BRANCH. The action is called "Node deploy using Environment secrets"
 https://github.com/govuk-one-login/devplatform-demo-sam-app/actions/workflows/node-deploy-using-environment-secrets.yml
 
-When the aboive is running, then look in AWS Cloudfromation, there is a stack called "node-app", it should have new events.
+When the above is running, then look in AWS Cloudfromation, there is a stack called "node-app", it should have new events.
 If those all worked fine, then look in "Outputs" for the API Gateway URL and test it loads.
 
 
 ## Deploy the sample application with the CLI
 
-Note: This method works but its easier to use the GitHub Actions method above.
+Note: This method works, but it's easier to use the GitHub Actions method above.
 
 - Follow the steps 1-3 of [How to deploy a container to Fargate with secure pipelines][1] docs to create a VPC, a pipeline and an ECR repo.
 - From the outputs of the pipeline, ECR and container-signer stacks, you would require the `GitHubArtifactSourceBucketName`, the `ContainerRepositoryUri` and the `ContainerSignerKmsKeyArn`

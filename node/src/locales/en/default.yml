@@ -18,10 +18,10 @@ govuk:
       buttonRejectText: "Reject analytics cookies"
       linkViewCookiesText: "View cookies"
       cookieBannerHideLink: "Hide this message"
-      cookeBannerAccept:
+      cookieBannerAccept:
         paragraph1: "You’ve accepted additional cookies. You can "
         paragraph2: " at any time."
-      cookeBannerReject:
+      cookieBannerReject:
         paragraph1: "You’ve rejected additional cookies. You can "
         paragraph2: " at any time."
       changeCookiePreferencesLink: "change your cookie settings"
@@ -43,7 +43,10 @@ govuk:
         - href: https://signin.account.gov.uk/privacy-notice
           text: Privacy notice
         - href: https://signin.account.gov.uk/contact-us
-          text: Support
+          text: Support (opens in new tab)
+          attributes:
+            rel: "noreferrer noopener"
+            target: "_blank"
   copyright:
     text: "© Crown copyright"
   contentLicence:

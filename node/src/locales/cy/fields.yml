@@ -19,3 +19,11 @@ toy:
       reveal: ""
   validation:
     default: Dewiswch hoff degan os gwelwch yn dda
+
+govuk:
+  languageToggle:
+    ariaLabel: Dewis iaith
+    englishLanguage: English
+    englishVisuallyHidden: Change to English
+    welshLanguage: Cymraeg
+    welshVisuallyHidden: Newid yr iaith ir Gymraeg

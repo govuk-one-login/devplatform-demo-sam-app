@@ -18,10 +18,10 @@ govuk:
       buttonRejectText: "Gwrthod cwcis dadansoddi"
       linkViewCookiesText: "Gweld cwcis"
       cookieBannerHideLink: "Cuddio'r neges yma"
-      cookeBannerAccept:
+      cookieBannerAccept:
         paragraph1: "Rydych wedi derbyn cwcis ychwanegol. Gallwch "
         paragraph2: " unrhyw bryd."
-      cookeBannerReject:
+      cookieBannerReject:
         paragraph1: "Rydych wedi gwrthod cwcis ychwanegol. Gallwch "
         paragraph2: " unrhyw bryd."
       changeCookiePreferencesLink: "newid eich gosodiadau cwcis"
@@ -43,7 +43,10 @@ govuk:
         - href: "https://signin.account.gov.uk/privacy-notice"
           text: "Hysbysiad preifatrwydd"
         - href: "https://signin.account.gov.uk/contact-us"
-          text: "Cefnogaeth"
+          text: "Cymorth (agor mewn tab newydd)"
+          attributes:
+            rel: "noreferrer noopener"
+            target: "_blank"
   copyright:
     text: "© Hawlfraint y goron"
   contentLicence:

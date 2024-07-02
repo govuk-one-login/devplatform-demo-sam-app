@@ -1,4 +1,10 @@
 const { setAPIConfig, setOAuthPaths } = require("./settings");
+const chai = require("chai");
+const sinon = require("sinon");
+const sinonChai = require("sinon-chai");
+
+const expect = chai.expect;
+chai.use(sinonChai);
 
 describe("settings", () => {
   let app;
@@ -28,7 +34,7 @@ describe("settings", () => {
       );
     });
 
-    it("should set 'API.PATHS.SESSION", () => {
+    it("should set 'API.PATHS.AUTHORIZATION", () => {
       setAPIConfig({ app, authorizationPath: "/api/authorization" });
 
       expect(app.set).to.have.been.calledWith(
