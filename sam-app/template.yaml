@@ -105,30 +105,6 @@ Globals:
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
-    Environment:
-      Variables:
-        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
-        DT_CONNECTION_AUTH_TOKEN: !Sub
-          - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'
-          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_CONNECTION_BASE_URL: !Sub
-          - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
-          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_CLUSTER_ID: !Sub
-          - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'
-          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_LOG_COLLECTION_AUTH_TOKEN: !Sub
-          - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'
-          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_TENANT: !Sub
-          - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'
-          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
-    MemorySize: 2048
-    Layers: 
-      - !Sub
-        - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}' # or NODEJS_LAYER or PYTHON_LAYER
-        - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
 
 Resources:
   APIGatewayAccessLogGroup:
@@ -263,13 +239,10 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 2048
       ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: Active
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
       VpcConfig:
         SecurityGroupIds:
           - !GetAtt LambdaEgressSecurityGroup.GroupId
@@ -315,6 +288,29 @@ Resources:
           PreTraffic: !Ref PreTrafficHook
           PostTraffic: !Ref PostTrafficHook
         Role: !GetAtt CodeDeployServiceRole.Arn
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+          DT_CONNECTION_AUTH_TOKEN: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_CONNECTION_BASE_URL: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_CLUSTER_ID: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_LOG_COLLECTION_AUTH_TOKEN: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_TENANT: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+      Layers: 
+        - !Sub
+          - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}' # or NODEJS_LAYER or PYTHON_LAYER
+          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -362,7 +358,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 2048
       ReservedConcurrentExecutions: 5
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Tracing: PassThrough
@@ -386,6 +382,29 @@ Resources:
             Path: /hello2
             Method: get
             RestApiId: !Ref HelloWorldRestApi
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+          DT_CONNECTION_AUTH_TOKEN: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_CONNECTION_BASE_URL: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_CLUSTER_ID: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_LOG_COLLECTION_AUTH_TOKEN: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_TENANT: !Sub
+            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'
+            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+          DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+      Layers: 
+        - !Sub
+          - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}' # or NODEJS_LAYER or PYTHON_LAYER
+          - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
