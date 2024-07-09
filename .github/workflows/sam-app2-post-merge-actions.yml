@@ -19,6 +19,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        working-directory: sam-app2
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -71,6 +74,7 @@ jobs:
       #     working-directory: ./sam-app2/.aws-sam/build
 
   deploy:
+    needs: [upload]
     environment: development
     runs-on: ubuntu-latest
     timeout-minutes: 60
