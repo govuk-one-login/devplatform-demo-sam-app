@@ -111,8 +111,8 @@ jobs:
           role-to-assume: ${{ secrets.SAM_APP2_GH_ACTIONS_ROLE_ARN }}
           aws-region: eu-west-2
 
-      - name: SAM build and test
-        run: sam build
+      # - name: SAM build and test
+      #   run: sam build
 
       - name: Deploy SAM app
         uses: govuk-one-login/devplatform-upload-action@v3.9.1
