@@ -27,6 +27,7 @@ Parameters:
     # Allowed values: See https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
     AllowedValues:
       - None
+      - CodeDeployDefault.ECSLinear10PercentEvery3Minutes
       - CodeDeployDefault.ECSCanary10Percent5Minutes
       - CodeDeployDefault.ECSCanary10Percent15Minutes
       - CodeDeployDefault.ECSAllAtOnce
