@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Sample SAM Template for sam-app2.
+  Sample SAM Template for step-functions-app.
   Managed by dev-platform
 
 Parameters:
@@ -38,6 +38,19 @@ Conditions:
           - !Ref CodeSigningConfigArn
           - "none"
 
+  IsNonDevEnvironment:
+    Fn::Not:
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref Environment
+          - "dev"
+        - Fn::Equals:
+          - !Ref Environment
+          - "demo"
+        - Fn::Equals:
+          - !Ref Environment
+          - "local"
+
 Mappings:
   EnvironmentConfiguration:
     dev:
@@ -51,7 +64,6 @@ Mappings:
     production:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables      # pragma: allowlist secret
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     CodeSigningConfigArn: !If
@@ -97,8 +109,48 @@ Globals:
 
 
 Resources:
+  TriggerFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_116:Ensure that AWS Lambda function is configured for a Dead Letter Queue (DLQ)
+    # checkov:skip=CKV_AWS_117:Ensure that AWS Lambda function is configured inside a VPC
+    # checkov:skip=CKV_AWS_173:Check encryption settings for Lambda environmental variable
+    Properties:
+      CodeUri: TriggerFunction/
+      Environment:
+        Variables:
+          STATE_MACHINE: !Sub
+            - "${HelloWorldStateMachine}:live"
+            - HelloWorldStateMachine: !Ref HelloWorldStateMachine
+      Handler: trigger-function.triggerHandler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - "states:StartExecution"
+              Resource:
+                - !Ref HelloWorldStateMachine
+      Runtime: nodejs20.x
+      AutoPublishAlias: live
+      MemorySize: 2048
+      ReservedConcurrentExecutions: 5
+      Events:
+        Trigger:
+          Type: Api
+          Properties:
+            Path: /trigger
+            Method: get
+            RestApiId: !Ref TriggerRestApi
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        EntryPoints:
+        - trigger-function.ts
+
   HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116: DLQ not required
     # checkov:skip=CKV_AWS_117: Internet access not required
     Metadata:
@@ -121,12 +173,43 @@ Resources:
         Environment: Demo
         Service: backend
         Name: HelloWorldFunction
-        Source: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
+        Source: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
         CheckovRulesToSkip: CKV_AWS_116.CKV_AWS_117
+
+  HelloWorldLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${HelloWorldFunction}'
+      RetentionInDays: 30
+      KmsKeyId: !GetAtt TriggerKmsKey.Arn
+      Tags:
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Name
+          Value: HelloWorldLogGroup
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
+
+  TriggerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${TriggerFunction}'
+      RetentionInDays: 30
+      KmsKeyId: !GetAtt TriggerKmsKey.Arn
+      Tags:
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Name
+          Value: TriggerLogGroup
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
 
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
-    # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
     DependsOn: HelloWorldFunctionAliasLatestVersion
     Properties:
       MaxCapacity: 3
@@ -158,8 +241,83 @@ Resources:
           PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
         TargetValue: 0.7
 
+  APIGatewayAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 30
+      KmsKeyId: !GetAtt TriggerKmsKey.Arn
+      Tags:
+        - Key: System
+          Value: Dev Platform
+        - Key: Environment
+          Value: Demo
+        - Key: Name
+          Value: APIGatewayAccessLogGroup
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
+
+  # Setup to validate we can use pipelines to set CSLS as the destination: https://github.com/alphagov/centralised-security-logging-service
+  CSLSFirehoseSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Condition: IsNonDevEnvironment
+    Properties:
+      DestinationArn: arn:aws:logs:eu-west-2:885513274347:destination:csls_cw_logs_destination_prodpython
+      FilterPattern: ""
+      LogGroupName: !Ref APIGatewayAccessLogGroup
+
+  TriggerRestApi:
+    Type: AWS::Serverless::Api
+    # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    Metadata:
+      checkov:
+        skip:
+          - id: "CKV_AWS_120"
+            comment: "API caching is not the programme approved way"
+    Properties:
+      OpenApiVersion: 3.0.3
+      StageName: Prod
+      AccessLogSetting:
+        Format: "$context.requestId $context.httpMethod $context.path $context.integrationErrorMessage"
+        DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
+      CacheClusterEnabled: false
+      # CacheClusterSize: "0.5"
+      TracingEnabled: true
+      Tags:
+        Product: GOV.UK Sign In
+        System: Dev Platform
+        Environment: Demo
+        Service: backend
+        Name: HelloWorldRestApi
+        Source: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
+
+  TriggerKmsKey:
+    Type: AWS::KMS::Key
+    Properties:
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              Service: !Sub "logs.${AWS::Region}.amazonaws.com"
+            Action:
+              - "kms:Encrypt*"
+              - "kms:Decrypt*"
+              - "kms:ReEncrypt*"
+              - "kms:GenerateDataKey*"
+              - "kms:Describe*"
+            Resource: "*"
+            Condition:
+              ArnLike:
+                "kms:EncryptionContext:aws:logs:arn": !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+
 ##### State Machine #####
-  
+
   StatesExecutionRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -187,13 +345,23 @@ Resources:
         - !Ref AWS::NoValue
 
   HelloWorldStateMachine:
-    Type: "AWS::StepFunctions::StateMachine"
+    Type: "AWS::Serverless::StateMachine"
     Properties:
       Definition:
         StartAt: HelloWorld
         States:
           HelloWorld:
             Type: Task
-            Resource: !GetAtt HelloWorldFunction.Arn
+            Resource: arn:aws:states:::lambda:invoke
+            OutputPath: $.Payload
+            Parameters:
+              Payload.$: $
+              FunctionName: !GetAtt HelloWorldFunction.Arn
             End: true
-      RoleArn: !GetAtt [ StatesExecutionRole, Arn ]
+      Role: !GetAtt [ StatesExecutionRole, Arn ]
+      AutoPublishAlias: live
+
+Outputs:
+  HelloWorldApi:
+    Description: "API Gateway endpoint URL for Prod stage for Trigger function"
+    Value: !Sub "https://${TriggerRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/trigger/"

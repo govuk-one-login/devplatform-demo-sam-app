@@ -2,8 +2,8 @@ const http = require('http');
 const hostname = '0.0.0.0';
 const port = 8000;
 
-//boolan needed for 503 error 
-let serverAvailable = true; 
+//boolan needed for 503 error
+let serverAvailable = true;
 
 const server = http.createServer(function (request, response) {
     //503 error - will render the server inaccesible for 60 seconds. No calls will be accepted until time is up.
@@ -24,7 +24,7 @@ const server = http.createServer(function (request, response) {
             response.end(JSON.stringify({ error: 'Intentional 503: Service Unavailable' }));
             return;
         }
-    //502 error - Bad Gateway error 
+    //502 error - Bad Gateway error
     if (request.url === '/giveme502') {
         response.statusCode = 502;
         response.setHeader('Content-Type', 'application/json');
@@ -37,7 +37,7 @@ const server = http.createServer(function (request, response) {
             response.end(JSON.stringify({ error: 'Intential 504: Gateway Timeout' }));
         }, 30000);
     } else {
-        response.statusCode = 200; //working state of the app - no endpoints 
+        response.statusCode = 200; //working state of the app - no endpoints
         response.setHeader('Content-Type', 'application/json');
         const requestHeaders = JSON.stringify(request.headers);
         response.end(requestHeaders);
