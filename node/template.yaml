@@ -675,6 +675,13 @@ Resources:
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
+        LoadBalancers:
+          - ContainerName: !Sub "${AWS::StackName}-node-server"
+            ContainerPort: 8000
+            TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+        Subnets: 
+          [Fn::ImportValue: !Sub "${VpcStackName}-PrivateSubnetIdA"]
+        SecurityGroups: [ !GetAtt ContainerServiceSecurityGroup.GroupId ]
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
