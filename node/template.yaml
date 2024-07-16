@@ -143,6 +143,8 @@ Resources:
           Subnets:
             - Fn::ImportValue:
                 !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
       TaskDefinition: !If
         - UseECSCanaryDeploymentStack
@@ -664,7 +666,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: UseECSCanaryDeploymentStack
     Properties:
-      TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
+      TemplateURL: "https://template-bucket-templatebucket-civakigopbg2.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
       Parameters:
         VpcId: !Sub ${VpcStackName}-VpcId
         # Parameters below to be filled by developers
@@ -672,16 +674,13 @@ Resources:
         ECSClusterName: !Ref FargateCluster
         ECSServiceName: !GetAtt ContainerService.Name
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
+        TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
-        LoadBalancers:
-          - ContainerName: !Sub "${AWS::StackName}-node-server"
-            ContainerPort: 8000
-            TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-        Subnets: 
-          [Fn::ImportValue: !Sub "${VpcStackName}-PrivateSubnetIdA"]
-        SecurityGroups: [ !GetAtt ContainerServiceSecurityGroup.GroupId ]
+        Subnets:
+          Fn::ImportValue: !Sub "${VpcStackName}-PrivateSubnetIdA"
+        SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
