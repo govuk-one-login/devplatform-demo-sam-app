@@ -854,7 +854,7 @@ Resources:
     #checkov:skip=CKV_AWS_173:This lambda function is not storing sensitive secrets, KMS cost not being incurred.
     #checkov:skip=CKV_AWS_116:Lambda configured sync behind API Gatewya, no DLQ needed.
     #checkov:skip=CKV_AWS_117:Lambda not processing sensitive data, wanting to avoid network congestion so using AWS networking layer.s
-    #checkov:skip=CKV_AWS_115:Lambda not configured for limit as unlimited for testing purposes.
+    #checkov:skip=CKV_AWS_115:Lambda not configured for limit as unlimited for testing purposees.
     Properties:
       CodeUri: src/
       Handler: serverless.handler
@@ -873,13 +873,13 @@ Resources:
         KoaFunctionProxy:
           Type: Api
           Properties:
-            RestApiId: !Ref NodeApi
+            RestApiId: !Ref NodeAPI
             Path: "/{proxy+}"
             Method: ANY
         KoaFunctionRoot:
           Type: Api
           Properties:
-            RestApiId: !Ref NodeApi
+            RestApiId: !Ref NodeAPI
             Path: "/"
             Method: ANY
 
@@ -916,4 +916,4 @@ Outputs:
     Value: !GetAtt ApiGateway.ApiEndpoint
   LambdaApiGatewayEndpoint:
     Description: The base URI for the lambda application
-    Value: !Sub "https://${NodeApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+    Value: !Sub "https://${NodeAPI}}.execute-api.${AWS::Region}.amazonaws.com/prod/"
