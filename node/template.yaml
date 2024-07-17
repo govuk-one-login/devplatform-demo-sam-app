@@ -854,6 +854,7 @@ Resources:
     #checkov:skip=CKV_AWS_173:This lambda function is not storing sensitive secrets, KMS cost not being incurred.
     #checkov:skip=CKV_AWS_116:Lambda configured sync behind API Gatewya, no DLQ needed.
     #checkov:skip=CKV_AWS_117:Lambda not processing sensitive data, wanting to avoid network congestion so using AWS networking layer.s
+    #checkov:skip=CKV_AWS_115:Lambda not configured for limit as unlimited for testing purposes.
     Properties:
       CodeUri: src/
       Handler: serverless.handler
