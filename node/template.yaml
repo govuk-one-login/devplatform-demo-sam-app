@@ -860,6 +860,7 @@ Resources:
       Handler: serverless.handler
       Runtime: nodejs20.x
       MemorySize: 512
+      Timeout: 30
       # ReservedConcurrentExecutions: 200
       Environment:
         Variables:
