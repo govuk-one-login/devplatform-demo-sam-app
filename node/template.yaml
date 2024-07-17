@@ -870,13 +870,13 @@ Resources:
             TableName:
               !Ref SessionTable
       Events:
-        KoaFunctionProxy:
+        NodeFunctionProxy:
           Type: Api
           Properties:
             RestApiId: !Ref NodeAPI
             Path: "/{proxy+}"
             Method: ANY
-        KoaFunctionRoot:
+        NodeFunctionRoot:
           Type: Api
           Properties:
             RestApiId: !Ref NodeAPI

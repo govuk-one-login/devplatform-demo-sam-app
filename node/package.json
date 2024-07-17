@@ -1,5 +1,6 @@
 {
   "name": "di-ipv-cri-toy-front",
+  "version": "0.0.1",
   "description": "Frontend for the Toy Credential Issuer",
   "scripts": {
     "start": "node src/app.js",
