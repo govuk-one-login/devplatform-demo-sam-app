@@ -7,7 +7,7 @@ declare status_code
 status_code="$(curl --silent --output /dev/null --write-out '%{http_code}' "$CFN_HelloWorldApi")"
 
 if [[ $status_code != "200" ]]; then
-  cat <<EOF > "$TEST_REPORT_DIR/result.json"
+  cat <<EOF > "$TEST_REPORT_ABSOLUTE_DIR/result.json"
 [
   {
     "uri": "test.sh",
@@ -39,7 +39,7 @@ if [[ $status_code != "200" ]]; then
 EOF
 exit 1
 else
-  cat <<EOF > "$TEST_REPORT_DIR/result.json"
+  cat <<EOF > "$TEST_REPORT_ABSOLUTE_DIR/result.json"
 [
   {
     "uri": "test.sh",
