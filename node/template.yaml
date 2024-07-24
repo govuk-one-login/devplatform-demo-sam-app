@@ -136,21 +136,21 @@ Resources:
         - ContainerName: !Sub "${AWS::StackName}-node-server"
           ContainerPort: 8000
           TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          SecurityGroups:
-            - !GetAtt ContainerServiceSecurityGroup.GroupId
-          Subnets:
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdA"
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdB"
+      # NetworkConfiguration:
+      #   AwsvpcConfiguration:
+      #     SecurityGroups:
+      #       - !GetAtt ContainerServiceSecurityGroup.GroupId
+      #     Subnets:
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdA"
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
-      # TaskDefinition: !If
-      #   - UseECSCanaryDeploymentStack
-      #   - !Ref AWS::NoValue
-      #   - !Ref TaskDefinition
-      TaskDefinition: !Ref TaskDefinition
+      TaskDefinition: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - !Ref TaskDefinition
+      # TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
@@ -677,13 +677,14 @@ Resources:
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
-        # LoadBalancers:
-        #   - ContainerName: !Sub "${AWS::StackName}-node-server"
-        #     ContainerPort: 8000
-        #     TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-        Subnets:
-          Fn::ImportValue: !Sub "${VpcStackName}-PrivateSubnetIdA"
-        SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
+        # Subnets: !Join 
+        #   - ","
+        #   - - Fn::ImportValue:
+        #         !Sub "${VpcStackName}-PrivateSubnetIdA"
+        #     - Fn::ImportValue:
+        #         !Sub "${VpcStackName}-PrivateSubnetIdB"
+        # SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
+        PlatformVersion: "1.3.0"
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
