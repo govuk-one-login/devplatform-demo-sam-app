@@ -132,10 +132,10 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
-      LoadBalancers:
-        - ContainerName: !Sub "${AWS::StackName}-node-server"
-          ContainerPort: 8000
-          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      # LoadBalancers:
+      #   - ContainerName: !Sub "${AWS::StackName}-node-server"
+      #     ContainerPort: 8000
+      #     TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
       # NetworkConfiguration:
       #   AwsvpcConfiguration:
       #     SecurityGroups:
@@ -677,13 +677,13 @@ Resources:
         LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
         DeploymentStrategy: !Ref DeploymentStrategy
-        # Subnets: !Join 
-        #   - ","
-        #   - - Fn::ImportValue:
-        #         !Sub "${VpcStackName}-PrivateSubnetIdA"
-        #     - Fn::ImportValue:
-        #         !Sub "${VpcStackName}-PrivateSubnetIdB"
-        # SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
+        Subnets: !Join
+          - ","
+          - - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
+        SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
         PlatformVersion: "1.3.0"
         # Replace with values correspondent to your app container
         ContainerName: !Sub "${AWS::StackName}-node-server"
