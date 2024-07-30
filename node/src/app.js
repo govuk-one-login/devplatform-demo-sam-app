@@ -30,7 +30,7 @@ const {
   SESSION_TTL,
 } = require("./lib/config");
 
-const { setup } = require("hmpo-app");
+const { setup } = require("shims/hmpo-app");
 
 const loggerConfig = {
   console: true,
@@ -58,8 +58,8 @@ const helmetConfig = require("@govuk-one-login/di-ipv-cri-common-express/src/lib
 
 const { app, router } = setup({
   config: { APP_ROOT: __dirname },
-  port: PORT,
   host: "0.0.0.0",
+  port: false,
   logs: loggerConfig,
   session: sessionConfig,
   helmet: helmetConfig,
@@ -132,3 +132,5 @@ router.use("/oauth2", commonExpress.routes.oauth2);
 router.use("/toy", require("./app/toy"));
 
 router.use(commonExpress.lib.errorHandling.redirectAsErrorToCallback);
+
+module.exports = app

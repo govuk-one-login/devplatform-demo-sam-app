@@ -1,5 +1,6 @@
 {
   "name": "di-ipv-cri-toy-front",
+  "version": "0.0.1",
   "description": "Frontend for the Toy Credential Issuer",
   "scripts": {
     "start": "node src/app.js",
@@ -17,13 +18,13 @@
     "build:js:all": "mkdir -p dist/public/javascripts; uglifyjs node_modules/govuk-frontend/govuk/all.js node_modules/hmpo-components/all.js --beautify -o dist/public/javascripts/all.js",
     "minfiy-build-js": "uglifyjs src/assets/javascript/application.js -o src/assets/javascript/application.js -c -m && uglifyjs src/assets/javascript/cookies.js -o src/assets/javascript/cookies.js -c -m",
     "build:sass": "rm -rf dist/public/stylesheets/application.css && sass --no-source-map src/assets/scss/application.scss dist/public/stylesheets/application.css --style compressed",
-    "copy-assets": "mkdir -p dist && copyfiles -u 1 src/**/*.njk dist/ src/locales/**/** dist/ && copyfiles -u 3 src/assets/javascript/*.js dist/public/scripts",
     "check-translation": "node node_modules/@govuk-one-login/di-ipv-cri-common-express/scripts/checkTranslations.js ../../../../src/locales/",
     "test:coverage": "npm run test -- --coverage",
     "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.592.0",
+    "@codegenie/serverless-express": "^4.14.1",
     "@govuk-one-login/di-ipv-cri-common-express": "6.4.1",
     "@govuk-one-login/frontend-analytics": "1.0.3",
     "@govuk-one-login/frontend-language-toggle": "1.1.0",
