@@ -18,12 +18,6 @@ Parameters:
     Description: "Specifies the configuration to enable gradual Lambda deployments"
     Type: String
     Default: "Canary10Percent5Minutes"
-    AllowedValues:
-      - AllAtOnce
-      - Canary10Percent5Minutes
-      - Canary10Percent10Minutes
-      - Canary10Percent15Minutes
-      - Canary10Percent30Minutes
 
   PermissionsBoundary:
     Description: "The ARN of the permissions boundary to apply when creating IAM roles"
@@ -510,7 +504,7 @@ Resources:
           - id: "CKV_AWS_18"
             comment: "This is the access logs bucket. It should not log itself."
     Properties:
-      AccessControl: LogDeliveryWrite
+      # AccessControl: LogDeliveryWrite
       OwnershipControls:
           Rules:
             - ObjectOwnership: BucketOwnerPreferred
