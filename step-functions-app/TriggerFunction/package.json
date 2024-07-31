@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "esbuild": "^0.23.0",
-    "@aws-sdk/client-sfn": "^3.606.0"
+    "@aws-sdk/client-sfn": "^3.621.0"
   }
 }
