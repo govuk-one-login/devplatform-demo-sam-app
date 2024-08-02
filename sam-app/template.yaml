@@ -850,8 +850,12 @@ Resources:
       Namespace: AWS/Lambda
       Statistic: Sum
       Dimensions:
+        - Name: Resource
+          Value: !Sub "${HelloWorldFunction}:live"
         - Name: FunctionName
           Value: !Ref HelloWorldFunction
+        - Name: ExecutedVersion
+          Value: !GetAtt HelloWorldFunction.Version.Version
       Period: 300
       EvaluationPeriods: 3
       DatapointsToAlarm: 3
