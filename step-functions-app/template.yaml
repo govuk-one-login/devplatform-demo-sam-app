@@ -162,7 +162,7 @@ Resources:
             comment: "Internet access not required"
     Properties:
       CodeUri: HelloWorldFunction
-      AutoPublishAlias: LatestVersion
+      AutoPublishAlias: live
       Handler: helloworld.App::handleRequest
       Runtime: java11
       MemorySize: 2048
@@ -210,7 +210,7 @@ Resources:
 
   AutoScalingHelloWorldScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
-    DependsOn: HelloWorldFunctionAliasLatestVersion
+    DependsOn: HelloWorldFunctionAliaslive
     Properties:
       MaxCapacity: 3
       MinCapacity: 1
@@ -356,10 +356,88 @@ Resources:
             OutputPath: $.Payload
             Parameters:
               Payload.$: $
-              FunctionName: !GetAtt HelloWorldFunction.Arn
+              FunctionName: !Ref HelloWorldFunction.Version
             End: true
       Role: !GetAtt [ StatesExecutionRole, Arn ]
       AutoPublishAlias: live
+      DeploymentPreference:
+        Type: LINEAR
+        Interval: 1
+        Percentage: 20
+
+##### Cloudwatch Alarms #####
+
+  HelloWorldStateMachineErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-HelloWorldStateMachineErrors"
+      AlarmDescription: >
+        HelloWorldStateMachine unsuccessful executions alarm.
+      MetricName: Errors
+      Namespace: AWS/States
+      Statistic: Sum
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !GetAtt HelloWorldStateMachine.Arn
+      Period: 300
+      EvaluationPeriods: 3
+      DatapointsToAlarm: 3
+      Threshold: 1
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+
+  HelloWorldLambdaErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-HelloWorldLambdaErrors"
+      AlarmDescription: >
+        The number of HelloWorld Lambda errors is greater than or equal to 10% of all function invocations
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      Metrics:
+        - Id: m1
+          Label: "Sum of invocations for latest Lambda version"
+          ReturnData: false
+          MetricStat:
+            Metric:
+              Namespace: AWS/Lambda
+              MetricName: Invocations
+              Dimensions:
+                - Name: Resource
+                  Value: !Sub "${HelloWorldFunction}:live"
+                - Name: FunctionName
+                  Value: !Ref HelloWorldFunction
+                - Name: ExecutedVersion
+                  Value: !GetAtt HelloWorldFunction.Version.Version
+            Period: 300
+            Stat: Sum
+        - Id: m2
+          Label: "Sum of function errors for latest Lambda version"
+          ReturnData: false
+          MetricStat:
+            Metric:
+              Namespace: AWS/Lambda
+              MetricName: Errors
+              Dimensions:
+                - Name: Resource
+                  Value: !Sub "${HelloWorldFunction}:live"
+                - Name: FunctionName
+                  Value: !Ref HelloWorldFunction
+                - Name: ExecutedVersion
+                  Value: !GetAtt HelloWorldFunction.Version.Version
+            Period: 300
+            Stat: Sum
+        - Id: m3
+          Label: "Percentage of invocations that result in a function error"
+          ReturnData: false
+          Expression: (m2/m1)*100
+        - Id: m4
+          Label: "Error threshold calculation"
+          ReturnData: true
+          Expression: IF(m2 >= 5, m3, 0)
 
 Outputs:
   HelloWorldApi:
