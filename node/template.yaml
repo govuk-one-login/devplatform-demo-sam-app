@@ -421,6 +421,29 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
+  ApplicationLoadBalancerGreenTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckPort: 8000
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: /healthcheck
+      Port: 8000
+      Protocol: HTTP
+      ProtocolVersion: HTTP1
+      Matcher:
+        HttpCode: "200"
+      TargetType: ip
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${VpcStackName}-VpcId"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-ApplicationLoadBalancerTargetGroup"
+        - Key: Service
+          Value: ci/cd
+        - Key: Source
+          Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+
   ApplicationLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -674,6 +697,7 @@ Resources:
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
+        GreenTargetGroupName: !GetAtt ApplicationLoadBalancerGreenTargetGroup.TargetGroupName
       ## NetworkConfiguration
         VpcId: !Sub ${VpcStackName}-VpcId
         Subnets: !Join
