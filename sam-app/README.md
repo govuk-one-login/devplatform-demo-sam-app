@@ -11,6 +11,19 @@ The application uses several AWS resources, including Lambda functions and an AP
 
 This application also includes an example of a backend Lambda canary deployment solution, for more information and an implamentaion guide please visit: [Lambda - Canary Deployment Migration Guidance](https://govukverify.atlassian.net/wiki/spaces/PLAT/pages/3823436177/Lambda+-+Canary+Deployment+Migration+Guidance)
 
+NOTE: For this application to work/deploy the VPC must have the following domains allowed:
+
+- checkip.amazonaws.com.
+- checkip.check-ip.aws.a2z.com.
+- checkip.eu-west-1.prod.check-ip.aws.a2z.com.
+
+And the VPC suricata firewall rules must include the following:
+
+```
+pass tls $HOME_NET any -> $EXTERNAL_NET 443 (tls.sni; content:".amazonaws.com"; endswith; msg:"Pass TLS to *.amazonaws.com"; flow:established; sid:2002; rev:1;)
+```
+
+
 ## Deploy the sample application
 
 The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
