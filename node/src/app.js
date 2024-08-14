@@ -1,6 +1,11 @@
 require("express");
 require("express-async-errors");
 
+const blocked = require("blocked-at");
+blocked((time, stack) => {
+  console.log(`Blocked for ${time}ms, operation started here:`, stack)
+}, { threshold: 20 })
+
 const path = require("path");
 const session = require("express-session");
 const DynamoDBStore = require("connect-dynamodb")(session);
