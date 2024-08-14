@@ -8,12 +8,12 @@ Parameters:
   CodeSigningConfigArn:
     Type: String
     Description: Asserts that lambdas are signed when deployed.
-    Default: "none"
+    Default: None
 
   PermissionsBoundary:
     Description: The ARN of the permissions boundary to apply when creating IAM roles
     Type: String
-    Default: "none"
+    Default: None
 
   Environment:
     Description: The name of the environment to deploy to
@@ -26,30 +26,35 @@ Parameters:
       - "integration"
       - "production"
 
-Conditions:
-  UsePermissionsBoundary:
-    Fn::Not:
-      - Fn::Equals:
-          - !Ref PermissionsBoundary
-          - "none"
-  UseCodeSigning:
-    Fn::Not:
-      - Fn::Equals:
-          - !Ref CodeSigningConfigArn
-          - "none"
+  StepFunctionsCanaryDeployment:
+    Description: Deployment configuration for your Step Functions
+    Type: String
+    Default: "None"
+    AllowedValues:
+      - None
+      - CANARY
+      - LINEAR
+      - ALL_AT_ONCE
 
-  IsNonDevEnvironment:
-    Fn::Not:
-      - Fn::Or:
-        - Fn::Equals:
-          - !Ref Environment
-          - "dev"
-        - Fn::Equals:
-          - !Ref Environment
-          - "demo"
-        - Fn::Equals:
-          - !Ref Environment
-          - "local"
+Conditions:
+  UsePermissionsBoundary: !Not
+    - !Equals [ !Ref PermissionsBoundary, None ]
+
+  UseCodeSigning: !Not
+    - !Equals [ !Ref CodeSigningConfigArn, None ]
+
+  IsNonDevEnvironment: !Not
+    - !Or
+      - !Equals [ !Ref Environment, dev ]
+      - !Equals [ !Ref Environment, demo ]
+      - !Equals [ !Ref Environment, local ]
+
+  UseCanaryDeployment: !Not
+      - !Equals [ !Ref StepFunctionsCanaryDeployment, None ]
+
+  UseDeploymentAlarms: !And
+    - Condition: UseCanaryDeployment
+    - !Not [ !Equals [ !Ref StepFunctionsCanaryDeployment, ALL_AT_ONCE ]]
 
 Mappings:
   EnvironmentConfiguration:
@@ -361,9 +366,17 @@ Resources:
       Role: !GetAtt [ StatesExecutionRole, Arn ]
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: LINEAR
+        Type: !If
+          - UseCanaryDeployment
+          - !Ref StepFunctionsCanaryDeployment
+          - ALL_AT_ONCE
         Interval: 1
         Percentage: 20
+        Alarms: !If
+          - UseDeploymentAlarms
+          - - !Ref HelloWorldStateMachineErrorsAlarm
+            - !Ref HelloWorldLambdaErrorsAlarm
+          - !Ref AWS::NoValue
 
 ##### Cloudwatch Alarms #####
 
