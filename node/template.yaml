@@ -132,19 +132,10 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
-      LoadBalancers:
-        - ContainerName: !Sub "${AWS::StackName}-node-server"
-          ContainerPort: 8000
-          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          SecurityGroups:
-            - !GetAtt ContainerServiceSecurityGroup.GroupId
-          Subnets:
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdA"
-            - Fn::ImportValue:
-                !Sub "${VpcStackName}-PrivateSubnetIdB"
+      # The following configuration is handled by ECSCanaryDeploymentStack:
+      # - LoadBalancers
+      # - NetworkConfiguration
+      # - PlatformVersion
       PropagateTags: SERVICE
       TaskDefinition: !If
         - UseECSCanaryDeploymentStack
@@ -668,18 +659,31 @@ Resources:
     Properties:
       TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
       Parameters:
-        VpcId: !Sub ${VpcStackName}-VpcId
-        # Parameters below to be filled by developers
-        # Replace with logical ID in this template
+      ## Canary deployment monitoring
+        DeploymentStrategy: !Ref DeploymentStrategy
+        CloudWatchAlarms: !Sub
+          - "${ELB5XXAlarm},${ELB4XXAnomalyAlarm}"
+          - ELB5XXAlarm: !Ref ELB5XXAlarm
+            ELB4XXAnomalyAlarm: !Ref ELB4XXAnomalyAlarm
+      ## ECS Service
         ECSClusterName: !Ref FargateCluster
         ECSServiceName: !GetAtt ContainerService.Name
-        TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
-        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ECSServiceTaskDefinition: !Ref TaskDefinition
-        DeploymentStrategy: !Ref DeploymentStrategy
-        # Replace with values correspondent to your app container
+      ## LoadBalancers
+        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
+        TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
+      ## NetworkConfiguration
+        VpcId: !Sub ${VpcStackName}-VpcId
+        Subnets: !Join
+          - ","
+          - - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
+        SecurityGroups: !GetAtt ContainerServiceSecurityGroup.GroupId
+      ## Secure Pipelines compliance
         PermissionsBoundary: !If
           - UsePermissionsBoundary
           - !Ref PermissionsBoundary
@@ -688,10 +692,6 @@ Resources:
           - UseCodeSigning
           - !Ref CodeSigningConfigArn
           - "none"
-        CloudWatchAlarms: !Sub
-          - "${ELB5XXAlarm},${ELB4XXAnomalyAlarm}"
-          - ELB5XXAlarm: !Ref ELB5XXAlarm
-            ELB4XXAnomalyAlarm: !Ref ELB4XXAnomalyAlarm
 
   #
   # Logging
