@@ -158,6 +158,7 @@ Resources:
     Type: AWS::Serverless::Function
     # checkov:skip=CKV_AWS_116: DLQ not required
     # checkov:skip=CKV_AWS_117: Internet access not required
+    # checkov:skip=CKV_AWS_173: These environment variables do not require encryption
     Metadata:
       checkov:
         skip:
