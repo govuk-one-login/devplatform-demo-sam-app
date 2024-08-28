@@ -114,6 +114,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       # checkov:skip=CKV_AWS_116: DLQ not required
       # checkov:skip=CKV_AWS_117: Internet access not required
+      # checkov:skip=CKV_AWS_173: These environment variables do not require encryption
     Metadata:
       checkov:
         skip:
