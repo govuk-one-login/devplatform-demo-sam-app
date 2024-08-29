@@ -462,14 +462,6 @@ Resources:
       ApiId: !Ref RestApiGateway
       Stage: !Ref ApiGatewayStage
 
-  OriginApiGatewayMappingV2:
-    Condition: NotFraudTest
-    Type: AWS::ApiGatewayV2::ApiMapping
-    Properties:
-      DomainName: !Ref RestApiGatewayOriginDomainName
-      ApiId: !Ref RestApiGateway
-      Stage: !Ref ApiGatewayStage
-
   FraudTestOriginApiGatewayMappingV2:
     Condition: IsFraudTest
     Type: AWS::ApiGatewayV2::ApiMapping
