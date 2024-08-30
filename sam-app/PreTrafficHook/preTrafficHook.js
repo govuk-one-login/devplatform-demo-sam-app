@@ -28,7 +28,6 @@ export const handler = (event, context, callback) => {
   // Perform validation of the newly deployed Lambda version
   var lambdaParams = {
     FunctionName: functionToTest,
-    Payload: "{\"option\": \"date\", \"period\": \"today\"}",
     InvocationType: "RequestResponse"
   };
   var lambdaResult = "Failed";
