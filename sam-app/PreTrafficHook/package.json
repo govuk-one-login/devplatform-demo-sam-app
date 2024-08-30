@@ -1,0 +1,12 @@
+{
+  "name": "sam-app",
+  "version": "1.0.0",
+  "description": "This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI",
+  "main": "preTrafficHook.js",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-codedeploy": "^3.637.0",
+    "@aws-sdk/client-lambda": "^3.637.0",
+    "@aws-sdk/util-utf8-node": "^3.259.0"
+  }
+}

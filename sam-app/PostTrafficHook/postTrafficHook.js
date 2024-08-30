@@ -1,8 +1,14 @@
-'use strict';
+'use strict';;
+import { CodeDeploy } from "@aws-sdk/client-codedeploy";
+import { Lambda } from "@aws-sdk/client-lambda";
 
-import AWS from 'aws-sdk';
-const codedeploy = new AWS.CodeDeploy({apiVersion: '2014-10-06'});
-var lambda = new AWS.Lambda();
+const asciiDecoder = new TextDecoder('ascii');
+const codedeploy = new CodeDeploy({
+  // The key apiVersion is no longer supported in v3, and can be removed.
+  // @deprecated The client uses the "latest" apiVersion.
+  apiVersion: '2014-10-06'
+});
+var lambda = new Lambda();
 
 export const handler = (event, context, callback) => {
 
@@ -36,7 +42,7 @@ export const handler = (event, context, callback) => {
       lambdaResult = "Failed";
     }
     else{   // successful response
-      var result = JSON.parse(data.Payload);
+      var result = JSON.parse(asciiDecoder.decode(data.Payload));
       console.log("Result: " +  JSON.stringify(result));
       console.log("statusCode: " + result.statusCode);
 

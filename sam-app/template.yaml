@@ -366,6 +366,7 @@ Resources:
           - id: "CKV_AWS_117"
             comment: "Internet access not required"
     Properties:
+      CodeUri: PreTrafficHook
       FunctionName: !Join
         - "_"
         - - "CodeDeployHook"
@@ -421,6 +422,7 @@ Resources:
           - id: "CKV_AWS_117"
             comment: "Ensure that AWS Lambda function is configured inside a VPC"
     Properties:
+      CodeUri: PostTrafficHook
       FunctionName: !Join
         - "_"
         - - "CodeDeployHook"

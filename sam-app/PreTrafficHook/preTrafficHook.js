@@ -1,8 +1,14 @@
-'use strict';
+'use strict';;
+import { CodeDeploy } from "@aws-sdk/client-codedeploy";
+import { Lambda } from "@aws-sdk/client-lambda";
 
-import AWS from 'aws-sdk';
-const codedeploy = new AWS.CodeDeploy({apiVersion: '2014-10-06'});
-var lambda = new AWS.Lambda();
+const asciiDecoder = new TextDecoder('ascii');
+const codedeploy = new CodeDeploy({
+  // The key apiVersion is no longer supported in v3, and can be removed.
+  // @deprecated The client uses the "latest" apiVersion.
+  apiVersion: '2014-10-06'
+});
+var lambda = new Lambda();
 
 export const handler = (event, context, callback) => {
 
@@ -15,21 +21,27 @@ export const handler = (event, context, callback) => {
   var functionToTest = process.env.NewVersion;
   console.log("Testing new function version: " + functionToTest);
 
+
+
+
+
   // Perform validation of the newly deployed Lambda version
   var lambdaParams = {
     FunctionName: functionToTest,
+    Payload: "{\"option\": \"date\", \"period\": \"today\"}",
     InvocationType: "RequestResponse"
   };
-
   var lambdaResult = "Failed";
+
   lambda.invoke(lambdaParams, function(err, data) {
     if (err){  // an error occurred
       console.log(err, err.stack);
       lambdaResult = "Failed";
     }
     else{  // successful response
-      var result = JSON.parse(data.Payload);
+      var result = JSON.parse(asciiDecoder.decode(data.Payload));
       console.log("Result: " +  JSON.stringify(result));
+
 
       // Check the response for valid results
       // The response will be a JSON payload with statusCode and body properties. ie:
@@ -52,7 +64,6 @@ export const handler = (event, context, callback) => {
         lifecycleEventHookExecutionId: lifecycleEventHookExecutionId,
         status: lambdaResult // status can be 'Succeeded' or 'Failed'
       };
-
       // Pass AWS CodeDeploy the prepared validation test results.
       codedeploy.putLifecycleEventHookExecutionStatus(params, function(err, data) {
         if (err) {
