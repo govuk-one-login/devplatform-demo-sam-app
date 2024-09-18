@@ -1,11 +1,6 @@
 require("express");
 require("express-async-errors");
 
-const blocked = require("blocked-at");
-blocked((time, stack) => {
-  console.log(`Blocked for ${time}ms, operation started here:`, stack)
-}, { threshold: 20 })
-
 const path = require("path");
 const session = require("express-session");
 const DynamoDBStore = require("connect-dynamodb")(session);
@@ -73,6 +68,11 @@ const { app, router } = setup({
     public: "/public",
   },
   publicDirs: ["../dist/public"],
+  public: {
+    setHeaders: function (res, path, stat) {
+      res.set("cache-control", "s-maxage=3600000 max-age=360000 immutable");
+    },
+  },
   views: [
     path.resolve(
       path.dirname(
@@ -93,6 +93,10 @@ const { app, router } = setup({
   },
   dev: true,
 });
+
+const { loadAssets } = require("./lib/loadAssets");
+loadAssets(app, "dist/**/*");
+app.locals.applicationStyleSheet = app.locals.assets["app.css"];
 
 setI18n({
   router,
