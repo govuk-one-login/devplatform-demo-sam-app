@@ -70,4 +70,4 @@ jobs:
         with:
             artifact-bucket-name: ${{ secrets.ACT_BUCKET_NAME }}
             signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
-            working-directory: ./sam-app/.aws-sam/build
+            working-directory: ./devplatform-demo-sam-app/sam-app/.aws-sam/build
