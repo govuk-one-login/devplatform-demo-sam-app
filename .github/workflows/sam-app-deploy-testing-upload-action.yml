@@ -6,7 +6,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ./sam-app
+    working-directory: ./devplatform-demo-sam-app/sam-app
 
 jobs:
   deploy:
