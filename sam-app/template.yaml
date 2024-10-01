@@ -90,6 +90,11 @@ Globals:
     Timeout: 20
 
 Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-test-fahmida-mybucket"
+  
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
