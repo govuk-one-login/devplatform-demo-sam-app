@@ -94,11 +94,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-test-fahmida-mybucket"
-
-  MyS3Bucket2:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${AWS::StackName}-test-fahmida-bucket"
   
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
