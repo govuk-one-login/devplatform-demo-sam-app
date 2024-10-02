@@ -93,7 +93,7 @@ Resources:
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "${AWS::StackName}-test-fahmida-mybucket"
+      BucketName: !Sub "${AWS::StackName}-test-fahmida-mybucket1"
   
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
