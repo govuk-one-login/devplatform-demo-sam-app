@@ -90,20 +90,6 @@ Globals:
     Timeout: 20
 
 Resources:  
-  MyPrivateRootCA:
-    Type: AWS::ACMPCA::CertificateAuthority
-    Properties:
-      Type: ROOT 
-      KeyAlgorithm: RSA_2048
-      SigningAlgorithm: "SHA256WITHRSA"
-      Subject: 
-        CommonName: PrivateCARoot gen1
-        Country: GB
-        Organization: "Test Organization"
-        OrganizationalUnit: "Test Unit"
-      Tags: 
-        - Key: StackName
-          Value: demo-sam-app
           
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
