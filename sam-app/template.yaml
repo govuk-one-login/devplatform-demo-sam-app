@@ -102,7 +102,7 @@ Resources:
         Organization: "Test Organization"
         OrganizationalUnit: "Test Unit"
       Tags: 
-        - Key: aws:cloudformation:stack-name
+        - Key: StackName
           Value: demo-sam-app
           
   APIGatewayAccessLogGroup:
