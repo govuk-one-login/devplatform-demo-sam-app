@@ -1,0 +1,84 @@
+{% extends "form-template.njk" %}
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+
+{%- block pageTitle %}
+    {{- (translate("govuk.error", { default: "Error" }) + ": ") if errorlist.length }}{{ hmpoTitle | safe }}{{ " – " + govukServiceName | safe if govukServiceName !== " " }} – GOV.UK
+{%- endblock %}
+
+{% block header %}
+  {% block cookieBanner %}
+    {% include 'banner.njk' %}
+  {% endblock %}
+
+  {% block govukHeader %}
+    {{ govukHeader({
+      homepageUrl: "https://www.gov.uk",
+      useTudorCrown: true
+    }) }}
+  {% endblock %}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: translate("govuk.phaseBanner.tag")
+    },
+    html: translate("govuk.phaseBanner.content"),
+    attributes: {
+      "role": "complementary"
+    }
+  }) }}
+  {% block backLink %}
+      {% if showLanguageToggle %}
+          {% from "frontend-language-toggle/macro.njk" import languageSelect %}
+        {{ languageSelect({
+          ariaLabel: translate("govuk.languageToggle.ariaLabel"),
+          class:'govuk-!-margin-bottom-1',
+          activeLanguage: htmlLang,
+          url: currentUrl,
+          languages: [
+            {
+              code: 'en',
+              text: translate("govuk.languageToggle.englishLanguage"),
+              visuallyHidden: translate("govuk.languageToggle.englishVisuallyHidden")
+            },
+            {
+              code:'cy',
+              text: translate("govuk.languageToggle.welshLanguage"),
+              visuallyHidden: translate("govuk.languageToggle.welshVisuallyHidden")
+            }]
+          })
+        }}
+      {% endif %}
+      {% if backLink %}
+        {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+        <span id="back">{{ govukBackLink({
+          text: translate("govuk.backLink"),
+          href: backLink}) }}
+        </span>
+      {% endif %}
+
+  {% endblock %}
+{% endblock %}
+
+
+{% set footerNavItems = translate("govuk.footerNavItems", { returnObjects: true }) %}
+{% block footer %}
+  {{ govukFooter( {
+    meta:footerNavItems.meta,
+    contentLicence: translate("govuk.contentLicence", { returnObjects: true }),
+    copyright: translate("govuk.copyright", { returnObjects: true })
+  } ) }}
+{% endblock %}
+
+{% block bodyEnd %}
+  {% block scripts %}
+    <script type="text/javascript" src="/public/javascripts/{{ assets['app.js'] }}"></script>
+    <script type="text/javascript" {% if cspNonce %} nonce="{{ cspNonce }}"{%  endif %}>
+      window.GOVUKFrontend.initAll()
+      window.DI.appInit({ga4ContainerId: "{{ga4ContainerId}}",uaContainerId:"{{uaContainerId}}"},{disableGa4Tracking:{{ga4Disabled}},disableUaTracking:{{uaDisabled}},cookieDomain:"{{analyticsCookieDomain}}"});
+    </script>
+  {% endblock %}
+{% endblock %}
