@@ -132,6 +132,19 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
+      LoadBalancers:
+        - ContainerName: !Sub "${AWS::StackName}-node-server"
+          ContainerPort: 8000
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !GetAtt ContainerServiceSecurityGroup.GroupId
+          Subnets:
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdA"
+            - Fn::ImportValue:
+                !Sub "${VpcStackName}-PrivateSubnetIdB"
       # The following configuration is handled by ECSCanaryDeploymentStack:
       # - LoadBalancers
       # - NetworkConfiguration
