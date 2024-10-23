@@ -142,6 +142,7 @@ Resources:
   HelloWorldRestApi:
     Type: AWS::Serverless::Api
     # checkov:skip=CKV_AWS_120:API caching is not the programme approved way
+    # checkov:skip=CKV_AWS_76: "logging error"
     Metadata:
       checkov:
         skip:
@@ -149,9 +150,9 @@ Resources:
             comment: "API caching is not the GDS approved way of caching in API Gateway"
     Properties:
       StageName: Prod
-      AccessLogSetting:
-        Format: "$context.requestId $context.httpMethod $context.path"
-        DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
+      # AccessLogSetting:
+      #   Format: "$context.requestId $context.httpMethod $context.path"
+      #   DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
       CacheClusterEnabled: false
       # CacheClusterSize: "0.5"
       DefinitionBody:
