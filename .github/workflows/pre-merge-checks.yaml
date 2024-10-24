@@ -97,9 +97,9 @@ jobs:
 
       - name: Move template files to scan folder
         run: mkdir ./scanned-templates && \
-          cp $GITHUB_WORKSPACE/cloudfront/template.yaml ./scanned-templates/cloudfront.yaml && \
-          cp $GITHUB_WORKSPACE/node/template.yaml ./scanned-templates/node.yaml && \
-          cp $GITHUB_WORKSPACE/sam-app/template.yaml ./scanned-templates/sam-app.yaml
+          mv $GITHUB_WORKSPACE/cloudfront/template.yaml ./scanned-templates/cloudfront.yaml && \
+          mv $GITHUB_WORKSPACE/node/template.yaml ./scanned-templates/node.yaml && \
+          mv $GITHUB_WORKSPACE/sam-app/template.yaml ./scanned-templates/sam-app.yaml
 
 
       - name: AWS Sustainability Scanner
