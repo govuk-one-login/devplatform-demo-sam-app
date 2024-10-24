@@ -91,9 +91,11 @@ jobs:
           sarif_file: results.sarif
 
   sustainbility-scan:
-    permissions:
-      pull-requests: write
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
