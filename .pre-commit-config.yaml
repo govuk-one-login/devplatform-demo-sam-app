@@ -58,7 +58,7 @@ repos:
         args: ['--verbose']
         verbose: true  # print warnings
   - repo: https://github.com/aws-cloudformation/cfn-python-lint
-    rev: v1.15.0
+    rev: v0.86.1
     hooks:
       - id: cfn-python-lint
         files: ^(?!\..*).*/template\.(json|yml|yaml)$
