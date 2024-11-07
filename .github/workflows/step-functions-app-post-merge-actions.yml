@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - step-functions-app/*
-      - .github/*
+      - "step-functions-app/**"
+      - ".github/workflows/step-functions-app-post-merge-actions.yml"
 
 defaults:
   run:
