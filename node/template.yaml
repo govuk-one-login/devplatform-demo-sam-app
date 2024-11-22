@@ -76,7 +76,7 @@ Conditions:
     Fn::Not:
       - Fn::Equals:
         - !Ref DeploymentStrategy
-        - None
+        - CodeDeployDefault.ECSLinear10PercentEvery3Minutes
 
   UseAlarmActions:
     Fn::Not:
@@ -133,7 +133,23 @@ Resources:
           - CODE_DEPLOY
           - ECS
       # The following configuration is handled by ECSCanaryDeploymentStack:
-      # - LoadBalancers
+      LoadBalancers: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - - ContainerName: !Sub "${AWS::StackName}-node-server"
+            ContainerPort: 8000
+            TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      NetworkConfiguration: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - AwsvpcConfiguration:
+            SecurityGroups:
+              - !GetAtt ContainerServiceSecurityGroup.GroupId
+            Subnets:
+              - Fn::ImportValue:
+                  !Sub "${VpcStackName}-PrivateSubnetIdA"
+              - Fn::ImportValue:
+                  !Sub "${VpcStackName}-PrivateSubnetIdB"
       # - NetworkConfiguration
       # - PlatformVersion
       PropagateTags: SERVICE
