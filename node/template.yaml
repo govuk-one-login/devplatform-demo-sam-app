@@ -132,6 +132,7 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
+      TaskDefinition: !Ref TaskDefinition
       # The following configuration is handled by ECSCanaryDeploymentStack:
       # LoadBalancers: !If
       #   - UseECSCanaryDeploymentStack
@@ -170,7 +171,6 @@ Resources:
       #   - UseECSCanaryDeploymentStack
       #   - !Ref AWS::NoValue
       #   - !Ref TaskDefinition
-      TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
