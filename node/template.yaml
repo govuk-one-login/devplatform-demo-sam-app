@@ -153,11 +153,11 @@ Resources:
       # - NetworkConfiguration
       # - PlatformVersion
       PropagateTags: SERVICE
-      TaskDefinition: !If
-        - UseECSCanaryDeploymentStack
-        - !Ref AWS::NoValue
-        - !Ref TaskDefinition
-      # TaskDefinition: !Ref TaskDefinition
+      # TaskDefinition: !If
+      #   - UseECSCanaryDeploymentStack
+      #   - !Ref AWS::NoValue
+      #   - !Ref TaskDefinition
+      TaskDefinition: !Ref TaskDefinition
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-ContainerService"
