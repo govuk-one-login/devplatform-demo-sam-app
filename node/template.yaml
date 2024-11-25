@@ -132,7 +132,7 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
-      Name: FranService
+      ServiceName: FranService
       # TaskDefinition: !Ref TaskDefinition
       # The following configuration is handled by ECSCanaryDeploymentStack:
       # LoadBalancers: !If
