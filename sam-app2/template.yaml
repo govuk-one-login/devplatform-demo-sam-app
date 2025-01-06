@@ -51,18 +51,18 @@ Conditions:
           - !Ref CodeSigningConfigArn
           - "none"
 
-Mappings:
-  EnvironmentConfiguration:
-    dev:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
-    build:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
-    staging:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
-    integration:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
-    production:
-      dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables      # pragma: allowlist secret
+# Mappings:
+#   EnvironmentConfiguration:
+#     dev:
+#       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+#     build:
+#       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+#     staging:
+#       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+#     integration:
+#       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables   # pragma: allowlist secret
+#     production:
+#       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables      # pragma: allowlist secret
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -76,37 +76,37 @@ Globals:
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
-    Environment:
-      Variables:
-        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
-        DT_CONNECTION_AUTH_TOKEN:
-          !Sub
-            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'           # pragma: allowlist secret
-            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_CONNECTION_BASE_URL:
-          !Sub
-            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'             # pragma: allowlist secret
-            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_CLUSTER_ID:
-          !Sub
-            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'                      # pragma: allowlist secret
-            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_LOG_COLLECTION_AUTH_TOKEN:
-          !Sub
-            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'       # pragma: allowlist secret
-            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_TENANT:
-          !Sub
-            - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'                          # pragma: allowlist secret
-            - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
-        DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
+    # Environment:
+    #   Variables:
+    #     AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+    #     DT_CONNECTION_AUTH_TOKEN:
+    #       !Sub
+    #         - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'           # pragma: allowlist secret
+    #         - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    #     DT_CONNECTION_BASE_URL:
+    #       !Sub
+    #         - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_BASE_URL}}'             # pragma: allowlist secret
+    #         - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    #     DT_CLUSTER_ID:
+    #       !Sub
+    #         - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CLUSTER_ID}}'                      # pragma: allowlist secret
+    #         - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    #     DT_LOG_COLLECTION_AUTH_TOKEN:
+    #       !Sub
+    #         - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_LOG_COLLECTION_AUTH_TOKEN}}'       # pragma: allowlist secret
+    #         - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    #     DT_TENANT:
+    #       !Sub
+    #         - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_TENANT}}'                          # pragma: allowlist secret
+    #         - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    #     DT_OPEN_TELEMETRY_ENABLE_INTEGRATION: "true"
     # https://govukverify.atlassian.net/wiki/spaces/Architecture/pages/3521183835/ADR+0082+Run+Lambda+functions+on+arm64+processor+architecture
     Architectures:
       - arm64
-    Layers:
-      - !Sub
-        - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}'                             # pragma: allowlist secret
-        - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
+    # Layers:
+    #   - !Sub
+    #     - '{{resolve:secretsmanager:${SecretArn}:SecretString:JAVA_LAYER}}'                             # pragma: allowlist secret
+    #     - SecretArn: !FindInMap [ EnvironmentConfiguration, !Ref Environment, dynatraceSecretArn ]
 
 
 Resources:
