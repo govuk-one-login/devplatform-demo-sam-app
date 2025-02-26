@@ -33,6 +33,11 @@ Parameters:
     Type: "String"
     Default: "none"
 
+  # TestRoleArn:
+  #   Type: String
+  #   Description: The ARN of the role that will used for integration tests
+  #   Default: none
+
 Conditions:
   IsNonDevEnvironment:
     Fn::Not:
@@ -64,6 +69,9 @@ Conditions:
       - Fn::Equals:
         - !Ref NotificationTopicArn
         - "none"
+
+  # UseTestRole: !Not
+  #   - !Equals [!Ref TestRoleArn, none]
 
 Mappings:
   APIDomainNames:
@@ -155,10 +163,38 @@ Resources:
       CacheClusterEnabled: false
       # CacheClusterSize: "0.5"
       DefinitionBody:
+        openapi: "3.0.3" # workaround to get `sam validate` to work
+        paths: # workaround to get `sam validate` to work
+          /foo:
+            bar: baz
         Fn::Transform:
           Name: AWS::Include
           Parameters:
             Location: ./openapi-spec.yaml
+      EndpointConfiguration:
+        Type: PRIVATE
+        VPCEndpointIds:
+          - Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+      Auth:
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Principal: '*'
+              Action: execute-api:Invoke
+              Resource: execute-api:/*
+              Condition:
+                StringEquals:
+                  aws:SourceVpce:
+                    Fn::ImportValue: !Sub "${VpcStackName}-ExecuteApiGatewayEndpointId"
+            # - !If
+            #   - UseTestRole
+            #   - - Effect: Allow
+            #       Principal:
+            #         AWS: arn:aws:iam::842766856468:role/PL-demo-sam-app-pipeline-TestRole-06449d80b2ef
+            #       Action: execute-api:Invoke
+            #       Resource: execute-api:/*
+            #   - !Ref "AWS::NoValue"
+
       TracingEnabled: true
       Tags:
         Product: GOV.UK Sign In
