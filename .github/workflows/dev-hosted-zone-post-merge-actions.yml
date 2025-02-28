@@ -47,7 +47,7 @@ jobs:
         run: sam build
 
       - name: Deploy SAM app
-        uses: govuk-one-login/devplatform-upload-action@v3.9.2
+        uses: govuk-one-login/devplatform-upload-action@v3.9.4
         with:
           artifact-bucket-name: ${{ secrets.DEV_HOSTED_ZONE_ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
