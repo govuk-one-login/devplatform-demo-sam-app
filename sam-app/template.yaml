@@ -93,10 +93,10 @@ Resources:
   LukeTestSSMParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: luke-test-ssm-parameter
-      Type: SecureString
-      Value: MyTestParameter
-      Description: Testing adding an SSM to see resource creation with aws
+      Name: "luke-test-ssm-parameter"
+      Type: "SecureString"
+      Value: "MyTestParameter"
+      Description: "Testing adding an SSM to see resource creation with aws"
   
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
