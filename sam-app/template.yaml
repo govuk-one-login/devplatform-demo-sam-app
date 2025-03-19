@@ -4,7 +4,7 @@ Description: >
   Sample SAM Template for demo-sam-app.
   Managed by dev-platform
 
-Parameters:
+Parameters:  
   VpcStackName:
     Description: "The VPC stack name in the account"
     Type: "String"
@@ -90,6 +90,14 @@ Globals:
     Timeout: 20
 
 Resources:
+  LukeTestSSMParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: luke-test-ssm-parameter
+      Type: SecureString
+      Value: MyTestParameter
+      Description: Testing adding an SSM to see resource creation with aws
+  
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
