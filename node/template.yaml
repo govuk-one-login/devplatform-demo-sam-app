@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Demo application container for deployment into AWS Fargate.
-  Managed by dev-platform
+  Managed by dev-platform.
 
 Parameters:
   VpcStackName:

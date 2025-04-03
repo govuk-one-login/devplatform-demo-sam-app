@@ -10,7 +10,7 @@ const path = require("path");
 const session = require("express-session");
 const DynamoDBStore = require("connect-dynamodb")(session);
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-
+console.log("Tests3")
 const commonExpress = require("@govuk-one-login/di-ipv-cri-common-express");
 
 const setHeaders = commonExpress.lib.headers;
