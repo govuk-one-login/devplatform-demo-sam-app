@@ -4,6 +4,7 @@ const hostname = '0.0.0.0';
 const port = 8000;
 
 const server = http.createServer(function (request, response) {
+    console.log("Test")
     const parsedURL = url.parse(
         request.url,
         true
