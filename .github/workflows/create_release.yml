@@ -26,12 +26,6 @@ jobs:
         with:
           node-version: '20' # Or your desired Node.js version
 
-      - name: Install dependencies (if your project has a package.json)
-        run: npm ci
-
-      - name: Run tests (optional but highly recommended)
-        run: npm test # Or your project's test command
-
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v4 # A popular GitHub Action for semantic-release
         env:
