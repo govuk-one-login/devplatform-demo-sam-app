@@ -1,0 +1,41 @@
+name: Release CI
+
+on:
+  push:
+    branches:
+      - cg-test # This workflow runs when changes are pushed to the main branch
+
+jobs:
+  release:
+    name: Automated Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to create releases and tags
+      issues: write # Needed to comment on issues/PRs linked to the release
+      pull-requests: write # Needed to comment on issues/PRs linked to the release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # This is crucial for semantic-release to analyze the full history
+          fetch-depth: 0
+
+      - name: Setup Node.js (if your project or semantic-release requires it)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your desired Node.js version
+
+      - name: Install dependencies (if your project has a package.json)
+        run: npm ci
+
+      - name: Run tests (optional but highly recommended)
+        run: npm test # Or your project's test command
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4 # A popular GitHub Action for semantic-release
+        env:
+          # GITHUB_TOKEN is automatically provided by GitHub Actions
+          # It needs sufficient permissions (see 'permissions' block above)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Only if publishing to npm registry
