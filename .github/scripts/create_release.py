@@ -57,7 +57,7 @@ if __name__ == "__main__":
     print(repository)
     tag_name = 'v1.0.2'
     release_name = 'v1.0.2 Release'
-    target_commitish = 'release-test'
+    target_commitish = os.environ['TARGET_SHA']
     body = 'Release notes here'
 
     create_github_release(token, repository, tag_name, release_name, target_commitish, body)

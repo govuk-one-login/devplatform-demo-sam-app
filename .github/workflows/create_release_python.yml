@@ -11,7 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: cg-test
+          ref: release-test
+
+      - name: Get SHA of release-test
+        id: get_sha
+        run: |
+          git fetch origin release-test
+          echo "::set-output name=sha::$(git rev-parse FETCH_HEAD)"
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -20,13 +26,9 @@ jobs:
 
       - name: Install requests
         run: pip install requests
-      
-      - name: check
-        run: |
-          pwd
-          ls -ltra
 
-      - name: Run create_release.py
+      - name: Create Release and Tag
         env:
-          RELEASE_CREATION_POC: ${{ secrets.RELEASE_CREATION_POC }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_CREATION_POC }}
+          TARGET_SHA: ${{ steps.get_sha.outputs.sha }}
         run: python .github/scripts/create_release.py
