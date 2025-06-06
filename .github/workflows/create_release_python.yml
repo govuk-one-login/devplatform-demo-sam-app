@@ -27,9 +27,6 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Authenticate gh
-        run: gh auth login --with-token ${{ secrets.RELEASE_CREATION_POC }}   
-
       - name: Create Release and Tag
         env:
           RELEASE_CREATION_POC: ${{ secrets.RELEASE_CREATION_POC }}
