@@ -21,7 +21,7 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Run create_release.py
+      - name: Run ../scripts/create_release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python create_release.py
