@@ -29,6 +29,6 @@ jobs:
 
       - name: Create Release and Tag
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_CREATION_POC }}
+          RELEASE_CREATION_POC: ${{ secrets.RELEASE_CREATION_POC }}
           TARGET_SHA: ${{ steps.get_sha.outputs.sha }}
         run: python .github/scripts/create_release.py
