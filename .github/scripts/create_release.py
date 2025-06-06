@@ -19,8 +19,9 @@ def create_github_release(token, repository, tag_name, release_name, target_comm
     }
 
     url = f'https://api.github.com/repos/{repository}/releases'
+    print(url)
     response = requests.post(url, headers=headers, json=data)
-
+    print(response)
     if response.status_code == 201:  # 201 Created
         print("Release created successfully!")
         print(response.json())
@@ -29,12 +30,15 @@ def create_github_release(token, repository, tag_name, release_name, target_comm
         print(response.text)  # Print the error response for debugging
 
 if __name__ == "__main__":
+    print('main')
     token = os.environ['GITHUB_TOKEN']
+    print(token)
     repository = os.environ['GITHUB_REPOSITORY']  # Get repo from environment
+    print(repository)
     tag_name = 'v1.0.2'
     release_name = 'v1.0.2 Release'
     target_commitish = 'release-test'
     body = 'Release notes here'
-
+    print('CREATING')
     create_github_release(token, repository, tag_name, release_name, target_commitish, body)
 
