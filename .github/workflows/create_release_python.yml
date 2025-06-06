@@ -24,4 +24,4 @@ jobs:
       - name: Run create_release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python ../scripts/create_release.py
+        run: python scripts/create_release.py
