@@ -20,6 +20,11 @@ jobs:
 
       - name: Install requests
         run: pip install requests
+      
+      - name: check
+        run: |
+          pwd
+          ls -ltr
 
       - name: Run create_release.py
         env:
