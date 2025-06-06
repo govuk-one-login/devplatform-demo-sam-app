@@ -52,11 +52,11 @@ def create_github_release(token, repository, tag_name, release_name, target_comm
 
 
 if __name__ == "__main__":
-    token = os.environ['RELEASE_CREATION_POC']
+    token = os.environ['GITHUB_TOKEN']
     repository = os.environ['GITHUB_REPOSITORY']  # Get repo from environment
     print(repository)
-    tag_name = 'v1.0.4'
-    release_name = 'v1.0.4'
+    tag_name = 'v1.0.5'
+    release_name = 'v1.0.5'
     target_commitish = os.environ['TARGET_SHA']
     body = 'Release notes here'
 
