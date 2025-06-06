@@ -43,11 +43,6 @@ def get_commits_since_last_release(repository, branch='main'):
 if __name__ == "__main__":
     repository = os.environ.get("GITHUB_REPOSITORY")  # Get repository from environment
     branch = "cg-test"  # Replace with your test branch name
-    try:
-      subprocess.run(["gh", "auth", "login", "--with-token", os.environ['RELEASE_CREATION_POC']], check=True)
-    except subprocess.CalledProcessError as e:
-      print(f"Error authenticating gh: {e}")
-      exit(1)
     commits = get_commits_since_last_release(repository, branch)
 
     if commits:
