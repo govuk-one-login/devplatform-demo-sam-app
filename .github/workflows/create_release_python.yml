@@ -11,12 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: release-test
+          ref: cg-test
 
-      - name: Get SHA of release-test
+      - name: Get SHA
         id: get_sha
         run: |
-          git fetch origin release-test
+          git fetch origin cg-test
           echo "::set-output name=sha::$(git rev-parse FETCH_HEAD)"
 
       - name: Set up Python
