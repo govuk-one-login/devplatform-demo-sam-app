@@ -24,9 +24,9 @@ jobs:
       - name: check
         run: |
           pwd
-          ls -ltr
+          ls -ltra
 
       - name: Run create_release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/create_release.py
+        run: python .github/scripts/create_release.py
