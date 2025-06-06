@@ -1,7 +1,9 @@
 name: Create Release with Python Script
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - cg-test
 
 jobs:
   create-release:
