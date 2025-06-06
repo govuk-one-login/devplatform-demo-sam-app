@@ -22,21 +22,24 @@ def get_commits_since_release_api(owner, repo, branch, token):
         tag_sha_response.raise_for_status()
         latest_release_sha = tag_sha_response.json()["object"]["sha"]
 
-        # 3. Get commits on the branch
-        commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"
-        commits = []
+        # 3. Get commits on the branch (keep full commit objects)
+        commits_data_all = []
         while commits_url:
             commits_response = requests.get(commits_url, headers=headers)
             commits_response.raise_for_status()
             commits_data = commits_response.json()
-            commits.extend([commit["commit"]["message"] for commit in commits_data])
+            commits_data_all.extend(commits_data)  # Extend with full commit objects
             commits_url = commits_response.links.get("next", {}).get("url")
 
-        # 4. Filter commits to those after the latest release
+
+        # 4. Filter commits to those after the latest release (using SHA)
         commits_since_release = [
-            commit for commit in commits if commit["sha"] > latest_release_sha
+            commit for commit in commits_data_all if commit["sha"] > latest_release_sha
         ]
-        return [commit["commit"]["message"] for commit in commits_since_release]
+
+        # 5. Extract commit messages after filtering
+        commit_messages = [commit["commit"]["message"] for commit in commits_since_release]
+        return commit_messages
 
 
     except requests.exceptions.RequestException as e:
