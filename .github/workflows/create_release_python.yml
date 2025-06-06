@@ -5,7 +5,7 @@ on:
     branches:
       - cg-test
 
-      permissions:
+permissions:
   actions: read
   contents: write
 
