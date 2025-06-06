@@ -28,5 +28,5 @@ jobs:
 
       - name: Run create_release.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_CREATION_POC: ${{ secrets.RELEASE_CREATION_POC }}
         run: python .github/scripts/create_release.py
