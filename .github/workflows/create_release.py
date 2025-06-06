@@ -29,6 +29,7 @@ def create_github_release(token, repository, tag_name, release_name, target_comm
         print(response.text)  # Print the error response for debugging
 
 if __name__ == "__main__":
+    print('main')
     token = os.environ['GITHUB_TOKEN']
     print(token)
     repository = os.environ['GITHUB_REPOSITORY']  # Get repo from environment
