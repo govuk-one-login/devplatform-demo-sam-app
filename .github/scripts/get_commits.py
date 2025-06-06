@@ -67,7 +67,7 @@ if __name__ == "__main__":
     owner = os.environ["GITHUB_REPOSITORY_OWNER"]
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "cg-test"  # Replace with your branch name
-    token = os.environ["RELEASE_CREATION_POC"]  # Or your PAT
+    token = os.environ["GITHUB_TOKEN"]  # Or your PAT
 
     commits = get_commits_since_release_api(owner, repo, branch, token)
 
