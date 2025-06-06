@@ -13,7 +13,7 @@ def get_commits_since_release_api(owner, repo, branch, token):
         # 1. Get the latest release tag
         release_url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
         release_response = requests.get(release_url, headers=headers)
-        release_response.raise_for_status()  # Raise an exception for bad status codes
+        release_response.raise_for_status()
         latest_release_tag = release_response.json()["tag_name"]
 
         # 2. Get the commit SHA of the tag
@@ -22,7 +22,8 @@ def get_commits_since_release_api(owner, repo, branch, token):
         tag_sha_response.raise_for_status()
         latest_release_sha = tag_sha_response.json()["object"]["sha"]
 
-        # 3. Get commits on the branch (keep full commit objects)
+        # 3. Get commits on the branch (initialize commits_url)
+        commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"  # Initialize here
         commits_data_all = []
         while commits_url:
             commits_response = requests.get(commits_url, headers=headers)
@@ -41,10 +42,23 @@ def get_commits_since_release_api(owner, repo, branch, token):
         commit_messages = [commit["commit"]["message"] for commit in commits_since_release]
         return commit_messages
 
-
     except requests.exceptions.RequestException as e:
-        print(f"Error during API request: {e}")
-        return []
+        if "404" in str(e):  # Check if the error is a 404 (Not Found)
+            print("No releases found. Getting all commits from the branch.")
+            commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"
+            commits_data_all = []
+            while commits_url:
+                commits_response = requests.get(commits_url, headers=headers)
+                commits_response.raise_for_status()
+                commits_data = commits_response.json()
+                commits_data_all.extend(commits_data)
+                commits_url = commits_response.links.get("next", {}).get("url")
+
+            commit_messages = [commit["commit"]["message"] for commit in commits_data_all]
+            return commit_messages  # Return all commits if no release exists
+        else:  # Handle other request errors
+            print(f"Error during API request: {e}")
+            return []
     except KeyError as e:
         print(f"Error parsing API response: {e}")
         return []
