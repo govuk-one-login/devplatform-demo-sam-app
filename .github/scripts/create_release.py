@@ -39,6 +39,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 latest_release_sha = tag_sha_response.json()["object"]["sha"]
                 current_version_str = latest_release_tag.split("/")[-1].lstrip("v")
                 current_version = semantic_version.Version(current_version_str)
+                print(current_version)
 
             # 3. Get commits on the branch and filter
             if latest_release_tag is not None:
@@ -92,12 +93,16 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 # 5. Determine new version
                 if breaking_change:
                     new_version = current_version.next_major()
+                    print('BREAKING CHANGE')
                 elif any(re.match(r"^feat\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in relevant_commits):
                     new_version = current_version.next_minor()
+                    print('MINOR VERSION')
                 elif any(re.match(r"^fix\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in relevant_commits):
                     new_version = current_version.next_patch()
+                    print('PATCH_VERSION')
                 else:
                     new_version = current_version
+                    print("NO NEW VERSION")
 
                 app_changes[app] = {
                 "changes": [commit["commit"]["message"] for commit in commits_since_release],
@@ -131,11 +136,10 @@ def create_release(owner, repo, app, new_version, commits_since_release, token):
     }
 
     tag_name = f"{app}/v{new_version}"
-    release_name = f"{app} v{new_version}"
-    release_body = f"Release notes for {app} v{new_version}:\n\n"
+    release_name = f"{app}/v{new_version}"
+    release_body = f"Release notes for {app}/v{new_version}:\n\n"
     for commit in commits_since_release:
         release_body += f"- {commit['commit']['message']}\n"
-
 
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     release_data = {
