@@ -174,7 +174,7 @@ if __name__ == "__main__":
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "PSREDEV-2337"  # Replace with your branch name
     token = os.environ["GITHUB_TOKEN"]
-    dry_run = false
+    dry_run = False
 
     root_path = os.getcwd()
     os.chdir(root_path)  # Change to the root directory
