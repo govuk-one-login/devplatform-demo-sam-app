@@ -91,7 +91,9 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         commits_since_release.append(commit)
 
                 # 5. Determine new version
+                print("--------")
                 print(commit["commit"]["message"])
+                print("--------")
                 if breaking_change:
                     new_version = current_version.next_major()
                     print('BREAKING CHANGE')
