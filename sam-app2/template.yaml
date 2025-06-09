@@ -190,6 +190,7 @@ Resources:
       CacheClusterEnabled: false
       # CacheClusterSize: "0.5"
       TracingEnabled: true
+      PropagateTags: true
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -270,131 +271,6 @@ Resources:
           Value: HelloWorldKmsKey
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
-
-  HelloWaf:
-    Type: AWS::WAFv2::WebACL
-    Properties:
-      DefaultAction:
-        Block: {}
-      Scope: "REGIONAL"
-      VisibilityConfig:
-        CloudWatchMetricsEnabled: true
-        MetricName: "hello-waf-metric"
-        SampledRequestsEnabled: true
-      Rules:
-        # Optional rule set to restrict to GDS IP addresses.
-        # See WAFv2GDSIPSet resource further on.
-        - Name: GDSIPs
-          Action:
-            Allow: {}
-          Priority: 10
-          Statement:
-            IPSetReferenceStatement:
-              Arn: !GetAtt WAFv2GDSIPSet.Arn
-              IPSetForwardedIPConfig:
-                FallbackBehavior: MATCH
-                HeaderName: X-Forwarded-For
-                Position: FIRST
-          VisibilityConfig:
-            CloudWatchMetricsEnabled: TRUE
-            MetricName: !Sub "${AWS::StackName}-WAFGDSIP-hits"
-            SampledRequestsEnabled: FALSE
-        - Name: AWS-AWMManagedRuleCommonRuleSet
-          OverrideAction:
-            None: {}
-          Priority: 20
-          Statement:
-            ManagedRuleGroupStatement:
-              Name: AWSManagedRulesCommonRuleSet
-              VendorName: AWS
-          VisibilityConfig:
-            CloudWatchMetricsEnabled: TRUE
-            MetricName: !Sub "${AWS::StackName}-AWSCRS-hits"
-            SampledRequestsEnabled: FALSE
-        - Name: AWS-AWSManagedRulesKnownBadInputsRuleSet
-          Priority: 30
-          OverrideAction:
-            None: {}
-          Statement:
-            ManagedRuleGroupStatement:
-              VendorName: AWS
-              Name: AWSManagedRulesKnownBadInputsRuleSet
-          VisibilityConfig:
-            CloudWatchMetricsEnabled: TRUE
-            MetricName: !Sub "${AWS::StackName}-AWSKBI-hits"
-            SampledRequestsEnabled: FALSE
-
-# The IP address blocks below are referenced from here:
-# https://sites.google.com/a/digital.cabinet-office.gov.uk/gds/working-at-gds/gds-internal-it/gds-internal-it-network-public-ip-addresses
-  WAFv2GDSIPSet:
-    Type: AWS::WAFv2::IPSet
-    Properties:
-      Addresses:
-        - "213.86.153.211/32"
-        - "213.86.153.212/32"
-        - "213.86.153.213/32"
-        - "213.86.153.214/32"
-        - "213.86.153.231/32"
-        - "213.86.153.235/32"
-        - "213.86.153.236/32"
-        - "213.86.153.237/32"
-        - "51.149.8.0/25"
-        - "51.149.8.128/29"
-      IPAddressVersion: IPV4
-      Scope: REGIONAL
-      Tags:
-        - Key: Product
-          Value: GOV.UK Sign In
-        - Key: System
-          Value: Dev Platform
-        - Key: Environment
-          Value: Demo
-        - Key: Service
-          Value: backend
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-WAFv2GDSIPSet"
-        - Key: Source
-          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
-
-  HelloWafGatewayAssociation:
-    Type: AWS::WAFv2::WebACLAssociation
-    Properties:
-      ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${HelloWorldRestApi}/stages/${HelloWorldRestApi.Stage}"
-      WebACLArn: !GetAtt HelloWaf.Arn
-
-  HelloWafLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName:
-        Fn::Join:
-          - '-'
-          - - aws-waf-logs-
-            - Ref: AWS::StackName
-            - Fn::Select:
-                - 4
-                - Fn::Split:
-                    - '-'
-                    - Fn::Select:
-                        - 2
-                        - Fn::Split:
-                            - /
-                            - Ref: AWS::StackId
-      RetentionInDays: 30
-      KmsKeyId: !GetAtt HelloWorldKmsKey.Arn
-      Tags:
-        - Key: Service
-          Value: backend
-        - Key: Name
-          Value: HelloWafLogGroup
-        - Key: Source
-          Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
-
-  HelloWafLogs:
-    Type: AWS::WAFv2::LoggingConfiguration
-    Properties:
-      LogDestinationConfigs:
-        - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${HelloWafLogGroup}"
-      ResourceArn: !GetAtt HelloWaf.Arn
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
