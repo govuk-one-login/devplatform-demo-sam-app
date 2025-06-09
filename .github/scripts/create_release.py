@@ -57,6 +57,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         if "breaking change" in lower_message or \
                             lower_message.startswith(("feat:", "fix:")) or \
                             (lower_message.startswith("chore:") and "breaking change" in lower_message):
+                            print(message)
                             relevant_commits.append(commit)
 
                     commits_url = commits_response.links.get("next", {}).get("url")
