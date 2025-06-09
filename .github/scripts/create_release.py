@@ -2,7 +2,6 @@ import requests
 import os
 import re
 import semantic_version
-#from packaging import version
 
 DRY_RUN = True
 
@@ -158,12 +157,13 @@ def create_release(owner, repo, app, new_version, commits_since_release, token):
 
 
 if __name__ == "__main__":
-    owner = "x"
-    repo = "x"
+    owner = os.environ["GITHUB_REPOSITORY_OWNER"]
+    repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "PSREDEV-2337"  # Replace with your branch name
-    token = "X"
+    token = os.environ["GITHUB_TOKEN"]
 
-    root_path = "/Users/cgrant/GDS/devplatform-demo-sam-app/"
+    root_path = os.getcwd()
+    print(root_path)
     os.chdir(root_path)  # Change to the root directory
     apps = [
         d for d in os.listdir(".")  # List current directory (which is now the root)
