@@ -9,7 +9,7 @@ on:
         type: boolean
   push:
     branches:
-      - main
+      - PSREDEV-2337
 
 permissions:
   contents: write
