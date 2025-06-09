@@ -15,6 +15,10 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
 
     for app in apps:
         try:
+            commits_since_release = []
+            relevant_commits = []
+            relevant_commits_since_release = []
+
             # 1. Get the latest release tag for the current app
             tags_url = f"https://api.github.com/repos/{owner}/{repo}/tags"
             tags_response = requests.get(tags_url, headers=headers)
@@ -39,8 +43,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 latest_release_sha = tag_sha_response.json()["object"]["sha"]
                 current_version_str = latest_release_tag.split("/")[-1].lstrip("v")
                 current_version = semantic_version.Version(current_version_str)
-                print(current_version)
-
+  
             # 3. Get commits on the branch and filter
             if latest_release_tag is not None:
                 commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"
@@ -57,12 +60,11 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         if "breaking change" in lower_message or \
                             lower_message.startswith(("feat:", "fix:")) or \
                             (lower_message.startswith("chore:") and "breaking change" in lower_message):
-                            print(message)
                             relevant_commits.append(commit)
 
                     commits_url = commits_response.links.get("next", {}).get("url")
             else:
-                relevant_commits = []
+                relevant_commits = [] 
 
             # 4. Filter commits to those after the latest release (if a release exists)
             if latest_release_sha:
@@ -70,7 +72,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                     commit for commit in relevant_commits if commit["sha"] > latest_release_sha
                 ]
                 #filter to commits where the file relates to this app
-                for commit in relevant_commits:
+                for commit in relevant_commits_since_release:
                     commit_sha = commit["sha"]
                     commit_url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}"
                     commit_response = requests.get(commit_url, headers=headers)
@@ -86,7 +88,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                             app_relevant = True
                             break 
 
-                    if app_relevant:    
+                    if app_relevant: 
                         commits_since_release.append(commit)
 
                 # 5. Determine new version
@@ -94,42 +96,31 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 minor_change = False
                 patch_change = False
                 for commit in commits_since_release:
-                    print("--------")
-                    print(commit["commit"]["message"])
-                    print("--------")
-                    lower_message = message.lower()
+                    lower_message = commit["commit"]["message"].lower()
                     if "breaking change" in lower_message:
-                        #check for a breaking change
+                        #check for a breaking/major change
                         major_change = True
-                        print('AAA')
-                        print(lower_message)
                     elif lower_message.startswith("feat:"):
-                        print('BBB')
-                        print(lower_message)
+                        #check for a minor change
                         minor_change = True
                     elif lower_message.startswith("fix:"):
-                        print('CCC')
-                        print(lower_message)
+                        #check for a patch change
                         patch_change = True    
                 if major_change:
                     new_version = current_version.next_major()
-                    print("MAJOR")
                 elif minor_change:
                     new_version = current_version.next_minor()
-                    print("MINOR")
                 elif patch_change:
-                    new_version = current_version.next_patch() 
-                    print("PATCH")   
+                    new_version = current_version.next_patch()   
                 else:
                     new_version = None
-                print(new_version)
+
                 app_changes[app] = {
                 "changes": [commit["commit"]["message"] for commit in commits_since_release],
                 "new_version": str(new_version) if commits_since_release else None,
                 "commits_since_release": commits_since_release # Add this line
                 }
             else:
-                #commits_since_release = relevant_commits
                 commits_since_release =[]
                 new_version = None
                 app_changes[app] = {"changes": [], "new_version": None, "commits_since_release": []}   
@@ -186,7 +177,6 @@ if __name__ == "__main__":
     token = os.environ["GITHUB_TOKEN"]
 
     root_path = os.getcwd()
-    print(root_path)
     os.chdir(root_path)  # Change to the root directory
     apps = [
         d for d in os.listdir(".")  # List current directory (which is now the root)
