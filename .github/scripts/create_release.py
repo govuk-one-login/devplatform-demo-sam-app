@@ -91,16 +91,17 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         commits_since_release.append(commit)
 
                 # 5. Determine new version
-                print("--------")
-                print(commit["commit"]["message"])
-                print("--------")
+                for commit in commits_since_release
+                    print("--------")
+                    print(commit["commit"]["message"])
+                    print("--------")
                 if breaking_change:
                     new_version = current_version.next_major()
                     print('BREAKING CHANGE')
-                elif any(re.match(r"^feat\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in relevant_commits):
+                elif any(re.match(r"^feat\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in commits_since_release):
                     new_version = current_version.next_minor()
                     print('MINOR VERSION')
-                elif any(re.match(r"^fix\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in relevant_commits):
+                elif any(re.match(r"^fix\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in commits_since_release):
                     new_version = current_version.next_patch()
                     print('PATCH_VERSION')
                 else:
