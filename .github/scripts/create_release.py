@@ -26,6 +26,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
 
             latest_release_tag = None
             for tag in tags_data:
+                print(app + " " + tag["name"])
                 if tag["name"].startswith(f"{app}/v"):
                     if latest_release_tag is None or version.parse(tag["name"]) > version.parse(latest_release_tag):
                         latest_release_tag = tag["name"]
