@@ -45,7 +45,6 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
             if latest_release_tag is not None:
                 commits_url = f"https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}"
                 relevant_commits = []
-                breaking_change = False
 
                 while commits_url:
                     commits_response = requests.get(commits_url, headers=headers)
@@ -54,15 +53,14 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
 
                     for commit in commits_data:
                         message = commit["commit"]["message"]
-                        if "BREAKING CHANGE" in message:
-                            breaking_change = True
-                            relevant_commits.append(commit)
-                        elif re.match(r"^(feat|fix|chore)(\(.*\))?:.*", message, re.IGNORECASE):
+                        lower_message = message.lower()
+                        if "breaking change" in lower_message or \
+                            lower_message.startswith(("feat:", "fix:")) or \
+                            (lower_message.startswith("chore:") and "breaking change" in lower_message):
                             relevant_commits.append(commit)
 
                     commits_url = commits_response.links.get("next", {}).get("url")
             else:
-                breaking_change = False
                 relevant_commits = []
 
             # 4. Filter commits to those after the latest release (if a release exists)
@@ -91,32 +89,39 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         commits_since_release.append(commit)
 
                 # 5. Determine new version
+                major_change = False
+                minor_change = False
+                patch_change = False
                 for commit in commits_since_release:
                     print("--------")
                     print(commit["commit"]["message"])
                     print("--------")
-                if breaking_change:
+                    lower_message = message.lower()
+                    if "breaking change" in lower_message:
+                        #check for a breaking change
+                        major_change = True
+                    elif lower_message.startswith("feat:"):
+                        minor_change = True
+                    elif lower_message.startswith("fix:"):
+                        patch_change = True    
+                if major_change:
                     new_version = current_version.next_major()
-                    print('BREAKING CHANGE')
-                elif any(re.match(r"^feat\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in commits_since_release):
+                elif minor_change:
                     new_version = current_version.next_minor()
-                    print('MINOR VERSION')
-                elif any(re.match(r"^fix\(.*\):.*", commit["commit"]["message"], re.IGNORECASE) for commit in commits_since_release):
-                    new_version = current_version.next_patch()
-                    print('PATCH_VERSION')
+                elif patch_change:
+                    new_version = current_version.next_patch()    
                 else:
-                    new_version = current_version
-                    print("NO NEW VERSION")
-
+                    new_version = None
+                print(new_version)
                 app_changes[app] = {
                 "changes": [commit["commit"]["message"] for commit in commits_since_release],
                 "new_version": str(new_version) if commits_since_release else None,
                 "commits_since_release": commits_since_release # Add this line
-            }
+                }
             else:
                 #commits_since_release = relevant_commits
                 commits_since_release =[]
-                new_version = current_version
+                new_version = None
                 app_changes[app] = {"changes": [], "new_version": None, "commits_since_release": []}   
 
         except requests.exceptions.RequestException as e:
