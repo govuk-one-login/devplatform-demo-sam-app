@@ -1,12 +1,6 @@
 name: Create Release with Python Script
 
 on:
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        required: false
-        default: false
-        type: boolean
   push:
     branches:
       - PSREDEV-2337
@@ -36,5 +30,4 @@ jobs:
       - name: Create Release and Tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: python .github/scripts/create_release.py

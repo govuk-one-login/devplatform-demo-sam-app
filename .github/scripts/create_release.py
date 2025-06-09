@@ -117,7 +117,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 app_changes[app] = {
                 "changes": [commit["commit"]["message"] for commit in commits_since_release],
                 "new_version": str(new_version) if commits_since_release else None,
-                "commits_since_release": commits_since_release # Add this line
+                "commits_since_release": commits_since_release 
                 }
             else:
                 commits_since_release =[]
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "PSREDEV-2337"  # Replace with your branch name
     token = os.environ["GITHUB_TOKEN"]
-    dry_run = os.environ.get("DRY_RUN")
+    dry_run = false
 
     root_path = os.getcwd()
     os.chdir(root_path)  # Change to the root directory
@@ -197,6 +197,6 @@ if __name__ == "__main__":
                 print(f"  - {commit}")
             if app_data["new_version"]: # Only create a release if there's a new version
                 if not dry_run:
-                    create_release(owner, repo, app, app_data["new_version"], commits_since_release, token)
+                    create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token)
         else:
             print(f"No changes for {app} since last release.")
