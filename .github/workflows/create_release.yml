@@ -6,8 +6,8 @@ on:
       - PSREDEV-2337
 
 permissions:
-  actions: read
-  contents: write
+  contents: read
+  releases: write
 
 jobs:
   create-release:
