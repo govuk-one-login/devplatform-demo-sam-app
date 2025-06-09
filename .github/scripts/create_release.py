@@ -160,7 +160,7 @@ def create_release(owner, repo, app, new_version, commits_since_release, token):
 if __name__ == "__main__":
     owner = os.environ["GITHUB_REPOSITORY_OWNER"]
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
-    branch = "cg-test"  # Replace with your branch name
+    branch = "PSREDEV-2337"  # Replace with your branch name
     token = os.environ["GITHUB_TOKEN"]
 
     root_path = "/Users/cgrant/GDS/devplatform-demo-sam-app/"

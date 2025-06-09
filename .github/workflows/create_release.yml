@@ -3,7 +3,7 @@ name: Create Release with Python Script
 on:
   push:
     branches:
-      - cg-test
+      - PSREDEV-2337
 
 permissions:
   actions: read
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: cg-test
+          ref: PSREDEV-2337
 
       - name: Set up Python
         uses: actions/setup-python@v4
