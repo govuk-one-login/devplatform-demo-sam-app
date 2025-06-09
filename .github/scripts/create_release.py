@@ -91,7 +91,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                         commits_since_release.append(commit)
 
                 # 5. Determine new version
-                for commit in commits_since_release
+                for commit in commits_since_release:
                     print("--------")
                     print(commit["commit"]["message"])
                     print("--------")
