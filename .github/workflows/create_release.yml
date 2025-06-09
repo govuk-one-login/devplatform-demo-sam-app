@@ -1,0 +1,34 @@
+name: Create Release with Python Script
+
+on:
+  push:
+    branches:
+      - cg-test
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: cg-test
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Install semantic-version
+        run: pip install semantic-version
+
+      - name: Create Release and Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python .github/scripts/create_release.py

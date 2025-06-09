@@ -71,3 +71,5 @@ See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-applica
 
 ### Gotchas
 - Due to limitation of blue/green style deployments, the cloudformation import function can not be used to set the VPC resource Id's in the template.
+
+### FORCE A CHANGE
