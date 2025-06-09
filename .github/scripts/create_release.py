@@ -100,16 +100,25 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                     if "breaking change" in lower_message:
                         #check for a breaking change
                         major_change = True
+                        print('AAA')
+                        print(lower_message)
                     elif lower_message.startswith("feat:"):
+                        print('BBB')
+                        print(lower_message)
                         minor_change = True
                     elif lower_message.startswith("fix:"):
+                        print('CCC')
+                        print(lower_message)
                         patch_change = True    
                 if major_change:
                     new_version = current_version.next_major()
+                    print("MAJOR")
                 elif minor_change:
                     new_version = current_version.next_minor()
+                    print("MINOR")
                 elif patch_change:
-                    new_version = current_version.next_patch()    
+                    new_version = current_version.next_patch() 
+                    print("PATCH")   
                 else:
                     new_version = None
                 print(new_version)
