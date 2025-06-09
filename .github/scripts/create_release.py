@@ -3,7 +3,6 @@ import os
 import re
 import semantic_version
 
-DRY_RUN = True
 
 def get_changes_since_last_release(owner, repo, branch, token, apps):
     headers = {
@@ -175,6 +174,7 @@ if __name__ == "__main__":
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "PSREDEV-2337"  # Replace with your branch name
     token = os.environ["GITHUB_TOKEN"]
+    dry_run = os.environ.get("DRY_RUN")
 
     root_path = os.getcwd()
     os.chdir(root_path)  # Change to the root directory
@@ -196,7 +196,7 @@ if __name__ == "__main__":
             for commit in app_data["changes"]:
                 print(f"  - {commit}")
             if app_data["new_version"]: # Only create a release if there's a new version
-                if not DRY_RUN:
+                if not dry_run:
                     create_release(owner, repo, app, app_data["new_version"], commits_since_release, token)
         else:
             print(f"No changes for {app} since last release.")
