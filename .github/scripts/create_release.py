@@ -161,7 +161,7 @@ def create_release(owner, repo, app, new_version, commits_since_release, token, 
         "body": release_body,
         "draft": False,  # Set to True for a draft release
         "prerelease": False, # Set to True for a pre-release
-        "target_commitish": target_commitish # Specify the target branch
+        "target_commitish": branch # Specify the target branch
     }
 
     try:
