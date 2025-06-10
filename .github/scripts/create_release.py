@@ -238,6 +238,7 @@ if __name__ == "__main__":
         d for d in os.listdir(".")  # List current directory (which is now the root)
         if os.path.isdir(d) and not d.startswith(".")
     ]
+    apps.sort()
     if not apps:
         print("No app directories found")
         exit(1)  # Or handle appropriately
