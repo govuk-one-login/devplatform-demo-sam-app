@@ -40,8 +40,6 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 print(tag_sha_url)
                 tag_sha_response = requests.get(tag_sha_url, headers=headers)
                 tag_sha_response.raise_for_status()
-                print(tag_sha_response.json()["object"]["sha"])
-                print(tag_sha_response.json())
                 latest_release_sha = tag_sha_response.json()["object"]["sha"]
                 current_version_str = latest_release_tag.split("/")[-1].lstrip("v")
                 current_version = semantic_version.Version(current_version_str)
@@ -153,7 +151,8 @@ def create_release(owner, repo, app, new_version, commits_since_release, token, 
     for commit in commits_since_release:
         release_body += f"- {commit['commit']['message']}\n"
 
-    print(target_commitish)
+    print('target_commitish='+target_commitish)
+    print('new_version='+new_version)
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     release_data = {
         "tag_name": tag_name,
@@ -165,23 +164,34 @@ def create_release(owner, repo, app, new_version, commits_since_release, token, 
     }
 
     try:
+        print('tag_name='+tag_name)
+        print('release_name='+release_name)
+        print('release_data')
         print(release_data)
         release_response = requests.post(release_url, headers=headers, json=release_data)
+        print('release_response')
+        print(release_response)
         release_response.raise_for_status()
         print(f"Release created for {app}: {tag_name}")
+    except requests.exceptions.HTTPError as errh:
+        print(f"HTTP Error creating release for {app}: {errh}")
+        print(f"Response content: {errh.response.content}")  # Print the error response content
     except requests.exceptions.RequestException as e:
-        print(f"Error creating release for {app}: {e}")
+        print(f"Other Request Error creating release for {app}: {e}")
 
 
 
 if __name__ == "__main__":
-    owner = os.environ["GITHUB_REPOSITORY_OWNER"]
-    repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
-    branch = "PSREDEV-2337"  # Replace with your branch name
-    token = os.environ["GITHUB_TOKEN"]
+    #owner = os.environ["GITHUB_REPOSITORY_OWNER"]
+    #repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
+    #branch = "PSREDEV-2337"  # Replace with your branch name
+    #token = os.environ["GITHUB_TOKEN"]
 
+
+    dry_run = False
 
     root_path = os.getcwd()
+    
     os.chdir(root_path)  # Change to the root directory
     apps = [
         d for d in os.listdir(".")  # List current directory (which is now the root)
@@ -201,7 +211,8 @@ if __name__ == "__main__":
             for commit in app_data["changes"]:
                 print(f"  - {commit}")
             if app_data["new_version"]: # Only create a release if there's a new version
-                last_relevant_commit_sha = app_data["commits_since_release"][-1]["sha"]
-                create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token, last_relevant_commit_sha)
+                if not dry_run:
+                    last_relevant_commit_sha = app_data["commits_since_release"][-1]["sha"]
+                    create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token, last_relevant_commit_sha)
         else:
             print(f"No changes for {app} since last release.")
