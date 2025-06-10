@@ -200,8 +200,7 @@ if __name__ == "__main__":
             for commit in app_data["changes"]:
                 print(f"  - {commit}")
             if app_data["new_version"]: # Only create a release if there's a new version
-                if not dry_run:
-                    last_relevant_commit_sha = app_data["commits_since_release"][-1]["sha"]
-                    create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token, last_relevant_commit_sha)
+                last_relevant_commit_sha = app_data["commits_since_release"][-1]["sha"]
+                create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token, last_relevant_commit_sha)
         else:
             print(f"No changes for {app} since last release.")
