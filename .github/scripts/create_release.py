@@ -2,7 +2,7 @@ import requests
 import os
 import re
 import semantic_version
-
+from packaging import version
 
 def get_changes_since_last_release(owner, repo, branch, token, apps):
     headers = {
@@ -26,9 +26,8 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
 
             latest_release_tag = None
             for tag in tags_data:
-                print(app + " " + tag["name"])
                 if tag["name"].startswith(f"{app}/v"):
-                    if latest_release_tag is None or version.parse(tag["name"]) > version.parse(latest_release_tag):
+                    if latest_release_tag is None or semantic_version.Version(tag["name"].split("/")[-1].lstrip("v")) > semantic_version.Version(latest_release_tag.split("/")[-1].lstrip("v")):
                         latest_release_tag = tag["name"]
 
             if latest_release_tag is None:
@@ -37,9 +36,13 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
                 current_version = semantic_version.Version("0.0.0")
             else:
                 # 2. Get commit SHA of the latest release tag
+                print(latest_release_tag)
                 tag_sha_url = f"https://api.github.com/repos/{owner}/{repo}/git/ref/tags/{latest_release_tag}"
+                print(tag_sha_url)
                 tag_sha_response = requests.get(tag_sha_url, headers=headers)
                 tag_sha_response.raise_for_status()
+                print(tag_sha_response.json()["object"]["sha"])
+                print(tag_sha_response.json())
                 latest_release_sha = tag_sha_response.json()["object"]["sha"]
                 current_version_str = latest_release_tag.split("/")[-1].lstrip("v")
                 current_version = semantic_version.Version(current_version_str)
@@ -139,7 +142,7 @@ def get_changes_since_last_release(owner, repo, branch, token, apps):
 
 
 
-def create_release(owner, repo, app, new_version, commits_since_release, token):
+def create_release(owner, repo, app, new_version, commits_since_release, token, target_commitish):
     headers = {
         'Authorization': f'token {token}',
         'Accept': 'application/vnd.github.v3+json'
@@ -151,6 +154,7 @@ def create_release(owner, repo, app, new_version, commits_since_release, token):
     for commit in commits_since_release:
         release_body += f"- {commit['commit']['message']}\n"
 
+    print(target_commitish)
     release_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
     release_data = {
         "tag_name": tag_name,
@@ -158,7 +162,7 @@ def create_release(owner, repo, app, new_version, commits_since_release, token):
         "body": release_body,
         "draft": False,  # Set to True for a draft release
         "prerelease": False, # Set to True for a pre-release
-        "target_commitish": branch # Specify the target branch
+        "target_commitish": target_commitish # Specify the target branch
     }
 
     try:
@@ -175,7 +179,7 @@ if __name__ == "__main__":
     repo = os.environ["GITHUB_REPOSITORY"].split("/")[-1]
     branch = "PSREDEV-2337"  # Replace with your branch name
     token = os.environ["GITHUB_TOKEN"]
-    dry_run = False
+
 
     root_path = os.getcwd()
     os.chdir(root_path)  # Change to the root directory
@@ -198,6 +202,7 @@ if __name__ == "__main__":
                 print(f"  - {commit}")
             if app_data["new_version"]: # Only create a release if there's a new version
                 if not dry_run:
-                    create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token)
+                    last_relevant_commit_sha = app_data["commits_since_release"][-1]["sha"]
+                    create_release(owner, repo, app, app_data["new_version"], app_data["commits_since_release"], token, last_relevant_commit_sha)
         else:
             print(f"No changes for {app} since last release.")
