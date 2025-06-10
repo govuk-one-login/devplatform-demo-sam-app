@@ -165,6 +165,7 @@ def create_release(owner, repo, app, new_version, commits_since_release, token, 
     }
 
     try:
+        print(release_data)
         release_response = requests.post(release_url, headers=headers, json=release_data)
         release_response.raise_for_status()
         print(f"Release created for {app}: {tag_name}")
