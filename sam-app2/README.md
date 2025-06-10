@@ -134,5 +134,3 @@ after the lambda function has been provisioned, the scalable target must have th
 [template.yaml](template.yaml).
 
 - The autoscaling policy can only be provisioned after the target has been created, therefore, it must have the property `depends_on` set to the scalable target logical ID.
-
-ADDING A LINE SO IT FORCES A CHANGE
