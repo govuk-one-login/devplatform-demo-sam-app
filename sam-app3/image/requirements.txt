@@ -7,7 +7,7 @@ importlib-metadata==6.1.0
 itsdangerous==2.1.2
 Jinja2==3.1.6
 MarkupSafe==2.1.2
-requests==2.32.2
+requests==2.32.4
 typing_extensions==4.5.0
 urllib3==1.26.19
 Werkzeug==3.0.6
