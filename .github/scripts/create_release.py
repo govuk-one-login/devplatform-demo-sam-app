@@ -2,7 +2,6 @@ import requests
 import os
 import re
 import semantic_version
-from packaging import version
 
 def get_changes_since_last_release(owner, repo, branch, token, apps):
     headers = {
