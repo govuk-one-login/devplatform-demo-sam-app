@@ -704,4 +704,3 @@ Outputs:
   ApiGatewayEndpoint:
     Description: The base URI for this application.
     Value: !GetAtt ApiGateway.ApiEndpoint
-

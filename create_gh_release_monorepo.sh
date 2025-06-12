@@ -216,12 +216,19 @@ for APP_NAME in "${APPS[@]}"; do
             echo "  git push origin $NEW_TAG_NAME"
 
             # 9. Upload the assets file
+            echo "Creating assets for $APP_NAME ($NEW_TAG_NAME)..."
+            zip_filename="${APP_NAME}-v${NEXT_VERSION}.zip"  #e.g., sam-app2_v2.0.4.zip
+            zip -r "$zip_filename" "$APP_NAME"
             echo "Uploading assets for $APP_NAME ($NEW_TAG_NAME)..."
             gh release upload "$NEW_TAG_NAME" "sam-app2.zip"
 
             if [ $? -ne 0 ]; then
                 echo "Error: Failed to upload assets file for $APP_NAME."
+                rm zip_filename
                 continue # Continue to next app
+            else
+                ls -ltr
+                rm zip_filename
             fi
             
         else
