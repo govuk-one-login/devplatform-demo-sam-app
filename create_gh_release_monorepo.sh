@@ -202,6 +202,7 @@ for APP_NAME in "${APPS[@]}"; do
                 --title "$RELEASE_TITLE" \
                 --notes-file - \
                 --target "$DEFAULT_BRANCH" \
+                --asset "sam-app2.zip"
                 --latest=true # Mark as latest for this app's specific tags
 
             if [ $? -ne 0 ]; then
