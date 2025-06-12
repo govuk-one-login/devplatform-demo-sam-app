@@ -169,7 +169,7 @@ for APP_NAME in "${APPS[@]}"; do
             fi
 
             NEW_TAG_NAME="${APP_NAME}/v${NEXT_VERSION}"
-            RELEASE_TITLE="${APP_NAME} v${NEXT_VERSION}"
+            RELEASE_TITLE="${APP_NAME}/v${NEXT_VERSION}"
 
             echo "Proposed new tag: $NEW_TAG_NAME"
             echo "Proposed release title: $RELEASE_TITLE"
@@ -212,7 +212,7 @@ for APP_NAME in "${APPS[@]}"; do
             fi
 
             echo "Successfully created release for $APP_NAME ($NEW_TAG_NAME)."
-            echo "Make sure to push your local tags to remote later if you haven't already:"
+            #echo "Make sure to push your local tags to remote later if you haven't already:"
             echo "  git push origin $NEW_TAG_NAME"
 
         else
