@@ -57,7 +57,7 @@ generate_app_release_notes() {
         echo "## Changes for $app_name"
         echo "See commit history for details."
     else
-        echo "## Changes for $app_name"
+        echo "## NEW Changes for $app_name"
         echo ""
         echo "$NOTES"
     fi
@@ -202,7 +202,6 @@ for APP_NAME in "${APPS[@]}"; do
                 --title "$RELEASE_TITLE" \
                 --notes-file - \
                 --target "$DEFAULT_BRANCH" \
-                --asset "sam-app2.zip"
                 --latest=true # Mark as latest for this app's specific tags
 
             if [ $? -ne 0 ]; then
@@ -216,6 +215,15 @@ for APP_NAME in "${APPS[@]}"; do
             #echo "Make sure to push your local tags to remote later if you haven't already:"
             echo "  git push origin $NEW_TAG_NAME"
 
+            # 9. Upload the assets file
+            echo "Uploading assets for $APP_NAME ($NEW_TAG_NAME)..."
+            gh release upload "$NEW_TAG_NAME" "sam-app2.zip"
+
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to upload assets file for $APP_NAME."
+                continue # Continue to next app
+            fi
+            
         else
             echo "No significant changes detected in '$APP_NAME' since $LAST_APP_TAG. Skipping release for this app."
         fi
