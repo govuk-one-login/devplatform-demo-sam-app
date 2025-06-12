@@ -150,7 +150,11 @@ for APP_NAME in "${APPS[@]}"; do
     # Using 'git diff-tree --name-only -r' is reliable for changes in a path
     # 'HEAD' refers to the current commit of the branch we are on
     if ! [ -z "$LAST_APP_TAG" ]; then
-        if git diff-tree --name-only -r "$CHANGES_FROM_REF".."$DEFAULT_BRANCH" -- "$APP_NAME" | grep -q .; then
+        changes=$(git diff-tree --name-only -r "$CHANGES_FROM_REF".."$DEFAULT_BRANCH" -- "$APP_NAME" )
+        if [[ -n "$changes" ]]; then  
+            echo $CHANGES_FROM_REF
+            echo $DEFAULT_BRANCH
+            echo $APP_NAME
             echo "Changes detected in '$APP_NAME'."
 
             # --- Automated Version Bumping (Example using Conventional Commits) ---
