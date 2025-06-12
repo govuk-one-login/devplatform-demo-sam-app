@@ -153,7 +153,6 @@ for APP_NAME in "${APPS[@]}"; do
         changes=$(git diff-tree --name-only -r "$CHANGES_FROM_REF".."$DEFAULT_BRANCH" -- "$APP_NAME" )
         if [[ -n "$changes" ]]; then  
             echo "Changes detected in '$APP_NAME'."
-            echo $changes
 
             # --- Automated Version Bumping (Example using Conventional Commits) ---
             # This is a critical and complex part of monorepo management.
