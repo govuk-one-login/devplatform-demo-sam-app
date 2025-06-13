@@ -1,4 +1,4 @@
-name: Monorepo Release
+name: Create Release from gh CLI
 
 on:
   push:
@@ -6,6 +6,43 @@ on:
       - PSREDEV-2337  # Your default branch
 
 jobs:
+  build_app_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Find applications
+        id: find_apps
+        run: |
+          apps=$(find . -maxdepth 1 -type d -name "app*" | sed 's/^\.\///g' | tr '\n' ' ')
+          echo "apps=$apps" >> $GITHUB_OUTPUT
+
+      - name: Build app version list
+        run: |
+          apps_string="${{ steps.find_apps.outputs.apps }}"
+          apps=($apps_string)
+          app_versions={}
+          today=$(date +"%d%m%y")
+          for app in "${apps[@]}"; do
+            version="${app}-${today}"
+            app_versions[$app]=$version
+          done
+          echo "app_versions=$(echo "${app_versions[@]}" | jq -R '.')" >> $GITHUB_OUTPUT
+
+  use_app_versions:
+    needs: build_app_versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use app version list
+        run: |
+          app_versions_json="${{ needs.build_app_versions.outputs.app_versions }}"
+          app_versions=$(echo "$app_versions_json" | jq -r '. | to_entries[] | [.key, .value] | @tsv')
+          while IFS=$'\t' read -r app version; do
+            echo "App: $app, Version: $version"
+            # Your commands to process each app and version here
+          done <<< "$app_versions"
+
   create-releases:
     runs-on: ubuntu-latest
     steps:
