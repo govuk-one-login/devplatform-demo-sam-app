@@ -39,6 +39,7 @@ jobs:
       - name: Use app version list
         run: |
           app_versions_string="${{ needs.build_app_versions.outputs.app_versions }}"
+          echo $app_versions_string
           for pair in $app_versions_string; do
             app=$(echo "$pair" | cut -d '=' -f 1)
             version=$(echo "$pair" | cut -d '=' -f 2)
