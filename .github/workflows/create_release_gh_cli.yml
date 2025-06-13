@@ -21,17 +21,21 @@ jobs:
       - name: Build app version list
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
-          echo "$app_string"
+          apps_string="platform-hosted-zone node sam-app node-with-waf tf-app sam-app3 parameters step-functions-app sam-app2 scripts"
           apps=($apps_string)
-          app_versions=() # Initialize as an array
+          app_versions=()
           today=$(date +"%d%m%y")
-          for app in "${apps[@]}"; do # Correctly quote the array element
+          for app in "${apps[@]}"; do
             version="${app}-${today}"
-            echo "$version"
-            app_versions[$app]=$version
-          done
-          echo "app_versions=$(jq -R '. | to_entries[] | [.key, .value] | @tsv' <<< "${app_versions[@]}")" >> $GITHUB_OUTPUT
-
+            app_versions+=("$app":"$version") # Add as key-value pair
+          done          
+          # Convert to JSON
+          json_output=$(printf '{%s}' $(printf '"%s":"%s",' "${app_versions[@]}"))          
+          # Remove trailing comma
+          json_output="${json_output%,}"          
+          echo "app_versions=$json_output" >> $GITHUB_OUTPUT
+                    
+          
   use_app_versions:
     needs: build_app_versions
     runs-on: ubuntu-latest
