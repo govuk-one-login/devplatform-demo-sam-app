@@ -18,7 +18,9 @@ get_last_app_release_tag() {
     local app_name="$1"
     # Find the latest tag that starts with the app's name, ordered by version (desc)
     # Assumes semantic versioning in tags like 'app1/v1.2.3'
-    echo git tag --list "$app_name/v*" | sort -V | tail -n 1
+    echo "--------"
+    echo "$app_name/v*"
+    echo "--------"
     git tag --list "$app_name/v*" | sort -V | tail -n 1
 }
 
