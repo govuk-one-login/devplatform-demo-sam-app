@@ -21,15 +21,16 @@ jobs:
       - name: Build app version list
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
-          echo "app_string"
+          echo "$app_string"
           apps=($apps_string)
           app_versions=() # Initialize as an array
           today=$(date +"%d%m%y")
           for app in "${apps[@]}"; do # Correctly quote the array element
             version="${app}-${today}"
+            echo "$version"
             app_versions[$app]=$version
           done
-          echo "app_versions=$(jq -R '. | to_entries[] | [.key, .value] | @tsv' <<< "${app_versions[@]}")" >> $GITHUB_OUTPUT
+          #echo "app_versions=$(jq -R '. | to_entries[] | [.key, .value] | @tsv' <<< "${app_versions[@]}")" >> $GITHUB_OUTPUT
 
   use_app_versions:
     needs: build_app_versions
