@@ -18,6 +18,7 @@ get_last_app_release_tag() {
     local app_name="$1"
     # Find the latest tag that starts with the app's name, ordered by version (desc)
     # Assumes semantic versioning in tags like 'app1/v1.2.3'
+    echo git tag --list "$app_name/v*" | sort -V | tail -n 1
     git tag --list "$app_name/v*" | sort -V | tail -n 1
 }
 
@@ -133,6 +134,8 @@ for APP_NAME in "${APPS[@]}"; do
     echo "--- Processing app: $APP_NAME ---"
 
     LAST_APP_TAG=$(get_last_app_release_tag "$APP_NAME")
+    echo "$APP_NAME"
+    echo "$LAST_APP_TAG"
     if ! [ -z "$LAST_APP_TAG" ]; then
         echo "Last release tag for $APP_NAME: ${LAST_APP_TAG:-None}"
     else
