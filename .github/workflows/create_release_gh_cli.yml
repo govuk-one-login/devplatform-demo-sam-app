@@ -1,21 +1,19 @@
-name: Create Release with gh CLI
+name: Monorepo Release
 
 on:
   push:
     branches:
-      - PSREDEV-2337  # Or your desired branch
+      - PSREDEV-2337  # Your default branch
 
 jobs:
-  validate-access:
+  create-releases:
     runs-on: ubuntu-latest
     steps:
-      - name: Check repository access
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run release script
         run: |
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }} | grep -q "full_name"
-          if [ $? -eq 0 ]; then
-            echo "Repository access granted."
-            exit 0
-          else
-            echo "Error: Repository access denied."
-            exit 1
-          fi
+          ./create_gh_release_monorepo.sh
+      #- name: Push tags
+      #  run: git push origin --tags

@@ -69,21 +69,21 @@ generate_app_release_notes() {
 echo "--- Monorepo Release Automation Script ---"
 
 # 1. Check if gh CLI is installed
-if ! command -v gh &> /dev/null
-then
-    echo "Error: GitHub CLI (gh) is not installed. Please install it to proceed."
-    echo "Instructions: https://cli.github.com/"
-    exit 1
-fi
+#if ! command -v gh &> /dev/null
+#then
+#    echo "Error: GitHub CLI (gh) is not installed. Please install it to proceed."
+#    echo "Instructions: https://cli.github.com/"
+#    exit 1
+#fi
 
 # 2. Check gh authentication status
-echo "Checking gh authentication status..."
-if ! gh auth status &> /dev/null; then
-    echo "gh CLI not authenticated. Please run 'gh auth login' to authenticate."
-    exit 1
-else
-    echo "gh CLI authenticated."
-fi
+#echo "Checking gh authentication status..."
+#if ! gh auth status &> /dev/null; then
+#    echo "gh CLI not authenticated. Please run 'gh auth login' to authenticate."
+#    exit 1
+#else
+#    echo "gh CLI authenticated."
+#fi
 
 # 3. Ensure you are in a Git repository
 if ! git rev-parse --is-inside-work-tree &> /dev/null; then
