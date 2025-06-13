@@ -15,7 +15,7 @@ jobs:
       - name: Find applications
         id: find_apps
         run: |
-          apps=$(find . -maxdepth 1 -type d -name "app*" | sed 's/^\.\///g' | tr '\n' ' ')
+          apps=$(find . -maxdepth 1 -type d ! -name ".*" | sed 's/^\.\///g' | tr '\n' ' ')
           echo "apps=$apps" >> $GITHUB_OUTPUT
 
       - name: Build app version list
@@ -43,17 +43,17 @@ jobs:
             # Your commands to process each app and version here
           done <<< "$app_versions"
 
-  create-releases:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: PSREDEV-2337
+  #create-releases:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout code
+  #      uses: actions/checkout@v3
+  #      with:
+  #        fetch-depth: 0
+  #        ref: PSREDEV-2337
 
-      - name: Run release script
-        run: |
-          ./create_gh_release_monorepo.sh
-      #- name: Push tags
-      #  run: git push origin --tags
+   #   - name: Run release script
+   #     run: |
+   #       ./create_gh_release_monorepo.sh
+   #   #- name: Push tags
+   #   #  run: git push origin --tags
