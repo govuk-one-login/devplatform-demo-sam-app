@@ -27,11 +27,13 @@ jobs:
           today=$(date +"%d%m%y")
           for app in "${apps[@]}"; do
             version="${app}-${today}"
+            echo "$version"
             app_versions+=("$app":"$version") # Add as key-value pair
           done          
           # Convert to JSON
           json_output=$(printf '{%s}' $(printf '"%s":"%s",' "${app_versions[@]}"))          
           # Remove trailing comma
+          echo "$app_versions"
           json_output="${json_output%,}"          
           echo "app_versions=$json_output" >> $GITHUB_OUTPUT
                     
