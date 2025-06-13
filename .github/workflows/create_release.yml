@@ -3,7 +3,7 @@ name: Create Release with Python Script
 on:
   push:
     branches:
-      - PSREDEV-2337
+      - PSREDEV-2337-disabled
 
 permissions:
   contents: write
