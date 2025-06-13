@@ -8,6 +8,8 @@ on:
 jobs:
   build_app_versions:
     runs-on: ubuntu-latest
+    outputs:
+      app_versions: ${{ steps.build_app_version_list.outputs.app_versions }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +21,7 @@ jobs:
           echo "apps=$apps" >> $GITHUB_OUTPUT
 
       - name: Build app version list
+        id: build_app_version_list 
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
           apps=($apps_string)
