@@ -24,7 +24,6 @@ jobs:
           apps=($apps_string)
           today=$(date +"%d%m%y")          
 
-          # Use an associative array for key-value pairs
           declare -A app_versions          
 
           for app in "${apps[@]}"; do
@@ -32,7 +31,7 @@ jobs:
             app_versions[$app]=$version
           done          
 
-          # Convert associative array to JSON
+          # Convert associative array to JSON string
           json_output=$(jq -n --argjson apps "${app_versions[@]}" '
             $apps | to_entries[] | map({key: .key, value: .value}) | from_entries
           ')          
