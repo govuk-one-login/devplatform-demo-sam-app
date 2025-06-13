@@ -57,7 +57,7 @@ generate_app_release_notes() {
         echo "## Changes for $app_name"
         echo "See commit history for details."
     else
-        echo "## NEW Changes for $app_name"
+        echo "## Changes for $app_name"
         echo ""
         echo "$NOTES"
     fi
@@ -239,4 +239,4 @@ done
 
 echo ""
 echo "--- Monorepo Release Script Finished ---"
-echo "Remember to run 'git push --tags' to push all new tags to GitHub."
+#echo "Remember to run 'git push --tags' to push all new tags to GitHub."

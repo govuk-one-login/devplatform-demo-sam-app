@@ -1,0 +1,23 @@
+name: Create Release with gh CLI
+
+on:
+  push:
+    branches:
+      - PSREDEV-2337  # Or your desired branch
+
+jobs:
+  validate-gh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code (optional, if needed)
+        uses: actions/checkout@v3
+
+      - name: Check gh CLI
+        run: |
+          if command -v gh &> /dev/null; then
+            echo "GitHub CLI (gh) is installed and available."
+            exit 0
+          else
+            echo "Error: GitHub CLI (gh) is not installed or not in PATH."
+            exit 1
+          fi
