@@ -30,7 +30,7 @@ jobs:
             echo "$version"
             app_versions[$app]=$version
           done
-          #echo "app_versions=$(jq -R '. | to_entries[] | [.key, .value] | @tsv' <<< "${app_versions[@]}")" >> $GITHUB_OUTPUT
+          echo "app_versions=$(jq -R '. | to_entries[] | [.key, .value] | @tsv' <<< "${app_versions[@]}")" >> $GITHUB_OUTPUT
 
   use_app_versions:
     needs: build_app_versions
