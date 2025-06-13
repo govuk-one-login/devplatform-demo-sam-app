@@ -21,6 +21,7 @@ jobs:
       - name: Build app version list
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
+          apps_string="platform-hosted-zone node sam-app node-with-waf tf-app sam-app3 parameters step-functions-app sam-app2 scripts"
           apps=($apps_string)
           today=$(date +"%d%m%y")          
 
@@ -31,11 +32,13 @@ jobs:
             app_versions[$app]=$version
           done          
 
-          # Convert associative array to JSON string
-          json_output=$(jq -n --argjson apps "${app_versions[@]}" '
-            $apps | to_entries[] | map({key: .key, value: .value}) | from_entries
-          ')          
-          echo "$app_versions"
+          # Correctly convert to JSON string using jq
+          json_output=$(jq -n \
+            --argjson apps "$(printf '{"%s":"%s"}' "${!app_versions[@]}" "${app_versions[@]}")" \
+            '$apps'
+          )          
+          
+
           echo "app_versions=$json_output" >> $GITHUB_OUTPUT
                               
           
