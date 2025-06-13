@@ -21,25 +21,15 @@ jobs:
       - name: Build app version list
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
-          apps_string="platform-hosted-zone node sam-app node-with-waf tf-app sam-app3 parameters step-functions-app sam-app2 scripts"
           apps=($apps_string)
-          today=$(date +"%d%m%y")          
-
-          declare -A app_versions          
-
+          app_versions=""
+          today=$(date +"%d%m%y")
           for app in "${apps[@]}"; do
             version="${app}-${today}"
-            app_versions[$app]=$version
-          done          
-
-          # Correctly convert to JSON string using jq
-          json_output=$(jq -n \
-            --argjson apps "$(printf '{"%s":"%s"}' "${!app_versions[@]}" "${app_versions[@]}")" \
-            '$apps'
-          )          
-          
-
-          echo "app_versions=$json_output" >> $GITHUB_OUTPUT
+            app_versions+=" ${app}=${version}"
+          done
+          echo $app_versions
+          echo "app_versions=$app_versions" >> $GITHUB_OUTPUT
                               
           
   use_app_versions:
@@ -48,12 +38,13 @@ jobs:
     steps:
       - name: Use app version list
         run: |
-          app_versions_json="${{ needs.build_app_versions.outputs.app_versions }}"
-          app_versions=$(echo "$app_versions_json" | jq -r '. | to_entries[] | [.key, .value] | @tsv')
-          while IFS=$'\t' read -r app version; do
+          app_versions_string="${{ needs.build_app_versions.outputs.app_versions }}"
+          for pair in $app_versions_string; do
+            app=$(echo "$pair" | cut -d '=' -f 1)
+            version=$(echo "$pair" | cut -d '=' -f 2)
             echo "App: $app, Version: $version"
             # Your commands to process each app and version here
-          done <<< "$app_versions"
+          done
 
   #create-releases:
   #  runs-on: ubuntu-latest
