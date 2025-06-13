@@ -22,7 +22,6 @@ jobs:
         run: |
           apps_string="${{ steps.find_apps.outputs.apps }}"
           apps=($apps_string)
-          app_versions=()
           today=$(date +"%d%m%y")          
 
           # Use an associative array for key-value pairs
