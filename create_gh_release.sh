@@ -2,7 +2,7 @@
 
 # --- Configuration ---
 # Replace with your desired version number
-VERSION="v-cg-1.0.5"
+VERSION="v1.0.0"
 # Replace with your desired release title
 RELEASE_TITLE="My First Release ($VERSION)"
 # Path to your release notes file (optional)
@@ -11,7 +11,6 @@ NOTES_FILE="RELEASE_NOTES.md"
 # If you run this script inside your cloned repo, gh will usually infer this.
 # Otherwise, you can explicitly set it:
 # REPO="your_github_username/your_repo_name"
-TARGET_BRANCH="PSREDEV-2337"
 
 # --- Script Logic ---
 
@@ -55,23 +54,20 @@ echo "Attempting to create GitHub release for tag: $VERSION..."
 # --target <branch/commit>: Specify the branch or commit SHA to create the tag from (if the tag doesn't exist).
 # --discussion-category <string>: Start a discussion in a specific category.
 # [<filename> | <pattern>...]: Add assets to the release (e.g., ./build/*.zip)
-echo $TARGET_BRANCH
+
 if [ -f "$NOTES_FILE" ]; then
     echo "Using notes from $NOTES_FILE"
     gh release create "$VERSION" \
         --title "$RELEASE_TITLE" \
-        --notes-file "$NOTES_FILE"
-        # \
-        #--target "$TARGET_BRANCH" 
-        # --prerelease # Example: Mark as prerelease
+        --notes-file "$NOTES_FILE" \
+        --prerelease # Example: Mark as prerelease
         # --latest=false # Example: Don't mark as latest (if you have multiple releases)
 else
     echo "No $NOTES_FILE found, generating notes automatically."
     gh release create "$VERSION" \
         --title "$RELEASE_TITLE" \
-         --target "$TARGET_BRANCH" \
         --generate-notes \
-        #--prerelease # Example: Mark as prerelease
+        --prerelease # Example: Mark as prerelease
 fi
 
 # Check the exit status of the gh command
