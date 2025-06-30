@@ -136,6 +136,11 @@ Resources:
             Path: /hello
             Method: get
             RestApiId: !Ref HelloWorldRestApi
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: "*"
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
