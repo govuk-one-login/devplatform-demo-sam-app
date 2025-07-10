@@ -128,14 +128,24 @@ Resources:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
       DeploymentController:
+        # Type: ECS
         Type: !If
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
-      # The following configuration is handled by ECSCanaryDeploymentStack:
-      # - LoadBalancers
-      # - NetworkConfiguration
-      # - PlatformVersion
+      # LoadBalancers:
+      #   - ContainerName: !Sub "${AWS::StackName}-node-server"
+      #     ContainerPort: 8000
+      #     TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      # NetworkConfiguration:
+      #   AwsvpcConfiguration:
+      #     SecurityGroups:
+      #       - !GetAtt ContainerServiceSecurityGroup.GroupId
+      #     Subnets:
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdA"
+      #       - Fn::ImportValue:
+      #           !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
       TaskDefinition: !If
         - UseECSCanaryDeploymentStack
@@ -655,9 +665,9 @@ Resources:
 
   ECSCanaryDeploymentStack:
     Type: AWS::CloudFormation::Stack
-    Condition: UseECSCanaryDeploymentStack
+    # Condition: UseECSCanaryDeploymentStack
     Properties:
-      TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
+      TemplateURL: "https://template-bucket-templatebucket-35qbug5k1irh.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
       Parameters:
       ## Canary deployment monitoring
         DeploymentStrategy: !Ref DeploymentStrategy
