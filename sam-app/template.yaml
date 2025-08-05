@@ -395,7 +395,7 @@ Resources:
               Action:
                 - "lambda:InvokeFunction"
               Resource: !Ref HelloWorldFunction.Version
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Environment:
         Variables:
@@ -451,7 +451,7 @@ Resources:
               Action:
                 - "lambda:InvokeFunction"
               Resource: !Ref HelloWorldFunction.Version
-      Runtime: nodejs18.x
+      Runtime: nodejs22.x
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
       Environment:
         Variables:
