@@ -10,11 +10,6 @@ Parameters:
     Description: Asserts that lambdas are signed when deployed.
     Default: "none"
 
-  PermissionsBoundary:
-    Description: The ARN of the permissions boundary to apply when creating IAM roles
-    Type: String
-    Default: "none"
-
   Environment:
     Description: The name of the environment to deploy to
     Type: String
@@ -40,11 +35,6 @@ Conditions:
           - !Ref Environment
           - "local"
 
-  UsePermissionsBoundary:
-    Fn::Not:
-      - Fn::Equals:
-          - !Ref PermissionsBoundary
-          - "none"
   UseCodeSigning:
     Fn::Not:
       - Fn::Equals:
@@ -71,10 +61,7 @@ Globals:
       - UseCodeSigning
       - !Ref CodeSigningConfigArn
       - !Ref AWS::NoValue
-    PermissionsBoundary: !If
-      - UsePermissionsBoundary
-      - !Ref PermissionsBoundary
-      - !Ref AWS::NoValue
+    PermissionsBoundary: !ImportValue PermissionsBoundaryArn
     Timeout: 20
     Environment:
       Variables:
