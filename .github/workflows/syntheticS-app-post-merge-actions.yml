@@ -1,0 +1,50 @@
+name: Deploy syntethics-app to build-demo
+
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build synthetics script
+        working-directory: synthetics-app
+        run: npm run build
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.SYNTHETICS_APP_GH_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Upload synthetics source code scripts zip to pipeline artifact bucket
+        working-directory: synthetics-app
+        run: |
+          echo "Upload synthetics artifact to S3"
+          OBJECT_VERSION="$(aws s3api put-object \
+            --bucket ${{ secrets.SYNTHETICS_APP_ARTIFACT_BUCKET_NAME }} \
+            --key synthetics.zip \
+            --body synthetics.zip \
+            --query VersionId --output text)"
+          echo "synthetics.zip artifact uploaded to artifact bucket, version: ${OBJECT_VERSION}"
+
+      - name: SAM build and test
+        working-directory: synthetics-app
+        run: sam build
+
+      - name: Deploy SAM app
+        uses: govuk-one-login/devplatform-upload-action@v3.10.1
+        with:
+          artifact-bucket-name: ${{ secrets.SYNTHETICS_APP_ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: ./synthetics-app/.aws-sam/build

@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Template containing resources for synthetic monitoring
+  Managed by dev-platform
+
+Parameters:
+  ArtifactSourceBucket:
+    Description: The name for bucket storing code for synthetic canary
+    Type: String
+    Default: none
+
+  PermissionsBoundary:
+    Description: The ARN of the permissions boundary to apply when creating IAM roles
+    Type: String
+    Default: none
+
+Conditions:
+  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundary, none ]]
+
+Resources:
+  SyntheticMonitoringRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: 2012-10-17
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+      - PolicyName: AdditionalSyntheticPermissions
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/cwsyn-*'
+            - Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Condition:
+                StringEquals:
+                  cloudwatch:namespace: CloudWatchSynthetics
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetBucketLocation
+              Resource:
+                - !GetAtt SyntheticsBucket.Arn
+                - Fn::Join:
+                  - ''
+                  - - !GetAtt SyntheticsBucket.Arn
+                    - /*
+            - Effect: Allow
+              Action:
+                - s3:ListAllMyBuckets
+              Resource: '*'
+
+  SyntheticsBucket:
+    Type: AWS::S3::Bucket
+    # checkov:skip=CKV_AWS_18
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 30
+            Status: Enabled
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  SyntheticsCanary:
+    Type: AWS::Synthetics::Canary
+    Properties:
+      Name: !Sub ${AWS::StackName}-synthetic-monitoring-canary
+      ExecutionRoleArn: !GetAtt SyntheticMonitoringRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactSourceBucket
+        S3Key: synthetics.zip
+        Handler: script.handler
+      ArtifactS3Location: !Sub
+            - s3://${SyntheticsBucket}
+            - SyntheticsBucket: !Ref SyntheticsBucket
+      RuntimeVersion: syn-nodejs-puppeteer-10.0
+      Schedule: {Expression: rate(60 minutes)}
+      RunConfig: {TimeoutInSeconds: 60}
+      FailureRetentionPeriod: 30
+      SuccessRetentionPeriod: 30
+      StartCanaryAfterCreation: true
+
+Outputs:
+  CanaryResultsBucket:
+    Description: Name for S3 Bucket
+    Value: !Ref SyntheticsBucket
+  SyntheticsCanary:
+    Description: Name for Synthetic Canary
+    Value: !Ref SyntheticsCanary

@@ -1,0 +1,10 @@
+{
+  "name": "synthetics-app",
+  "version": "1.0.0",
+  "description": "Script to run as part of synthetic monitoring canary",
+  "main": "index.js",
+  "scripts": {
+    "build": "mkdir -p nodejs/node_modules && cp -rf src/* nodejs/node_modules/ && zip -r synthetics.zip nodejs"
+  },
+  "license": "MIT"
+}
