@@ -33,6 +33,11 @@ Parameters:
     Type: "String"
     Default: "none"
 
+  DisableCanaryAlarms:
+    Description: "Determines if canary deployments escape hatch is active"
+    Type: "String"
+    Default: "false"
+
 Conditions:
   IsNonDevEnvironment:
     Fn::Not:
@@ -64,6 +69,10 @@ Conditions:
       - Fn::Equals:
         - !Ref NotificationTopicArn
         - "none"
+
+  DisableCanaryAlarms: !Equals
+    - !Ref DisableCanaryAlarms
+    - "true"
 
 Mappings:
   APIDomainNames:
@@ -262,14 +271,16 @@ Resources:
       DeploymentPreference:
         # Testing against 10 percent of traffic: runs for 5 minutes, if no alarms fire, remaining traffic shifts.
         Type: !Ref LambdaDeploymentPreference
-        Alarms:
-          - !Ref HelloWorldFunctionTooManyRequestsAlarm
-          - !Ref HelloWorldLambdaErrors
-          # Anomaly alarms need to be active in an account prior to being added as a deployment alarm.
-          # Otherwise there is a risk of false positives
-          - !Ref HelloWorldFunctionInvocationAnomalyAlarm
-          - !Ref HelloWorldLambda4XXAnomalyAlarm
-          - !Ref HelloWorldLambdaErrorAnomalyAlarm
+        Alarms: !If
+          - DisableCanaryAlarms
+          - - !Ref AWS::NoValue
+          - - !Ref HelloWorldFunctionTooManyRequestsAlarm
+            - !Ref HelloWorldLambdaErrors
+            # Anomaly alarms need to be active in an account prior to being added as a deployment alarm.
+            # Otherwise there is a risk of false positives
+            - !Ref HelloWorldFunctionInvocationAnomalyAlarm
+            - !Ref HelloWorldLambda4XXAnomalyAlarm
+            - !Ref HelloWorldLambdaErrorAnomalyAlarm
         Hooks:
           PreTraffic: !Ref PreTrafficHook
           PostTraffic: !Ref PostTrafficHook
