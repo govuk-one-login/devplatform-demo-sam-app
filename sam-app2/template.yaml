@@ -78,7 +78,12 @@ Globals:
     Timeout: 20
     Environment:
       Variables:
-        AWS_LAMBDA_EXEC_WRAPPER: /opt/dynatrace
+        AWS_LAMBDA_EXEC_HANDLER: /opt/otel-handler
+        OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: delta
+        OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED: false
+        OTEL_INSTRUMENTATION_AWS_LAMBDA_ENABLED: true
+        OTEL_INSTRUMENTATION_AWS_SDK_ENABLED: true
+        OPENTELEMETRY_COLLECTOR_CONFIG_URI: '/var/task/collector.yaml'
         DT_CONNECTION_AUTH_TOKEN:
           !Sub
             - '{{resolve:secretsmanager:${SecretArn}:SecretString:DT_CONNECTION_AUTH_TOKEN}}'           # pragma: allowlist secret
@@ -106,10 +111,21 @@ Globals:
     Layers:
     # Please see the README on the https://github.com/govuk-one-login/observability-infrastructure/blob/main/lambdalayer/README.md
     # , for the latest supported arn for your language.
-      - arn:aws:lambda:eu-west-2:216552277552:layer:Dynatrace_OneAgent_1_311_51_20250331-143707_with_collector_java:1
+      - !Ref OpenTelemetryLayerJava
 
 
 Resources:
+
+  OpenTelemetryLayerJava:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: JavaLayer
+      Description: Layer description
+      ContentUri: '../../../../aws-otel-java-agent-arm64-ver-1-32-0-339f86c3-4b25-4f5d-8adc-40717c26c118.zip'
+      CompatibleRuntimes:
+        - java11
+      RetentionPolicy: Retain
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       # checkov:skip=CKV_AWS_116: DLQ not required
@@ -199,39 +215,39 @@ Resources:
         Name: HelloWorldRestApi
         Source: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
-  AutoScalingHelloWorldScalableTarget:
-    Type: AWS::ApplicationAutoScaling::ScalableTarget
-    # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
-    DependsOn: HelloWorldFunctionAliasLatestVersion
-    Properties:
-      MaxCapacity: 3
-      MinCapacity: 1
-      RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency"
-      ServiceNamespace: lambda
-      ScalableDimension: lambda:function:ProvisionedConcurrency
-      ResourceId: !Join
-        - ':'
-        - - 'function'
-          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
-          - 'LatestVersion'
+  # AutoScalingHelloWorldScalableTarget:
+  #   Type: AWS::ApplicationAutoScaling::ScalableTarget
+  #   # Need to depend on the auto deployed version alias: "<function_logical_id> + Alias + <the_alias_name>"
+  #   DependsOn: HelloWorldFunctionAliasLatestVersion
+  #   Properties:
+  #     MaxCapacity: 3
+  #     MinCapacity: 1
+  #     RoleARN: !Sub "arn:aws:iam::${AWS::AccountId}:role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency"
+  #     ServiceNamespace: lambda
+  #     ScalableDimension: lambda:function:ProvisionedConcurrency
+  #     ResourceId: !Join
+  #       - ':'
+  #       - - 'function'
+  #         - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+  #         - 'LatestVersion'
 
-  HelloWorldLambdaAutoScalingPolicy:
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    DependsOn: AutoScalingHelloWorldScalableTarget
-    Properties:
-      PolicyName: "hello-world-lambda-autoscaling-policy"
-      PolicyType: TargetTrackingScaling
-      ResourceId: !Join
-        - ':'
-        - - 'function'
-          - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
-          - 'LatestVersion'
-      ScalableDimension: lambda:function:ProvisionedConcurrency
-      ServiceNamespace: lambda
-      TargetTrackingScalingPolicyConfiguration:
-        PredefinedMetricSpecification:
-          PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
-        TargetValue: 0.7
+  # HelloWorldLambdaAutoScalingPolicy:
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   DependsOn: AutoScalingHelloWorldScalableTarget
+  #   Properties:
+  #     PolicyName: "hello-world-lambda-autoscaling-policy"
+  #     PolicyType: TargetTrackingScaling
+  #     ResourceId: !Join
+  #       - ':'
+  #       - - 'function'
+  #         - !Select [ 6, !Split [ ':', !GetAtt HelloWorldFunction.Arn ] ]
+  #         - 'LatestVersion'
+  #     ScalableDimension: lambda:function:ProvisionedConcurrency
+  #     ServiceNamespace: lambda
+  #     TargetTrackingScalingPolicyConfiguration:
+  #       PredefinedMetricSpecification:
+  #         PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+  #       TargetValue: 0.7
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
