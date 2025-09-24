@@ -657,7 +657,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: UseECSCanaryDeploymentStack
     Properties:
-      TemplateURL: "https://template-storage-templatebucket-1upzyw6v9cs42.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
+      TemplateURL: "https://template-bucket-templatebucket-civakigopbg2.s3.eu-west-2.amazonaws.com/ecs-canary-deployment/template.yaml"
       Parameters:
       ## Canary deployment monitoring
         DeploymentStrategy: !Ref DeploymentStrategy
