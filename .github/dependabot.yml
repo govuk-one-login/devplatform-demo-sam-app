@@ -42,7 +42,7 @@ updates:
   - package-ecosystem: "docker"
     # Workflow files stored in the
     # default location of `.github/workflows`
-    directory: "/"
+    directory: "/node/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 3
