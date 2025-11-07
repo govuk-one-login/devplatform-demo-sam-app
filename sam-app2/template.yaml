@@ -106,7 +106,7 @@ Globals:
     Layers:
     # Please see the README on the https://github.com/govuk-one-login/observability-infrastructure/blob/main/lambdalayer/README.md
     # , for the latest supported arn for your language.
-      - arn:aws:lambda:eu-west-2:216552277552:layer:Dynatrace_OneAgent_1_311_51_20250331-143707_with_collector_java:1
+      - arn:aws:lambda:eu-west-2:216552277552:layer:Dynatrace_OneAgent_1_321_3_20250725-124102_with_collector_nodejs:1
 
 
 Resources:
