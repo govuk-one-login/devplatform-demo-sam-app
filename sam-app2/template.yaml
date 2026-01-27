@@ -110,6 +110,13 @@ Globals:
 
 
 Resources:
+  ExampleSettingParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: demo-sam-app2
+      Type: String
+      Value: testing2
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       # checkov:skip=CKV_AWS_116: DLQ not required
@@ -125,6 +132,7 @@ Resources:
     Properties:
       CodeUri: HelloWorldFunction
       AutoPublishAlias: LatestVersion
+      AutoPublishCodeSha256: test
       Handler: helloworld.App::handleRequest
       Runtime: java11
       MemorySize: 2048
