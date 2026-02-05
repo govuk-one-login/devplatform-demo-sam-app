@@ -5,8 +5,8 @@
   "main": "preTrafficHook.js",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-codedeploy": "^3.637.0",
-    "@aws-sdk/client-lambda": "^3.637.0",
+    "@aws-sdk/client-codedeploy": "^3.983.0",
+    "@aws-sdk/client-lambda": "^3.983.0",
     "@aws-sdk/util-utf8-node": "^3.259.0"
   }
 }
