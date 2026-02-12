@@ -39,3 +39,12 @@ updates:
       - "TobySaundersGDS"
     reviewers:
       - "govuk-one-login/dev-platform"
+  - package-ecosystem: "docker"
+    # Workflow files stored in the
+    # default location of `.github/workflows`
+    directory: "/node/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "govuk-one-login/dev-platform"
