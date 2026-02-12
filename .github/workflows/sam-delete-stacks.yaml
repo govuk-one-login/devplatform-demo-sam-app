@@ -1,0 +1,27 @@
+name: SAM Delete Stacks
+run-name: SAM app deploy using Environment secrets to ${{ inputs.environment }}
+
+on:
+  push: 
+    branches:
+      - PSREDEV-3132
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./sam-app
+
+jobs:
+  delete-stacks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: delete-stacks
+        uses: govuk-one-login/github-actions/sam/delete-stacks@main
+        with:
+          aws-role-arn: arn:aws:iam::842766856468:role/psredev-3132-role-GitHubActionsRole-1cY7Zx8PFlNv
+          stack-names: psredev-3132-pipeline
+          empty-buckets: true
