@@ -529,6 +529,21 @@ Resources:
       Port: 80
       Protocol: HTTP
 
+  ApplicationLoadBalancerListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
+      # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
+      DefaultActions:
+        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      Certificates:
+        - CertificateArn: !Ref NodeALBCertificate
+
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
