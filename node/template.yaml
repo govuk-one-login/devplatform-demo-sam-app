@@ -102,6 +102,15 @@ Mappings:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     production:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables     # pragma: allowlist secret
+  APIDomainNames:
+    build:
+      DomainName: "demonodeapp.build.platform.account.gov.uk"
+    staging:
+      DomainName: "demonodeapp.staging.platform.sandpit.account.gov.uk"
+    integration:
+      DomainName: "demonodeapp.integration.platform.sandpit.account.gov.uk"
+    production:
+      DomainName: "demonodeapp.platform.sandpit.account.gov.uk"
 
 Resources:
   #
@@ -124,6 +133,11 @@ Resources:
 
   ContainerService:
     Type: AWS::ECS::Service
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3052
     Properties:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
@@ -368,6 +382,81 @@ Resources:
         Service: ci/cd
         Source: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
+  ############################
+  # Domain Names
+  ############################
+  NodeAppDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Ref NodeALBCertificate
+      SecurityPolicy: TLS_1_2
+      Tags:
+        - Key: Name
+          Value: NodeAppDomainName
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "govuk-one-login/devplatform-demo-sam-app/node/template.yaml"
+
+
+  #
+  # Certificates & Certificate Record
+  #
+  NodeAppCertificateRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      Type: A
+      HostedZoneId:
+        Fn::ImportValue: PlatformSandpitHostedZone
+      AliasTarget:
+        DNSName: !GetAtt NodeAppDomainName.RegionalDomainName
+        HostedZoneId: !GetAtt NodeAppDomainName.RegionalHostedZoneId
+
+  NodeALBCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      DomainValidationOptions:
+        - DomainName: !Sub
+            - "${AWS::StackName}.${DomainName}"
+            - DomainName: !FindInMap
+                - APIDomainNames
+                - !Ref Environment
+                - DomainName
+          HostedZoneId:
+            Fn::ImportValue: PlatformSandpitHostedZone
+      ValidationMethod: DNS
+      CertificateTransparencyLoggingPreference: ENABLED
+      Tags:
+        - Key: Name
+          Value: NodeALBCertificate
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "govuk-one-login/devplatform-demo-sam-app/node/template.yaml"
+
+
+
   #
   # Load balancing
   #
@@ -427,8 +516,13 @@ Resources:
       # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
       # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
-        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-          Type: forward
+        - Type: "redirect"
+          RedirectConfig:
+            Protocol: "HTTPS"
+            Port: "443"
+            StatusCode: "HTTP_301"
+        # - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+        #   Type: forward
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 80
       Protocol: HTTP
