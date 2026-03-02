@@ -103,6 +103,8 @@ Mappings:
     production:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables     # pragma: allowlist secret
   APIDomainNames:
+    dev:
+      DomainName: "demonodeapp.dev.platform.sandpit.account.gov.uk"
     build:
       DomainName: "demonodeapp.build.platform.account.gov.uk"
     staging:
