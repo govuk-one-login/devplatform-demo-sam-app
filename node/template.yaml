@@ -376,7 +376,7 @@ Resources:
           !Sub "${VpcStackName}-VpcLinkId"
       ConnectionType: VPC_LINK
       IntegrationMethod: ANY
-      IntegrationUri: !Ref ApplicationLoadBalancerListener
+      IntegrationUri: !Ref ApplicationLoadBalancerListenerHTTPS
       PayloadFormatVersion: 1.0
 
   ApiRoute:
