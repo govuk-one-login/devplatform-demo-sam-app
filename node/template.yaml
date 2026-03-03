@@ -135,6 +135,9 @@ Resources:
 
   ContainerService:
     Type: AWS::ECS::Service
+    DependsOn:
+      - ApplicationLoadBalancerListener
+      - ApplicationLoadBalancerListenerHTTPS
     Metadata:
       cfn-lint:
         config:
@@ -165,7 +168,7 @@ Resources:
           Value: ci/cd
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
-    DependsOn: ApplicationLoadBalancerListener
+
 
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
@@ -529,20 +532,20 @@ Resources:
       Port: 80
       Protocol: HTTP
 
-  # ApplicationLoadBalancerListenerHTTPS:
-  #   Type: AWS::ElasticLoadBalancingV2::Listener
-  #   Properties:
-  #     # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
-  #     # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
-  #     DefaultActions:
-  #       - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-  #         Type: forward
-  #     LoadBalancerArn: !Ref ApplicationLoadBalancer
-  #     Port: 443
-  #     Protocol: HTTPS
-  #     SslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  #     Certificates:
-  #       - CertificateArn: !Ref NodeALBCertificate
+  ApplicationLoadBalancerListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
+      # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
+      DefaultActions:
+        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      Certificates:
+        - CertificateArn: !Ref NodeALBCertificate
 
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -581,6 +584,16 @@ Resources:
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
+
+  ApplicationLoadBalancerSecurityGroupIngressHTTPS:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
+      CidrIp: 10.0.0.0/16
+      Description: Allow traffic from the VPC on port 443
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
 
   ApplicationLoadBalancerSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
