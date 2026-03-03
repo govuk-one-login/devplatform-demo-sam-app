@@ -121,7 +121,6 @@ Resources:
           Value: ci/cd
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
-
   ContainerService:
     Type: AWS::ECS::Service
     Properties:
@@ -132,10 +131,23 @@ Resources:
           - UseECSCanaryDeploymentStack
           - CODE_DEPLOY
           - ECS
-      # The following configuration is handled by ECSCanaryDeploymentStack:
-      # - LoadBalancers
-      # - NetworkConfiguration
-      # - PlatformVersion
+      LoadBalancers: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - - ContainerName: !Sub "${AWS::StackName}-node-server"
+            ContainerPort: 8000
+            TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+      NetworkConfiguration: !If
+        - UseECSCanaryDeploymentStack
+        - !Ref AWS::NoValue
+        - AwsvpcConfiguration:
+            SecurityGroups:
+              - !GetAtt ContainerServiceSecurityGroup.GroupId
+            Subnets:
+              - Fn::ImportValue:
+                  !Sub "${VpcStackName}-PrivateSubnetIdA"
+              - Fn::ImportValue:
+                  !Sub "${VpcStackName}-PrivateSubnetIdB"
       PropagateTags: SERVICE
       TaskDefinition: !If
         - UseECSCanaryDeploymentStack
