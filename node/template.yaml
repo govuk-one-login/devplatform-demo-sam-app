@@ -538,8 +538,6 @@ Resources:
             Protocol: "HTTPS"
             Port: "443"
             StatusCode: "HTTP_301"
-        # - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-        #   Type: forward
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 80
       Protocol: HTTP
@@ -550,14 +548,31 @@ Resources:
       # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
       # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
-        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-          Type: forward
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/plain
+            MessageBody: "Hello world"
+            StatusCode: 404
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 443
       Protocol: HTTPS
       SslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06"
       Certificates:
         - CertificateArn: !Ref NodeALBCertificate
+
+
+  ALBListenerHTTPSRule:
+    Type: 'AWS::ElasticLoadBalancingV2::ListenerRule'
+    Properties:
+      ListenerArn: !Ref ApplicationLoadBalancerListenerHTTPS
+      Priority: 10
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - "/*"
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
 
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
