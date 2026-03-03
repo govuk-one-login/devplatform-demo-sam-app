@@ -806,7 +806,7 @@ Resources:
         ECSServiceName: !GetAtt ContainerService.Name
         ECSServiceTaskDefinition: !Ref TaskDefinition
       ## LoadBalancers
-        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
+        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListenerHTTPS
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
