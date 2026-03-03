@@ -132,6 +132,7 @@ Resources:
           Value: ci/cd
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+
   ContainerService:
     Type: AWS::ECS::Service
     DependsOn:
@@ -548,11 +549,8 @@ Resources:
       # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
       # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
-        - Type: fixed-response
-          FixedResponseConfig:
-            ContentType: text/plain
-            MessageBody: "Hello world"
-            StatusCode: 404
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
       LoadBalancerArn: !Ref ApplicationLoadBalancer
       Port: 443
       Protocol: HTTPS
@@ -560,19 +558,6 @@ Resources:
       Certificates:
         - CertificateArn: !Ref NodeALBCertificate
 
-
-  ALBListenerHTTPSRule:
-    Type: 'AWS::ElasticLoadBalancingV2::ListenerRule'
-    Properties:
-      ListenerArn: !Ref ApplicationLoadBalancerListenerHTTPS
-      Priority: 10
-      Conditions:
-        - Field: path-pattern
-          Values:
-            - "/*"
-      Actions:
-        - Type: forward
-          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
 
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
