@@ -378,6 +378,9 @@ Resources:
       IntegrationMethod: ANY
       IntegrationUri: !Ref ApplicationLoadBalancerListenerHTTPS
       PayloadFormatVersion: 1.0
+      TlsConfig:
+        ServerNameToVerify: !Ref NodeAppDomainName
+
 
   ApiRoute:
     Type: AWS::ApiGatewayV2::Route
