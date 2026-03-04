@@ -106,7 +106,7 @@ Mappings:
     dev:
       DomainName: "demonodeapp.dev.platform.sandpit.account.gov.uk"
     build:
-      DomainName: "demonodeapp.build.platform.account.gov.uk"
+      DomainName: "demonodeapp.build.platform.sandpit.account.gov.uk"
     staging:
       DomainName: "demonodeapp.staging.platform.sandpit.account.gov.uk"
     integration:
