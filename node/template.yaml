@@ -102,6 +102,15 @@ Mappings:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceNonProductionVariables  # pragma: allowlist secret
     production:
       dynatraceSecretArn: arn:aws:secretsmanager:eu-west-2:216552277552:secret:DynatraceProductionVariables     # pragma: allowlist secret
+  APIDomainNames:
+    dev:
+      DomainName: "demonodeapp.dev.platform.sandpit.account.gov.uk"
+    build:
+      DomainName: "demonodeapp.build.platform.sandpit.account.gov.uk"
+    staging:
+      DomainName: "demonodeapp.staging.platform.sandpit.account.gov.uk"
+    production:
+      DomainName: "demonodeapp.platform.sandpit.account.gov.uk"
 
 Resources:
   #
@@ -123,6 +132,8 @@ Resources:
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
   ContainerService:
     Type: AWS::ECS::Service
+    DependsOn:
+      - ApplicationLoadBalancerListenerHTTPS
     Properties:
       Cluster: !Ref FargateCluster
       LaunchType: FARGATE
@@ -161,7 +172,7 @@ Resources:
           Value: ci/cd
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
-    DependsOn: ApplicationLoadBalancerListener
+
 
   ContainerAutoScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
@@ -356,8 +367,11 @@ Resources:
           !Sub "${VpcStackName}-VpcLinkId"
       ConnectionType: VPC_LINK
       IntegrationMethod: ANY
-      IntegrationUri: !Ref ApplicationLoadBalancerListener
+      IntegrationUri: !Ref ApplicationLoadBalancerListenerHTTPS
       PayloadFormatVersion: 1.0
+      TlsConfig:
+        ServerNameToVerify: !Ref NodeAppDomainName
+
 
   ApiRoute:
     Type: AWS::ApiGatewayV2::Route
@@ -379,6 +393,84 @@ Resources:
         Name: !Sub "${AWS::StackName}-ApiDefaultStage"
         Service: ci/cd
         Source: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
+
+  ############################
+  # Domain Names
+  ############################
+  NodeAppDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Ref NodeALBCertificate
+      SecurityPolicy: TLS_1_2
+      Tags:
+        - Key: Name
+          Value: NodeAppDomainName
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "govuk-one-login/devplatform-demo-sam-app/node/template.yaml"
+
+
+  #
+  # Certificates & Certificate Record
+  #
+  NodeAppCertificateRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      Type: CNAME
+      TTL: 300
+      HostedZoneId:
+        Fn::ImportValue: PlatformSandpitHostedZone
+      ResourceRecords:
+        - !GetAtt NodeAppDomainName.RegionalDomainName
+      # AliasTarget:
+      #   DNSName: !GetAtt NodeAppDomainName.RegionalDomainName
+      #   HostedZoneId: !GetAtt NodeAppDomainName.RegionalHostedZoneId
+
+  NodeALBCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub
+        - "${AWS::StackName}.${DomainName}"
+        - DomainName: !FindInMap
+            - APIDomainNames
+            - !Ref Environment
+            - DomainName
+      DomainValidationOptions:
+        - DomainName: !Sub
+            - "${AWS::StackName}.${DomainName}"
+            - DomainName: !FindInMap
+                - APIDomainNames
+                - !Ref Environment
+                - DomainName
+          HostedZoneId:
+            Fn::ImportValue: PlatformSandpitHostedZone
+      ValidationMethod: DNS
+      CertificateTransparencyLoggingPreference: ENABLED
+      Tags:
+        - Key: Name
+          Value: NodeALBCertificate
+        - Key: Service
+          Value: backend
+        - Key: Source
+          Value: "govuk-one-login/devplatform-demo-sam-app/node/template.yaml"
+
+
 
   #
   # Load balancing
@@ -433,17 +525,19 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
-  ApplicationLoadBalancerListener:
+  ApplicationLoadBalancerListenerHTTPS:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      # checkov:skip=CKV_AWS_2:Certificate generation must be resolved before the listener can use HTTPS.
-      # checkov:skip=CKV_AWS_103:The load balancer cannot use TLS v1.2 until HTTPS is enabled.
       DefaultActions:
-        - TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
-          Type: forward
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
       LoadBalancerArn: !Ref ApplicationLoadBalancer
-      Port: 80
-      Protocol: HTTP
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      Certificates:
+        - CertificateArn: !Ref NodeALBCertificate
+
 
   ApplicationLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -473,15 +567,15 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/node/template.yaml
 
-  ApplicationLoadBalancerSecurityGroupIngress:
+  ApplicationLoadBalancerSecurityGroupIngressHTTPS:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
       CidrIp: 10.0.0.0/16
-      Description: Allow traffic from the VPC on port 80
+      Description: Allow traffic from the VPC on port 443
       IpProtocol: tcp
-      FromPort: 80
-      ToPort: 80
+      FromPort: 443
+      ToPort: 443
 
   ApplicationLoadBalancerSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
@@ -682,7 +776,7 @@ Resources:
         ECSServiceName: !GetAtt ContainerService.Name
         ECSServiceTaskDefinition: !Ref TaskDefinition
       ## LoadBalancers
-        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListener
+        LoadBalancerListenerARN: !Ref ApplicationLoadBalancerListenerHTTPS
         ContainerName: !Sub "${AWS::StackName}-node-server"
         ContainerPort: 8000
         TargetGroupName: !GetAtt ApplicationLoadBalancerTargetGroup.TargetGroupName
