@@ -440,6 +440,7 @@ Resources:
             - !Ref Environment
             - DomainName
       Type: CNAME
+      TTL: 300
       HostedZoneId:
         Fn::ImportValue: PlatformSandpitHostedZone
       ResourceRecords:
