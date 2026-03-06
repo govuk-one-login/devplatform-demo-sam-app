@@ -189,6 +189,10 @@ Resources:
         DestinationArn: !GetAtt APIGatewayAccessLogGroup.Arn
       CacheClusterEnabled: false
       # CacheClusterSize: "0.5"
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
       TracingEnabled: true
       PropagateTags: true
       Tags:
