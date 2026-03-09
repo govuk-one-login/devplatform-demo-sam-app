@@ -291,6 +291,9 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
+      Volumes:
+        - Name: temp-storage
+          Host: {}
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-TaskDefinition"
