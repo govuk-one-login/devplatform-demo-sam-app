@@ -250,9 +250,14 @@ Resources:
       ContainerDefinitions:
         - Name: !Sub "${AWS::StackName}-node-server"
           Image: "CONTAINER-IMAGE-PLACEHOLDER"
+          ReadonlyRootFilesystem: true
           PortMappings:
             - ContainerPort: 8000
               Protocol: tcp
+          MountPoints:
+            - ContainerPath: /tmp/verify
+              ReadOnly: false
+              SourceVolume: temp-storage
           Essential: true
           LogConfiguration:
             LogDriver: awslogs

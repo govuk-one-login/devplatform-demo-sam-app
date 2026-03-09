@@ -12,11 +12,24 @@ RUN npm prune
 
 FROM node:18.12.1-alpine3.16@sha256:67373bd5d90ea600cb5f0fa58d7a5a4e6ebf50b6e05c50c1d1cc22df5134db43 AS final
 
+
+ENV USER=nodeappuser \
+    GROUP=nodeappgroup
+
 RUN ["apk", "--no-cache", "upgrade"]
 RUN ["apk", "add", "--no-cache", "tini"]
 RUN ["apk", "add", "--no-cache", "curl"]
 
 WORKDIR /app
+
+# Create group and user
+RUN addgroup -S ${GROUP} && \
+    adduser -S -D ${USER} -G ${GROUP} && \
+    mkdir -p /tmp/${USER} && \
+    chown -R ${USER}:${GROUP} /tmp/${USER} && \
+    chown -R ${USER}:${GROUP} /app
+
+VOLUME [ "/tmp/${USER}" ]
 
 # Copy in compile assets and deps from build container
 COPY --from=builder /app/node_modules ./node_modules
@@ -29,6 +42,9 @@ COPY --from=builder /app/src ./src
 COPY --from=khw46367.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs / /
 ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/lib64/liboneagentproc.so
 ENV DT_LOGLEVELCON INFO
+
+# Switch to nodeappuser
+USER ${USER}
 
 ENV NODE_ENV "production"
 ENV PORT 8000
