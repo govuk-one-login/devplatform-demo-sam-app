@@ -255,7 +255,7 @@ Resources:
             - ContainerPort: 8000
               Protocol: tcp
           MountPoints:
-            - ContainerPath: /tmp/verify
+            - ContainerPath: /tmp/nodeappuser
               ReadOnly: false
               SourceVolume: temp-storage
           Essential: true
