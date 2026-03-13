@@ -288,6 +288,10 @@ Resources:
       CacheClusterEnabled: false
       # CacheClusterSize: "0.5"
       TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform

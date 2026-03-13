@@ -159,6 +159,10 @@ Resources:
           Name: AWS::Include
           Parameters:
             Location: ./openapi-spec.yaml
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
       TracingEnabled: true
       Tags:
         Product: GOV.UK Sign In
