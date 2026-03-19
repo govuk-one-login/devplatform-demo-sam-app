@@ -14,6 +14,10 @@ Parameters:
     Description: The ARN of the permissions boundary to apply when creating IAM roles
     Type: String
     Default: None
+  
+  VpcStackName:
+    Description: "The VPC stack name in the account"
+    Type: "String"
 
   Environment:
     Description: The name of the environment to deploy to
@@ -173,6 +177,14 @@ Resources:
       Runtime: java11
       MemorySize: 2048
       ReservedConcurrentExecutions: 5
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-ProtectedSubnetIdB"
       Tags:
         Product: GOV.UK Sign In
         System: Dev Platform
@@ -197,6 +209,20 @@ Resources:
           Value: HelloWorldLogGroup
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/step-functions-app/template.yaml
+
+  LambdaEgressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: >-
+        Permits outbound on port 443 from within the VPC to the internet.
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow to the wider internet on port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      VpcId:
+        Fn::ImportValue: !Sub "${VpcStackName}-VpcId"
 
   TriggerLogGroup:
     Type: AWS::Logs::LogGroup
