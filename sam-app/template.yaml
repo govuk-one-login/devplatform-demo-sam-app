@@ -401,6 +401,14 @@ Resources:
               Resource: !Ref HelloWorldFunction.Version
       Runtime: nodejs22.x
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdB"
       Environment:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
@@ -457,6 +465,14 @@ Resources:
               Resource: !Ref HelloWorldFunction.Version
       Runtime: nodejs22.x
       KmsKeyArn: !GetAtt HelloWorldKmsKey.Arn
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdB"
       Environment:
         Variables:
           NewVersion: !Ref HelloWorldFunction.Version
