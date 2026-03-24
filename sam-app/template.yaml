@@ -576,13 +576,23 @@ Resources:
         - Key: CheckovRulesToSkip
           Value: "CKV_AWS_18"
 
-  # AccessLogsBucketPolicy:
-  #   Type: AWS::S3::BucketPolicy
-  #   Properties:
-  #     Bucket: !Ref AccessLogsBucket
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
+  AccessLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AccessLogsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: EnforceSSL
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !Sub ${AccessLogsBucket.Arn}
+              - !Sub ${AccessLogsBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: false
   #         - Effect: "Allow"
   #           Resource:
   #             - !Sub "AccessLogsBucket.Arn"
@@ -636,6 +646,24 @@ Resources:
           Value: HelloWorldBucket
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml
+
+  HelloWorldBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref HelloWorldBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: EnforceSSL
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !Sub ${HelloWorldBucket.Arn}
+              - !Sub ${HelloWorldBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: false
 
   HelloWorldKmsKey:
     Type: AWS::KMS::Key
