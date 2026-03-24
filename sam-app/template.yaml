@@ -8,6 +8,7 @@ Parameters:
   VpcStackName:
     Description: "The VPC stack name in the account"
     Type: "String"
+    Default: "vpc"
 
   CodeSigningConfigArn:
     Type: String
