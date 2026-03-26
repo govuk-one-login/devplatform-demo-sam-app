@@ -143,6 +143,14 @@ Resources:
       AutoPublishAlias: live
       MemorySize: 2048
       ReservedConcurrentExecutions: 5
+      VpcConfig:
+        SecurityGroupIds:
+          - !GetAtt LambdaEgressSecurityGroup.GroupId
+        SubnetIds:
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdA"
+          - Fn::ImportValue:
+              "Fn::Sub": "${VpcStackName}-PrivateSubnetIdB"
       Events:
         Trigger:
           Type: Api
@@ -374,7 +382,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - "lambda:InvokeFunction"
-                Resource: !GetAtt HelloWorldFunction.Arn
+                Resource:
+                  - !GetAtt HelloWorldFunction.Arn
+                  - !Join [ ":", [ !GetAtt HelloWorldFunction.Arn, "*" ] ]
       PermissionsBoundary: !If
         - UsePermissionsBoundary
         - !Ref PermissionsBoundary
