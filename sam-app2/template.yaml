@@ -303,7 +303,7 @@ Resources:
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
   # This resource is added to force a pipeline failure.  Resource already exists
-  andylockranDynatraceNonProd:
+  my_parameter:
     Type: AWS::SSM::Parameter
     Properties:
       AllowedPattern: ""
