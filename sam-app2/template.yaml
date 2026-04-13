@@ -302,6 +302,15 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
+  # This resource is added to force a pipeline failure.  Resource already exists
+  andylockranDynatraceNonProd:
+    Type: AWS::SSM::Parameter
+    Properties:
+      AllowedPattern: ""
+      Description: "Intended to force a duplicate resource pipeline failure scenario"
+      Type: String
+      Value: no value provided
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
