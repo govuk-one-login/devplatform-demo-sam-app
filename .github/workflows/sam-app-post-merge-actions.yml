@@ -62,8 +62,8 @@ jobs:
       - name: SAM validate
         run: sam validate
 
-      - name: SAM build and test
-        run: sam build
+      - name: Deploy SAM app
+        uses: govuk-one-login/github-actions/sam/build-application@LIME-2030
 
       - name: Login to Amazon ECR
         id: login-ecr
