@@ -1,4 +1,4 @@
-# Reference fargate app
+# Reference fargate app 
 
 This project contains source code and supporting files for a fargate application, and ElastiCache clusters that you can deploy with the SAM CLI. It includes the following files and folders.
 
