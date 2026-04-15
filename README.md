@@ -9,7 +9,7 @@ This repository contains GitHub workflows that deploy two separate artifacts by 
 defined in the [di-devplatform-demo-pipelines](https://github.com/alphagov/di-devplatform-demo-pipelines)
 repository.
 
-The GitHub workflows make use of the following secrets:
+The GitHub workflows make use of the following secrets: 
 
 * CONTAINER_SIGN_KMS_KEY - The KMS key ARN signing container images for [node](node), [sam-app](sam-app) and [aws-integration-test](aws-integration-test)
 * NODE_ARTIFACT_BUCKET - The name of the S3 bucket to deploy [node](node) to
