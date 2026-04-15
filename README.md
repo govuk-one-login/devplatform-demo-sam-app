@@ -3,7 +3,7 @@
 This repository contains a simple SAM application that uses a variety of common resources to help develop
 the dev platform pipelines.
 
-## Usage
+## Usage 
 
 This repository contains GitHub workflows that deploy two separate artifacts by interfacing with AWS CodePipelines
 defined in the [di-devplatform-demo-pipelines](https://github.com/alphagov/di-devplatform-demo-pipelines)
