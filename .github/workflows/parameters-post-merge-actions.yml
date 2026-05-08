@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Set up SAM cli
-        uses: aws-actions/setup-sam@v2
+        uses: aws-actions/setup-sam@v3
         with:
           use-installer: true  # this caches installation but is only available on Linux x86-64 runners
 
