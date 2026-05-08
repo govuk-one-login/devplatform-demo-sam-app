@@ -62,6 +62,6 @@
     "uglify-js": "3.17.4"
   },
   "overrides": {
-    "brace-expansion": "^2.0.2"
+    "brace-expansion": "^2.1.0"
   }
 }
