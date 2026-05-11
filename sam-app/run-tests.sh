@@ -2,6 +2,18 @@
 
 set -eu
 
+
+### This first test checks that the hello endpoint can serve up 200 requests with a concurrency of 10 requests per second
+
+ab -n 200 -c 20 $CFN_HelloWorldApi/hello
+
+### This first test checks that the hello2 endpoint can serve up 200 requests with a concurrency of 10 requests per second
+
+ab -n 200 -c 20 $CFN_HelloWorldApi/hello2
+
+
+### The following test checks that the endpoint returns a 200 response
+
 declare status_code
 # shellcheck disable=SC2154
 status_code="$(curl --silent --output /dev/null --write-out '%{http_code}' "$CFN_HelloWorldApi")"
