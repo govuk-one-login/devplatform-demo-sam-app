@@ -997,6 +997,14 @@ Resources:
         - Key: Source
           Value: "govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml"
 
+  MySarNestedStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        ApplicationId: "arn:aws:serverlessrepo:eu-west-2:842766856468:applications/my-simple-lambda-component"
+        SemanticVersion: "1.0.0" # Or whichever version you published
+      Parameters:
+
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
