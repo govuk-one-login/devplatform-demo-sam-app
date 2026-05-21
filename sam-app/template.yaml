@@ -1002,7 +1002,7 @@ Resources:
     Properties:
       Location:
         ApplicationId: "arn:aws:serverlessrepo:eu-west-2:842766856468:applications/my-simple-lambda-component"
-        SemanticVersion: "1.0.1" # Or whichever version you published
+        SemanticVersion: "1.0.2" # Or whichever version you published
       Parameters:
         PermissionsBoundary: "arn:aws:iam::842766856468:policy/demo-sam-app-pipeline-AppProgrammaticPermissionsBoundary-06449d80b2ef"
 
