@@ -62,7 +62,7 @@
     "uglify-js": "3.17.4"
   },
   "overrides": {
-    "brace-expansion": "^2.1.2",
+    "brace-expansion": "^2.1.4",
     "i18next-http-middleware": "3.9.7",
     "i18next-fs-backend": "2.6.6",
     "js-yaml": "^4.3.0",
