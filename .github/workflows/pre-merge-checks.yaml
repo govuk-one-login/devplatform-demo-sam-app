@@ -64,6 +64,9 @@ jobs:
         env:
           SHELLCHECK_OPTS: --shell=bash --external-sources
 
+      - name: Checkov scan
+        uses: govuk-one-login/devplatform-quality-check/.github/quality-check@PSREDEV-3740
+
   security-check:
     permissions:
       actions: read
