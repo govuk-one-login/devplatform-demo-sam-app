@@ -6,19 +6,19 @@ on:
       - PSREDEV3658/testing_updated_sam_GHA_role
       - main
 
-  workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        type: choice
-        options:
-          - build
+  # workflow_dispatch:
+  #   inputs:
+  #     environment:
+  #       required: true
+  #       type: choice
+  #       options:
+  #         - build
 
 jobs:
   assume-role:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    environment: ${{inputs.environment || 'build'}}
+    # environment: ${{inputs.environment || 'build'}}
     permissions:
       id-token: write
       contents: read
@@ -26,5 +26,5 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          role-to-assume: ${{ vars.BUILD_SAM_APP_2_GHA_ROLE_ARN_AMINAH }} #Added my name to differentiate from all the other  env vars
+          role-to-assume: ${{ vars.SAM_APP_2_GHA_ROLE_ARN_AMINAH }} #Added my name to differentiate from all the other  env vars
           aws-region: eu-west-2
