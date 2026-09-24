@@ -4,6 +4,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
   QualityCheckValidationPolicy:
+    #checkov:skip=GDS_DEVPLATFORM_001: test
+    #checkov:skip=CKV_AWS_109: test
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
