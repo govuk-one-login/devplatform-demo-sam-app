@@ -10,12 +10,29 @@ const path = require("path");
 const session = require("express-session");
 const DynamoDBStore = require("connect-dynamodb")(session);
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
+
+const client = new DynamoDBClient({
+  region: "eu-west-2",
+});
+
+const dynamodbClient = DynamoDBDocumentClient.from(client, {
+  marshallOptions: {
+    convertEmptyValues: true,
+    removeUndefinedValues: true,
+  },
+});
 
 const commonExpress = require("@govuk-one-login/di-ipv-cri-common-express");
 
 const setHeaders = commonExpress.lib.headers;
 const setScenarioHeaders = commonExpress.lib.scenarioHeaders;
-const setAxiosDefaults = commonExpress.lib.axios;
+const setAxiosDefaults = 
+  commonExpress.lib?.axios?.setAxiosDefaults ||
+  commonExpress.lib?.axios ||
+  commonExpress.axios?.setAxiosDefaults ||
+  commonExpress.axios ||
+  ((req, res, next) => next());
 
 const { setAPIConfig, setOAuthPaths } = require("./lib/settings");
 const { setGTM, setLanguageToggle } = commonExpress.lib.settings;
@@ -42,10 +59,6 @@ const loggerConfig = {
   consoleJSON: true,
   app: false,
 };
-
-const dynamodbClient = new DynamoDBClient({
-  region: "eu-west-2",
-});
 
 const dynamoDBSessionStore = new DynamoDBStore({
   client: dynamodbClient,
@@ -104,7 +117,10 @@ setI18n({
 // Common express relies on 0/1 strings
 const showLanguageToggle = APP.LANGUAGE_TOGGLE_DISABLED === "true" ? "0" : "1";
 setLanguageToggle({ app, showLanguageToggle: showLanguageToggle });
-app.get("nunjucks").addGlobal("addLanguageParam", addLanguageParam);
+const nunjucksEnv = app.get("nunjucks");
+nunjucksEnv.addGlobal("addLanguageParam", addLanguageParam);
+nunjucksEnv.addGlobal("contactUsUrl", process.env.CONTACT_US_URL || "/contact-us");
+nunjucksEnv.addGlobal("showContactUs", true);
 app.set("view engine", "njk");
 
 setAPIConfig({
@@ -124,6 +140,13 @@ setGTM({
   ga4Disabled: APP.GTM.GA4_DISABLED,
   ga4ContainerId: APP.GTM.GA4_CONTAINER_ID,
 });
+
+console.log("getGTM:", typeof getGTM);
+console.log("getLanguageToggle:", typeof getLanguageToggle);
+console.log("getAssetPath:", typeof getAssetPath);
+console.log("setScenarioHeaders:", typeof setScenarioHeaders);
+console.log("setAxiosDefaults:", typeof setAxiosDefaults);
+console.log("oauth2:", typeof commonExpress.routes.oauth2);
 
 router.use(getGTM);
 router.use(getLanguageToggle);
