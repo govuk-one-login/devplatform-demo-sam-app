@@ -64,28 +64,18 @@ jobs:
         env:
           SHELLCHECK_OPTS: --shell=bash --external-sources
 
-  security-check:
+  security-checks:
     permissions:
-      actions: read
       contents: read
       security-events: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - name: Checkov GitHub Action
-        uses: bridgecrewio/checkov-action@v12
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          # This will add both a CLI output to the console and create a results.sarif file
+          fetch-depth: 0
+      - name: Run Custom Checkov Policies
+        uses: govuk-one-login/devplatform-quality-check/.github/actions/custom-checkov-policies@PSREDEV-3741
+        with:
           framework: cloudformation
-          quiet: true
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v4
-        # Results are generated only on a success or failure
-        # this is required since GitHub by default won't run the next step
-        # when the previous one has failed. Security checks that do not pass will 'fail'.
-        if: success() || failure()
-        with:
-          sarif_file: results.sarif
+          ref: main # needs to be updated to a release tag once the action is released
