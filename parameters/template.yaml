@@ -79,6 +79,32 @@ Resources:
         Source: govuk-one-login/devplatform-demo-sam-app/parameters/template.yaml
 
 
+  # Intentionally failing resource for Checkov policy testing
+  # Fails GDS_DEVPLATFORM_003 - no PermissionsBoundary
+  # Fails GDS_DEVPLATFORM_004 - cross-account AssumeRole without aws:PrincipalOrgID
+  # Fails GDS_DEVPLATFORM_001 - iam:PassRole on wildcard resource
+  # Fails GDS_DEVPLATFORM_002 - iam:CreateRole granted
+  FailingCheckovRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "arn:aws:iam::123456789012:root"
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FailingPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                  - iam:CreateRole
+                Resource: "*"
+
   AnotherBasicParameter:
     Type: AWS::SSM::Parameter
     Properties:
