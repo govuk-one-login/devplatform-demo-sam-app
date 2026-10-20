@@ -3,8 +3,8 @@ name: Assuming Role to validate sam deploy GHA role
 on:
   push:
     branches:
-      - PSREDEV3658/testing_updated_sam_GHA_role
-      - main
+      - psredev-3812-testing-trust-policies
+  pull_request:
 
   # workflow_dispatch:
   #   inputs:
@@ -18,7 +18,7 @@ jobs:
   assume-role:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    # environment: ${{inputs.environment || 'build'}}
+    # environment: build
     permissions:
       id-token: write
       contents: read
@@ -26,5 +26,5 @@ jobs:
       - name: Set up AWS creds
         uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          role-to-assume: ${{ vars.SAM_APP_2_GHA_ROLE_ARN_AMINAH }} #Added my name to differentiate from all the other  env vars
+          role-to-assume: arn:aws:iam::842766856468:role/psredev-3812-sam-GitHubActionsRole-QhtoilQ35dDe
           aws-region: eu-west-2
