@@ -70,12 +70,9 @@ jobs:
       security-events: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
       - name: Run Custom Checkov Policies
         uses: govuk-one-login/infrastructure-compliance-checks/actions/custom-checkov-policies@main
         with:
           framework: cloudformation
+          pull-repository: true
           ref: main # needs to be updated to a release tag once the action is released
