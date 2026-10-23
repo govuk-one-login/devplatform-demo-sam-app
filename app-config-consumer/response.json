@@ -1,0 +1,1 @@
+{"statusCode":200,"body":"{\"version\":\"1.0.0\",\"message\":\"Hello from app config pipeline!\",\"featureFlags\":{\"enableNewFeature\":false}}"}
