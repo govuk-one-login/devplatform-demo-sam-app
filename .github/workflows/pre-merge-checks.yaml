@@ -71,8 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Custom Checkov Policies
-        uses: govuk-one-login/infrastructure-compliance-checks/actions/custom-checkov-policies@main
+        uses: govuk-one-login/infrastructure-compliance-checks/actions/custom-checkov-policies@PSREDEV-3868
         with:
           framework: cloudformation
           pull-repository: true
-          ref: main # needs to be updated to a release tag once the action is released
