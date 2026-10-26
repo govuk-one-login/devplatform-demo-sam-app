@@ -56,6 +56,7 @@ jobs:
           output_file_path: console,results.sarif
 
       - name: Upload SARIF file
+        id: upload_sarif
         uses: github/codeql-action/upload-sarif@v4
         # Results are generated only on a success or failure
         # this is required since GitHub by default won't run the next step
@@ -63,3 +64,13 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: results.sarif
+
+      - name: Automatically Dismiss Skipped Alerts
+        # Only run on open pull requests or default branch workflows
+        if: success() 
+        uses: advanced-security/dismiss-alerts@v1
+        with:
+          sarif-id: ${{ steps.upload_sarif.outputs.sarif-id }}
+          sarif-file: checkov-results/results.sarif
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
