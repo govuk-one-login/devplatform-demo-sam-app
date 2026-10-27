@@ -1,6 +1,4 @@
-FROM amazonlinux:2
-
-RUN yum install -y awscli
+FROM amazonlinux:2023
 
 COPY run-tests.sh ./
 

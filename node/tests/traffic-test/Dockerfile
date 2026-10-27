@@ -1,6 +1,5 @@
-FROM amazonlinux:2
+FROM amazonlinux:2023
 
-RUN yum install -y awscli
-RUN yum install -y httpd-tools
+RUN dnf install -y httpd-tools && dnf clean all
 
 COPY run-tests.sh ./
