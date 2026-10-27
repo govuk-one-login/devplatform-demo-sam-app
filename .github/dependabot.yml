@@ -39,3 +39,23 @@ updates:
       - "TobySaundersGDS"
     reviewers:
       - "govuk-one-login/dev-platform"
+  - package-ecosystem: "docker"
+    # Dockerfiles across the node, node-with-waf, sam-app
+    # and test image directories
+    directories:
+      - "/node"
+      - "/node-with-waf"
+      - "/sam-app"
+      - "/node/tests/post-deployment-test"
+      - "/node/tests/traffic-test"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 3
+    assignees:
+      - "TobySaundersGDS"
+    reviewers:
+      - "govuk-one-login/dev-platform"
+    groups:
+      docker-base-images:
+        patterns:
+          - "*"
