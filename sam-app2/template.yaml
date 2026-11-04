@@ -302,6 +302,18 @@ Resources:
         - Key: Source
           Value: govuk-one-login/devplatform-demo-sam-app/sam-app2/template.yaml
 
+  FailingTestRole:
+    # checkov:skip=GDS_DEVPLATFORM_003: Testing skipping checks work as expected
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole 
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
