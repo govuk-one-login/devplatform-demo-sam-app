@@ -10,9 +10,9 @@ Parameters:
     Type: "String"
     Default: "vpc"
 
-  CodeSigningConfigArn:
+  CodeSigningConfigArfn:
     Type: String
-    Description: Asserts that lambdas are signed when deployed.
+    Description: Set to a Lambda code-signing-config ARN to enable signing, or leave as none to use the template-managed config.
     Default: "none"
 
   LambdaDeploymentPreference:
@@ -33,6 +33,16 @@ Parameters:
     Description: "The ARN of the SNS topic used for notifications"
     Type: "String"
     Default: "none"
+
+  DynatraceJavaX86LayerArn:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: "Dynatrace Java x86 Lambda layer ARN lookup from the SSM parameter store"
+    Default: "/dynatrace/java_x86_arn"
+
+  DynatraceSigningProfileArn:
+    Type: String
+    Description: "AWS Signer profile ARN allowed for Lambda code signing"
+    Default: "arn:aws:signer:eu-west-2:216552277552:/signing-profiles/DynatraceSigner/5uwzCCGTPq"
 
 Conditions:
   IsNonDevEnvironment:
@@ -82,15 +92,26 @@ Globals:
   Function:
     CodeSigningConfigArn: !If
       - UseCodeSigning
-      - !Ref CodeSigningConfigArn
+      - !Ref LambdaCodeSigningConfig
       - !Ref AWS::NoValue
     PermissionsBoundary: !If
       - UsePermissionsBoundary
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
     Timeout: 20
+    Layers:
+      - !Ref DynatraceJavaX86LayerArn
 
 Resources:
+  LambdaCodeSigningConfig:
+    Type: AWS::Lambda::CodeSigningConfig
+    Condition: UseCodeSigning
+    Properties:
+      Description: "Allow signed Lambdas from the Dynatrace signer profile"
+      AllowedPublishers:
+        SigningProfileVersionArns:
+          - !Ref DynatraceSigningProfileArn
+
   APIGatewayAccessLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -302,12 +323,10 @@ Resources:
                 - codedeploy.amazonaws.com
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
-      PermissionsBoundary:
-        !If [
-          UsePermissionsBoundary,
-          !Ref PermissionsBoundary,
-          !Ref AWS::NoValue,
-        ]
+      PermissionsBoundary: !If
+        - UsePermissionsBoundary
+        - !Ref PermissionsBoundary
+        - !Ref AWS::NoValue
 
   HelloWorldFunction2:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
