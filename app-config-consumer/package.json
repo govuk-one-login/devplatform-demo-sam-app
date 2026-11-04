@@ -2,7 +2,7 @@
   "name": "app-config-consumer",
   "version": "1.0.0",
   "description": "Consumer app for validating the app-config-deploy-pipeline template end-to-end",
-  "main": "src/handler.js",
+  "main": "src/handler.ts",
   "scripts": {
     "build": "esbuild src/handler.ts --bundle --platform=node --target=node24 --outfile=dist/handler.js"
   },
