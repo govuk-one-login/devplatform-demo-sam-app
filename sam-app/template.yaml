@@ -913,6 +913,17 @@ Resources:
         - Key: Source
           Value: "govuk-one-login/devplatform-demo-sam-app/sam-app/template.yaml"
 
+  FailingTestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+
 Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
