@@ -1,0 +1,45 @@
+name: App config consumer deploy config to S3
+run-name: App config consumer deploy config to S3 ${{ inputs.environment }}
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app-config-consumer/config.json"
+      - ".github/workflows/app-config-consumer-deploy-config.yml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        type: environment
+        required: true
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./app-config-consumer
+
+jobs:
+  deploy-config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ inputs.environment || 'dev' }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Sign and upload config to S3
+        uses: govuk-one-login/app-config-upload-action@5b22796f343e5a8721a50962b74d2baa04e78e31 # v2.0.1
+        with:
+          aws-role-arn: ${{ vars.APP_CONFIG_GH_ACTIONS_ROLE_ARN }}
+          config-file: config.json
+          artefact-signing-key-arn: ${{ vars.ARTIFACT_SIGNING_KEY_ARN }}
+          config-source-bucket-name: ${{ vars.APP_CONFIG_CONSUMER_CONFIG_BUCKET_NAME }}
+          environment: ${{ inputs.environment || 'dev' }}
+          working-directory: ./app-config-consumer
