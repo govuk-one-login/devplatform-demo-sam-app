@@ -5,8 +5,12 @@ Description: >
 
 Parameters:
   ConfigPipelineStackName:
-    Description: "Name of the app-config-deploy-pipeline stack whose exports this app consumes"
+    Description: >
+      Name of the app-config-deploy-pipeline stack whose exports
+      this app consumes for AppConfig resource IDs.        
     Type: String
+    Default: "app-config-demo-pipeline"
+    AllowedPattern: "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
 
 Globals:
   Function:
