@@ -39,15 +39,15 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.9'
+          python-version: '3.13' # latest version supported by checkov
 
       - name: Cache Python packages
         uses: actions/cache@v6
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip3.9-${{ hashFiles('.github/workflows/pre-merge-checks.yaml') }}
+          key: ${{ runner.os }}-pip3.13-${{ hashFiles('.github/workflows/pre-merge-checks.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pip3.9-
+            ${{ runner.os }}-pip3.13-
 
       - name: Install linters
         run: pip install 'cfn-lint~=0.74.0' 'poetry~=0.12.17' 'checkov~=2.2.130'
