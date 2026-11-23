@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Simple Python Favourite Toy Demo using Lambda Function URL
+
+Resources:
+  ToyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ToyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-toy-app'
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Role: !GetAtt ToyLambdaRole.Arn
+      Timeout: 10
+      Code:
+        ZipFile: |
+          import html
+
+          TOY_EMOJIS = {
+              "bear": "🧸",
+              "teddy": "🧸",
+              "car": "🚗",
+              "truck": "🚚",
+              "train": "🚂",
+              "lego": "🧱",
+              "blocks": "🧱",
+              "robot": "🤖",
+              "doll": "🪆",
+              "ball": "⚽",
+              "football": "⚽",
+              "dino": "🦖",
+              "dinosaur": "🦖",
+              "plane": "✈️",
+              "rocket": "🚀",
+              "bike": "🚲",
+              "game": "🎮",
+              "console": "🎮",
+              "puzzle": "🧩",
+              "kite": "🪁",
+              "duck": "🦆",
+              "yo-yo": "🪀",
+              "yoyo": "🪀",
+          }
+
+          def pick_emoji(toy_text: str) -> str:
+              lowered = toy_text.lower()
+              for keyword, emoji in TOY_EMOJIS.items():
+                  if keyword in lowered:
+                      return emoji
+              return "🎁"  # Default fallback icon
+
+          def lambda_handler(event, context):
+              query_params = event.get("queryStringParameters") or {}
+              raw_toy = query_params.get("toy", "").strip()
+              
+              safe_toy = html.escape(raw_toy)
+              
+              if safe_toy:
+                  icon = pick_emoji(raw_toy)
+                  result_block = f"""
+                  <div class="result">
+                      <div class="icon">{icon}</div>
+                      <p>Your favourite toy is: <strong>{safe_toy}</strong></p>
+                  </div>
+                  """
+              else:
+                  result_block = ""
+              
+              page = f"""<!DOCTYPE html>
+              <html lang="en">
+              <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Favourite Toy Demo</title>
+                  <style>
+                      body {{
+                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                          display: flex;
+                          justify-content: center;
+                          align-items: center;
+                          height: 100vh;
+                          margin: 0;
+                          background-color: #f4f6f8;
+                      }}
+                      .card {{
+                          background: white;
+                          padding: 2rem;
+                          border-radius: 12px;
+                          box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+                          text-align: center;
+                          width: 340px;
+                      }}
+                      h2 {{ color: #232f3e; margin-top: 0; }}
+                      input {{
+                          width: 85%;
+                          padding: 10px;
+                          margin: 12px 0;
+                          border: 1px solid #ccc;
+                          border-radius: 6px;
+                          font-size: 16px;
+                      }}
+                      button {{
+                          background-color: #ff9900;
+                          color: #111;
+                          font-weight: bold;
+                          border: none;
+                          padding: 10px 20px;
+                          border-radius: 6px;
+                          cursor: pointer;
+                          font-size: 16px;
+                      }}
+                      button:hover {{ background-color: #e88b00; }}
+                      .result {{
+                          margin-top: 24px;
+                          padding-top: 16px;
+                          border-top: 1px solid #eee;
+                      }}
+                      .icon {{
+                          font-size: 48px;
+                          margin-bottom: 8px;
+                      }}
+                      p {{
+                          font-size: 18px;
+                          color: #232f3e;
+                          margin: 0;
+                      }}
+                  </style>
+              </head>
+              <body>
+                  <div class="card">
+                      <h2>What is your favourite toy?</h2>
+                      <form method="GET">
+                          <input type="text" name="toy" placeholder="e.g. Lego, Teddy bear, Robot" required />
+                          <br/>
+                          <button type="submit">Submit</button>
+                      </form>
+                      {result_block}
+                  </div>
+              </body>
+              </html>"""
+              
+              return {
+                  "statusCode": 200,
+                  "headers": {
+                      "Content-Type": "text/html; charset=utf-8"
+                  },
+                  "body": page
+              }
+
+  ToyFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: NONE
+      TargetFunctionArn: !GetAtt ToyLambdaFunction.Arn
+
+  ToyFunctionUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ToyLambdaFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+Outputs:
+  DemoAppUrl:
+    Description: Open this URL in your browser to view the demo
+    Value: !GetAtt ToyFunctionUrl.FunctionUrl
