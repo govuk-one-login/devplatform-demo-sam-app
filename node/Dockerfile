@@ -1,4 +1,4 @@
-FROM node:18.20.8-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npm run build
 
 RUN npm prune
 
-FROM node:18.20.8-alpine AS final
+FROM node:22-alpine AS final
 
 ENV USER=nodeappuser \
     GROUP=nodeappgroup
