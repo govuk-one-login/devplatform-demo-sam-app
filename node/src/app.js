@@ -93,6 +93,10 @@ const { app, router } = setup({
       ),
       "components"
     ),
+    path.resolve(
+      path.dirname(require.resolve("hmpo-components/package.json")),
+      "components"
+    ),
     path.resolve("node_modules/@govuk-one-login/"),
     "views",
   ],
@@ -172,6 +176,8 @@ router.use(getAssetPath);
 
 router.use(setScenarioHeaders);
 router.use(setAxiosDefaults);
+
+router.get("/", (req, res) => res.redirect("/toy"));
 
 router.use("/oauth2", commonExpress.routes.oauth2);
 
